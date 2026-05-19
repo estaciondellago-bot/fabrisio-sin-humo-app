@@ -9,15 +9,17 @@
  *   ALLOWED_ORIGINS      → Lista separada por comas de orígenes permitidos. Plain Text.
  *                          Ej: "https://fabrisiosinhumo.com,https://www.fabrisiosinhumo.com,https://fabrisio-sin-humo-app.vercel.app"
  *
- * Bindings requeridos (Cloudflare → Worker → Settings → Bindings):
- *   RATE_LIMITER         → Rate Limiter binding. Variable name: RATE_LIMITER
- *                          Namespace ID: 1001 (cualquier número único)
- *                          Limit: 30 requests / 60 seconds
+ * Rate limit: 30 requests/min por IP, implementado con caches.default del edge.
+ *             Per-colo (eventual consistency entre data centers) pero suficiente para
+ *             prevenir abuso de la API key después de un eventual leak de password.
  *
  * Endpoint expuesto: POST /
  *   Headers: Content-Type: application/json, X-Access-Password: <password>
  *   Body:    { model, max_tokens, system, messages } (formato Anthropic Messages API)
  */
+
+const RATE_LIMIT_MAX = 30;       // requests
+const RATE_LIMIT_WINDOW = 60;    // segundos
 
 const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
 
@@ -59,32 +61,32 @@ export default {
       return jsonError('Método no permitido. Usá POST.', 405, corsHeaders);
     }
 
-    // Rate limit por IP. Va ANTES de validar password para que un atacante
-    // no pueda hammear con passwords inválidas.
-    let rlDebug = 'no-binding';
-    if (env.RATE_LIMITER) {
-      try {
-        // TEST: usando key constante 'global' para diagnosticar binding
-        const result = await env.RATE_LIMITER.limit({ key: 'global' });
-        rlDebug = `ok success=${result.success} key=global`;
-        if (!result.success) {
-          return new Response(
-            JSON.stringify({ error: 'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.' }),
-            { status: 429, headers: { 'Content-Type': 'application/json', 'X-Debug-RL': rlDebug, ...corsHeaders } }
-          );
-        }
-      } catch (err) {
-        rlDebug = `err: ${err.message}`;
+    // Rate limit por IP usando caches.default. Va ANTES de validar password para que
+    // un atacante no pueda hammear con passwords inválidas. Per-colo (eventual consistency).
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const window = Math.floor(Date.now() / (RATE_LIMIT_WINDOW * 1000));
+    const cacheKey = new Request(`https://rl.local/${encodeURIComponent(ip)}/${window}`);
+    const cached = await caches.default.match(cacheKey);
+    let count = 1;
+    if (cached) {
+      count = parseInt(await cached.text(), 10) + 1;
+      if (count > RATE_LIMIT_MAX) {
+        return jsonError(
+          'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.',
+          429,
+          corsHeaders
+        );
       }
     }
+    await caches.default.put(
+      cacheKey,
+      new Response(String(count), { headers: { 'Cache-Control': `public, max-age=${RATE_LIMIT_WINDOW}` } })
+    );
 
     // Validar password
     const password = request.headers.get('X-Access-Password');
     if (!password || password !== env.ACCESS_PASSWORD) {
-      return new Response(
-        JSON.stringify({ error: 'Acceso no autorizado. Verificá tu contraseña.' }),
-        { status: 401, headers: { 'Content-Type': 'application/json', 'X-Debug-RL': rlDebug, ...corsHeaders } }
-      );
+      return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
     }
 
     // Leer body
