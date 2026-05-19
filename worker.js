@@ -63,10 +63,10 @@ export default {
     // no pueda hammear con passwords inválidas.
     let rlDebug = 'no-binding';
     if (env.RATE_LIMITER) {
-      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
       try {
-        const result = await env.RATE_LIMITER.limit({ key: ip });
-        rlDebug = `ok success=${result.success} ip=${ip}`;
+        // TEST: usando key constante 'global' para diagnosticar binding
+        const result = await env.RATE_LIMITER.limit({ key: 'global' });
+        rlDebug = `ok success=${result.success} key=global`;
         if (!result.success) {
           return new Response(
             JSON.stringify({ error: 'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.' }),
