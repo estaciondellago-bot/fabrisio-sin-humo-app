@@ -59,14 +59,9 @@ export default {
       return jsonError('Método no permitido. Usá POST.', 405, corsHeaders);
     }
 
-    // Validar password
-    const password = request.headers.get('X-Access-Password');
-    if (!password || password !== env.ACCESS_PASSWORD) {
-      return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
-    }
-
-    // Rate limit por IP (30 req/min). El binding RATE_LIMITER se configura en el dashboard.
-    // Si el binding no existe (ej. en testing local), se saltea sin error.
+    // Rate limit por IP (30 req/min). Va ANTES de validar password para que un atacante
+    // no pueda hammear con passwords inválidas. Si el binding no existe (ej. testing local),
+    // se saltea sin error.
     if (env.RATE_LIMITER) {
       const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
       const { success } = await env.RATE_LIMITER.limit({ key: ip });
@@ -77,6 +72,12 @@ export default {
           corsHeaders
         );
       }
+    }
+
+    // Validar password
+    const password = request.headers.get('X-Access-Password');
+    if (!password || password !== env.ACCESS_PASSWORD) {
+      return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
     }
 
     // Leer body
