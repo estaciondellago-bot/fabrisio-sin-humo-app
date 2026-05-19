@@ -3,12 +3,16 @@
  * ===========================================
  * Proxy entre el cliente (Vercel) y la API de Anthropic.
  *
- * Variables de entorno requeridas (Cloudflare → Worker → Settings → Variables):
+ * Variables de entorno (Cloudflare → Worker → Settings → Variables and Secrets):
  *   ANTHROPIC_API_KEY    → Tu key sk-ant-... (Secret)
  *   ACCESS_PASSWORD      → La contraseña que ingresan los clientes (Secret)
- *   ALLOWED_ORIGINS      → Lista separada por comas de orígenes permitidos.
+ *   ALLOWED_ORIGINS      → Lista separada por comas de orígenes permitidos. Plain Text.
  *                          Ej: "https://fabrisiosinhumo.com,https://www.fabrisiosinhumo.com,https://fabrisio-sin-humo-app.vercel.app"
- *                          (Plain Text está bien, no hace falta marcarla Secret)
+ *
+ * Bindings requeridos (Cloudflare → Worker → Settings → Bindings):
+ *   RATE_LIMITER         → Rate Limiter binding. Variable name: RATE_LIMITER
+ *                          Namespace ID: 1001 (cualquier número único)
+ *                          Limit: 30 requests / 60 seconds
  *
  * Endpoint expuesto: POST /
  *   Headers: Content-Type: application/json, X-Access-Password: <password>
@@ -59,6 +63,20 @@ export default {
     const password = request.headers.get('X-Access-Password');
     if (!password || password !== env.ACCESS_PASSWORD) {
       return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
+    }
+
+    // Rate limit por IP (30 req/min). El binding RATE_LIMITER se configura en el dashboard.
+    // Si el binding no existe (ej. en testing local), se saltea sin error.
+    if (env.RATE_LIMITER) {
+      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const { success } = await env.RATE_LIMITER.limit({ key: ip });
+      if (!success) {
+        return jsonError(
+          'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.',
+          429,
+          corsHeaders
+        );
+      }
     }
 
     // Leer body
