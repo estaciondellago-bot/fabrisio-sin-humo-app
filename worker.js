@@ -59,25 +59,32 @@ export default {
       return jsonError('Método no permitido. Usá POST.', 405, corsHeaders);
     }
 
-    // Rate limit por IP (30 req/min). Va ANTES de validar password para que un atacante
-    // no pueda hammear con passwords inválidas. Si el binding no existe (ej. testing local),
-    // se saltea sin error.
+    // Rate limit por IP. Va ANTES de validar password para que un atacante
+    // no pueda hammear con passwords inválidas.
+    let rlDebug = 'no-binding';
     if (env.RATE_LIMITER) {
       const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-      const { success } = await env.RATE_LIMITER.limit({ key: ip });
-      if (!success) {
-        return jsonError(
-          'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.',
-          429,
-          corsHeaders
-        );
+      try {
+        const result = await env.RATE_LIMITER.limit({ key: ip });
+        rlDebug = `ok success=${result.success} ip=${ip}`;
+        if (!result.success) {
+          return new Response(
+            JSON.stringify({ error: 'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.' }),
+            { status: 429, headers: { 'Content-Type': 'application/json', 'X-Debug-RL': rlDebug, ...corsHeaders } }
+          );
+        }
+      } catch (err) {
+        rlDebug = `err: ${err.message}`;
       }
     }
 
     // Validar password
     const password = request.headers.get('X-Access-Password');
     if (!password || password !== env.ACCESS_PASSWORD) {
-      return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
+      return new Response(
+        JSON.stringify({ error: 'Acceso no autorizado. Verificá tu contraseña.' }),
+        { status: 401, headers: { 'Content-Type': 'application/json', 'X-Debug-RL': rlDebug, ...corsHeaders } }
+      );
     }
 
     // Leer body
