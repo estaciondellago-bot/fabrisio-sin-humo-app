@@ -239,12 +239,36 @@ const TOOLS = {
       {id:'pmBlock2',title:{es:'Bloque 2: Campañas + Segmentación + Presupuesto',en:'Block 2: Campaigns + Targeting + Budget'}},
       {id:'pmBlock3',title:{es:'Bloque 3: Creatividades + Copy + Testing',en:'Block 3: Creatives + Copy + Testing'}}
     ]
+  },
+  'ideas-virales-1':{
+    id:'ideas-virales-1',category:'marketing',
+    name:{es:'Generador de Ideas Virales',en:'Viral Ideas Generator'},
+    description:{es:'Ideas de contenido con potencial viral, adaptadas a tu marca y plataforma.',en:'Content ideas with viral potential, adapted to your brand and platform.'},
+    level:'basico',time:'15-25',available:true,
+    recommendedFor:['ecommerce','service','health','local','education'],
+    illustrationId:'viral',entryModes:['guided'],
+    questions:[
+      {phase:'context',key:'viralAbout',type:'textarea'},
+      {phase:'context',key:'viralAudience',type:'textarea'},
+      {phase:'context',key:'viralPlatform',type:'select'},
+      {phase:'voice',key:'viralTone',type:'select'},
+      {phase:'voice',key:'viralAngle',type:'textarea',optional:true},
+      {phase:'performance',key:'viralFrequency',type:'select'},
+      {phase:'performance',key:'viralBestPosts',type:'textarea',optional:true}
+    ],
+    phases:{
+      es:{context:'Contexto',voice:'Voz y tono',performance:'Performance y ritmo'},
+      en:{context:'Context',voice:'Voice & tone',performance:'Performance & cadence'}
+    },
+    outputBlocks:[
+      {id:'viralIdeasList',title:{es:'Bloque 1: 10-15 Ideas Virales',en:'Block 1: 10-15 Viral Ideas'}},
+      {id:'viralCalendar',title:{es:'Bloque 2: Calendario de Publicación (4 semanas)',en:'Block 2: Publishing Calendar (4 weeks)'}}
+    ]
   }
 };
 
 const LOCKED_TOOLS = [
   {id:'optimizador-meta-ads',category:'marketing',level:'avanzado',time:'20-35',illustrationId:'paid-media',recommendedFor:['ecommerce','service']},
-  {id:'ideas-virales-1',category:'marketing',level:'basico',time:'15-25',illustrationId:'viral',recommendedFor:['ecommerce','service','health','local']},
   {id:'ideas-virales-2',category:'marketing',level:'intermedio',time:'15-25',illustrationId:'viral',recommendedFor:['ecommerce','service','health']},
   {id:'ideas-instagram',category:'marketing',level:'basico',time:'15-25',illustrationId:'instagram',recommendedFor:['ecommerce','service','health','local']},
   {id:'storytelling-heroe',category:'content',level:'intermedio',time:'25-35',illustrationId:'hero',recommendedFor:['service','b2b','education']},
@@ -257,7 +281,6 @@ const LOCKED_TOOLS = [
 
 const LOCKED_NAMES = {
   'optimizador-meta-ads':{es:{name:'Optimizador de Meta Ads',desc:'Auditoría y optimización de campañas existentes.'},en:{name:'Meta Ads Optimizer',desc:'Audit and optimize campaigns.'}},
-  'ideas-virales-1':{es:{name:'Generador de Ideas Virales',desc:'Ideas de contenido con potencial viral.'},en:{name:'Viral Ideas Generator',desc:'Content ideas with viral potential.'}},
   'ideas-virales-2':{es:{name:'Generador de Ideas Virales Pro',desc:'Versión avanzada con frameworks de viralidad.'},en:{name:'Viral Ideas Pro',desc:'Advanced viral frameworks.'}},
   'ideas-instagram':{es:{name:'Ideas de Contenido Premium',desc:'Contenido de calidad para Instagram.'},en:{name:'Premium Content Ideas',desc:'Quality Instagram content.'}},
   'storytelling-heroe':{es:{name:'Storytelling: Viaje del Héroe',desc:'Aplicá el viaje del héroe a tu marca.'},en:{name:"Hero's Journey",desc:"Apply hero's journey."}},
@@ -315,7 +338,14 @@ const BIZ_Q = {
     bsChallenges2:{title:'¿Cómo lo superaste?',desc:'Qué hiciste.',placeholder:'Ej: Reconvertí a alquileres mensuales, bajé costos 40%...'},
     bsChallenges3:{title:'Aprendizaje de ese proceso',desc:'El insight.',placeholder:'Ej: Nunca depender de un solo flujo de ingresos...'},
     bsFuture1:{title:'Objetivos próximos meses',desc:'3-12 meses.',placeholder:'Ej: Q1: lanzar plataforma. Q2: 5 clientes pagos...'},
-    bsFuture2:{title:'¿Ideas nuevas que querés explorar?',desc:'',placeholder:'Ej: SaaS para PyMEs, podcast, expansión...'}
+    bsFuture2:{title:'¿Ideas nuevas que querés explorar?',desc:'',placeholder:'Ej: SaaS para PyMEs, podcast, expansión...'},
+    viralAbout:{title:'¿De qué se trata tu cuenta o negocio?',desc:'Qué hacés, qué ofrecés, en qué nicho estás.',placeholder:'Ej: Soy nutricionista deportiva, trabajo con runners amateurs en CABA. Doy planes personalizados y educo sobre nutrición sin fanatismos...'},
+    viralAudience:{title:'¿A quién querés que llegue ese contenido?',desc:'Audiencia ideal: demografía + intereses + dolor.',placeholder:'Ej: Hombres y mujeres 28-45, runners que entrenan 3-4 veces por semana, quieren mejorar performance sin contar calorías ni hacer dietas extremas...'},
+    viralPlatform:{title:'¿En qué plataforma vas a publicar?',desc:'Esto define el formato y duración.',options:['Instagram (Reels)','TikTok','YouTube Shorts','Multi (Reels + TikTok + Shorts)','LinkedIn (video o texto)']},
+    viralTone:{title:'¿Cuál es el tono de tu marca?',desc:'Cómo querés sonar.',options:['Educativo y claro','Humorístico / irónico','Polémico / contrarian','Inspiracional / motivacional','Técnico / experto','Cercano / coloquial']},
+    viralAngle:{title:'¿Algún tema o ángulo específico que querés explorar? (opcional)',desc:'Para enfocar las ideas en algo concreto.',placeholder:'Ej: errores comunes en la alimentación pre-carrera, mitos que escucho todos los días, cómo entrenar con un trabajo de oficina...'},
+    viralFrequency:{title:'¿Con qué frecuencia podés publicar?',desc:'Para armar un calendario realista.',options:['1 post por semana','2-3 posts por semana','4-5 posts por semana','Diario (6-7 por semana)']},
+    viralBestPosts:{title:'¿Qué posts tuyos funcionaron mejor antes? (opcional)',desc:'Pegá títulos, descripciones o el ángulo. Sirve para detectar patrones.',placeholder:'Ej: Un Reel donde explicaba por qué la avena no es el mejor desayuno: 50k views, 200 comentarios. Un carrusel sobre suplementos: 30k...'}
   },
   en:{
     product:{title:'What is your product or service?',desc:'Name and description.',placeholder:'Ex: Tech e-commerce...'},
@@ -363,7 +393,14 @@ const BIZ_Q = {
     bsChallenges2:{title:'How did you overcome it?',desc:'What you did.',placeholder:'Ex: Pivoted to monthly rentals, cut costs 40%...'},
     bsChallenges3:{title:'Learning from that',desc:'The insight.',placeholder:'Ex: Never depend on single revenue stream...'},
     bsFuture1:{title:'Coming months goals',desc:'3-12 months.',placeholder:'Ex: Q1: launch platform. Q2: 5 paid clients...'},
-    bsFuture2:{title:'New ideas to explore?',desc:'',placeholder:'Ex: SaaS, podcast, expansion...'}
+    bsFuture2:{title:'New ideas to explore?',desc:'',placeholder:'Ex: SaaS, podcast, expansion...'},
+    viralAbout:{title:'What is your account or business about?',desc:'What you do, what you offer, which niche.',placeholder:'Ex: I\'m a sports nutritionist working with amateur runners. Personalized plans and education without dogma...'},
+    viralAudience:{title:'Who do you want this content to reach?',desc:'Ideal audience: demographics + interests + pain.',placeholder:'Ex: 28-45, runners training 3-4 times a week, want to improve performance without counting calories...'},
+    viralPlatform:{title:'Which platform are you publishing on?',desc:'Defines format and duration.',options:['Instagram (Reels)','TikTok','YouTube Shorts','Multi (Reels + TikTok + Shorts)','LinkedIn (video or text)']},
+    viralTone:{title:'Brand tone',desc:'How you want to sound.',options:['Educational & clear','Humorous / ironic','Polemic / contrarian','Inspirational','Technical / expert','Casual / conversational']},
+    viralAngle:{title:'Any specific topic or angle to explore? (optional)',desc:'To focus the ideas on something concrete.',placeholder:'Ex: common pre-race nutrition mistakes, myths I hear daily, training around a desk job...'},
+    viralFrequency:{title:'How often can you publish?',desc:'For a realistic calendar.',options:['1 post per week','2-3 posts per week','4-5 posts per week','Daily (6-7 per week)']},
+    viralBestPosts:{title:'Posts of yours that worked best before? (optional)',desc:'Paste titles, captions, or the angle. Helps detect patterns.',placeholder:'Ex: A Reel explaining why oatmeal isn\'t the best breakfast: 50k views, 200 comments. A carousel on supplements: 30k...'}
   }
 };
 
@@ -509,6 +546,15 @@ function buildPrompt(lang: string, data: any, mode: string, bizType: string, too
     if (mode==='bsLiteralDoc') return bs+ctx+`\n\nDOCUMENTO LITERAL en Markdown. REGLA CRÍTICA: Preservá la voz EXACTA. NO reformules. Solo corregís typos obvios.\n\n# Brand Story\n\n## 1. Origen y Punto de Partida\n**[Pregunta textual]**\n> [Respuesta EXACTA como blockquote]\n(etc para las 6 secciones)\n\nSi falta respuesta: *"[Falta respuesta]"*. NO agregues comentarios propios.`;
     if (mode==='bsStrategicReading') return bs+ctx+`\n\nLECTURA ESTRATÉGICA en Markdown (interpretativa, ojo de consultor):\n# 🎯 Lectura Estratégica\n## 1. Posicionamiento detectado (3-5 oraciones)\n## 2. Diferencial real vs declarado\n## 3. Elementos narrativos clave (3-6)\n## 4. Ángulos para ventas (3-5)\n## 5. Hooks para contenido (3-5)\n## 6. Lo que afilaría (1-3)\n## 7. Sugerencias 30 días (3-5 acciones)`;
     if (mode==='refine') return bs+ctx+`\n\nSi es doc literal: NO cambies respuestas, solo formato. Si es lectura estratégica: incorporá ajustes.`;
+  }
+
+  if (toolId==='ideas-virales-1') {
+    const vir = base+`\n\nEspecialista en contenido viral con conocimiento profundo del algoritmo de Instagram, TikTok y YouTube Shorts.\n\nFILOSOFÍA NO NEGOCIABLE:\n1. Ideas CONCRETAS no vagas. Cada idea tiene hook, estructura y porqué.\n2. Hook fuerte (primeros 3 segundos): pregunta provocadora, dato contraintuitivo, contradicción, demostración visual.\n3. Estructura clara: 3-5 puntos máximo, ritmo rápido.\n4. NUNCA copiar clichés del nicho ("3 errores que..." cuando ya lo dijeron 100 cuentas). Buscar ángulos frescos.\n5. Justificar por qué cada idea podría viralizar (qué patrón explota, qué emoción dispara).\n6. Si el usuario tiene posts que funcionaron, USAR esos patrones como base.`;
+    if (mode==='help') return vir+`\n\nUNA pregunta guía por turno. Si la respuesta es genérica, pedí ejemplos concretos.`;
+    if (mode==='review') return vir+ctx+`\n\nRESUMEN EJECUTIVO en Markdown máx 5 bullets: nicho/cuenta, audiencia, plataforma + frecuencia, tono detectado, ángulo o patrón si lo hay. Cerrá con UNA frase del consultor sobre qué oportunidad ves para viralizar.`;
+    if (mode==='viralIdeasList') return vir+ctx+`\n\nGenerá BLOQUE 1 en Markdown:\n# 🔥 10-15 Ideas Virales\n\nPara cada idea (numerada del 1 al 10-15):\n## [Número]. [Título corto de la idea]\n**Hook (primeros 3s):** [frase exacta o pregunta exacta para abrir]\n**Estructura:** [3-5 bullets con qué pasa en cada momento]\n**Por qué podría funcionar:** [1-2 oraciones: qué patrón de viralidad explota, qué emoción dispara]\n**Formato:** [Reel / Carrusel / Short / etc — coherente con la plataforma elegida]\n\nAl final agregá:\n## ⚡ Tres ideas con MÁS potencial\nIndicá cuáles 3 priorizarías y por qué.`;
+    if (mode==='viralCalendar') return vir+ctx+`\n\nGenerá BLOQUE 2 en Markdown:\n# 📅 Calendario de Publicación (4 semanas)\n\nUsá la frecuencia elegida por el usuario para definir cuántos posts por semana. Distribuí las ideas del Bloque 1 a lo largo de 4 semanas en una tabla:\n\n| Semana | Día | Idea (referencia # del Bloque 1) | Formato | Best time |\n|---|---|---|---|---|\n| 1 | Lunes | #3 | Reel | 18-20hs |\n| ... | ... | ... | ... | ... |\n\nDespués agregá:\n## 🎯 Mix recomendado\n- % educativo vs entretenimiento vs vende\n- Por qué este mix para esta audiencia\n## ⏰ Tips de timing\n- Mejores horarios para esta plataforma + zona horaria de Argentina (asumir UTC-3 si no se aclara)\n- Días fuertes vs días flojos\n## 📈 Qué medir\n- 3-5 métricas concretas para evaluar viralización en las primeras 24-48hs.`;
+    if (mode==='refine') return vir+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura.`;
   }
 
   return base;
