@@ -630,6 +630,8 @@ export default function App() {
   const [preloadStatus, setPreloadStatus] = useState('');
   const [vagueWarning, setVagueWarning] = useState<string | null>(null);
   const [vagueOverride, setVagueOverride] = useState<Record<string, boolean>>({});
+  const [toolSearch, setToolSearch] = useState('');
+  const [toolCatFilter, setToolCatFilter] = useState('');
 
   const lng = (t as any)[lang];
   const currentTool = (TOOLS as any)[toolId];
@@ -987,11 +989,9 @@ export default function App() {
 
   if (screen==='toolbox') {
     const allTools = [...Object.values(TOOLS), ...LOCKED_TOOLS.map(lt=>({...lt,available:false,name:{es:(LOCKED_NAMES as any)[lt.id]?.es?.name||lt.id,en:(LOCKED_NAMES as any)[lt.id]?.en?.name||lt.id},description:{es:(LOCKED_NAMES as any)[lt.id]?.es?.desc||'',en:(LOCKED_NAMES as any)[lt.id]?.en?.desc||''}}))];
-    const [search, setSearch] = useState('');
-    const [catFilter, setCatFilter] = useState('');
     let filtered = allTools;
-    if (search.trim()) { const q=search.toLowerCase(); filtered=filtered.filter(tl=>(getToolName(tl.id).toLowerCase().includes(q)||getToolDesc(tl.id).toLowerCase().includes(q))); }
-    if (catFilter) filtered=filtered.filter(tl=>tl.category===catFilter);
+    if (toolSearch.trim()) { const q=toolSearch.toLowerCase(); filtered=filtered.filter(tl=>(getToolName(tl.id).toLowerCase().includes(q)||getToolDesc(tl.id).toLowerCase().includes(q))); }
+    if (toolCatFilter) filtered=filtered.filter(tl=>tl.category===toolCatFilter);
     const recommended = bizType ? allTools.filter(tl=>tl.available&&tl.recommendedFor?.includes(bizType)).slice(0,3) : [];
     const levelColors = {basico:'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',intermedio:'bg-blue-500/10 text-blue-400 border-blue-500/30',avanzado:'bg-orange-500/10 text-orange-400 border-orange-500/30'};
     const levelMap = {basico:lng.toolLevelBasico,intermedio:lng.toolLevelIntermedio,avanzado:lng.toolLevelAvanzado};
@@ -1030,13 +1030,13 @@ export default function App() {
             {bizType&&<div className="mt-4 inline-flex items-center gap-2 text-xs text-zinc-500"><span>{lang==='es'?'Negocio:':'Business:'}</span><span className="text-yellow-400 font-medium">{lng.bizTypes[bizType].label}</span><button onClick={()=>setScreen('biztype')} className="text-zinc-600 hover:text-yellow-400 underline">{lang==='es'?'cambiar':'change'}</button></div>}
           </div>
           <div className="mb-8 space-y-3">
-            <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"/><input type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder={lng.toolboxSearch} className="w-full pl-11 pr-5 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600"/></div>
+            <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"/><input type="text" value={toolSearch} onChange={e=>setToolSearch(e.target.value)} placeholder={lng.toolboxSearch} className="w-full pl-11 pr-5 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600"/></div>
             <div className="flex flex-wrap gap-2">
-              <button onClick={()=>setCatFilter('')} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${catFilter===''?'bg-yellow-400 text-zinc-950 border-yellow-400':'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'}`}>{lng.toolboxAll}</button>
-              {cats.map(cat=><button key={cat.id} onClick={()=>setCatFilter(cat.id)} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${catFilter===cat.id?'bg-yellow-400 text-zinc-950 border-yellow-400':'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'}`}><cat.icon className="w-3 h-3"/>{cat.label}</button>)}
+              <button onClick={()=>setToolCatFilter('')} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${toolCatFilter===''?'bg-yellow-400 text-zinc-950 border-yellow-400':'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'}`}>{lng.toolboxAll}</button>
+              {cats.map(cat=><button key={cat.id} onClick={()=>setToolCatFilter(cat.id)} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${toolCatFilter===cat.id?'bg-yellow-400 text-zinc-950 border-yellow-400':'bg-zinc-900 text-zinc-300 border-zinc-800 hover:border-zinc-700'}`}><cat.icon className="w-3 h-3"/>{cat.label}</button>)}
             </div>
           </div>
-          {recommended.length>0&&!search&&!catFilter&&(
+          {recommended.length>0&&!toolSearch&&!toolCatFilter&&(
             <div className="mb-12">
               <div className="flex items-center gap-2 mb-4"><Sparkles className="w-4 h-4 text-yellow-400"/><h3 className="text-sm font-bold text-yellow-400 uppercase tracking-wider">{lng.toolboxRecommended}</h3></div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{recommended.map(tl=><CardComp key={tl.id} tool={tl}/>)}</div>
