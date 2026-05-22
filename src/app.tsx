@@ -59,6 +59,7 @@ const t = {
     preloadSuccess:'¡Listo! Pre-llené el diagnóstico.',
     preloadFailed:'No pude acceder al sitio. Pegá el contenido manualmente.',
     autoDetected:'Auto-detectado', clearField:'Limpiar',
+    fromProfile:'Tomado de tu perfil',
     vagueTitle:'Necesito más concreto', vagueRefine:'Refinar respuesta', vagueContinue:'Avanzar igual',
     profileTitle:'¿Cuál te representa mejor?',
     profileDesc:'Las preguntas se adaptan según tu perfil.'
@@ -117,6 +118,7 @@ const t = {
     preloadFetching:'Accessing site...', preloadAnalyzing:'Analyzing...',
     preloadSuccess:'Done! Pre-filled.', preloadFailed:"Couldn't access site.",
     autoDetected:'Auto-detected', clearField:'Clear',
+    fromProfile:'From your profile',
     vagueTitle:'I need more specifics', vagueRefine:'Refine answer', vagueContinue:'Continue anyway',
     profileTitle:'Which represents you best?',
     profileDesc:'Questions adapt to your profile.'
@@ -496,6 +498,74 @@ const DEMO = {
 const BIZ_LABELS = {ecommerce:'E-commerce / Retail',service:'Servicio profesional',b2b:'B2B',health:'Salud y bienestar',education:'Educación / Infoproductos',local:'Local / Servicio presencial'};
 const CRITICAL_KEYS = new Set(['differential','fodaMainStrength','fodaMainWeakness','bsAudience2','bsValues1','bsOffer2','bsOrigin3']);
 
+// ============ PERFIL DEL NEGOCIO (persistente entre tools) ============
+type ProfileKey = 'businessName' | 'businessDescription' | 'idealCustomer' | 'differential' | 'mainPain';
+const PROFILE_STORAGE_KEY = 'fshumo_profile';
+
+// Mapea preguntas de cada tool a conceptos del perfil compartido.
+// Solo incluir matches semánticamente claros: si hay duda, NO mapear (es más seguro re-preguntar que ensuciar el perfil).
+const PROFILE_MAPPING: Record<string, Record<string, ProfileKey>> = {
+  'paid-media-strategy': {
+    product: 'businessDescription',
+    differential: 'differential',
+    mainPain: 'mainPain',
+  },
+  'foda-estrategico': {
+    fodaIdentification: 'businessDescription',
+  },
+  'ideas-virales-1': {
+    viralAbout: 'businessDescription',
+    viralAudience: 'idealCustomer',
+  },
+  'ideas-instagram': {
+    igAbout: 'businessDescription',
+    igIdealFollower: 'idealCustomer',
+  },
+  // brand-story NO se mapea — su lógica es voz personal sagrada (ver feedback_pragmatic_typing)
+};
+
+function loadProfile(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveProfile(profile: Record<string, string>) {
+  try { localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile)); } catch {}
+}
+
+function updateProfileField(key: ProfileKey, value: string) {
+  if (!value || typeof value !== 'string' || !value.trim()) return;
+  const profile = loadProfile();
+  profile[key] = value.trim();
+  saveProfile(profile);
+}
+
+// Dado un toolId y los datos del wizard, devuelve qué keys/valores deberían pre-llenarse desde el perfil.
+function getProfilePrefill(toolId: string): { values: Record<string, string>, filledKeys: Record<string, boolean> } {
+  const mapping = PROFILE_MAPPING[toolId];
+  if (!mapping) return { values: {}, filledKeys: {} };
+  const profile = loadProfile();
+  const values: Record<string, string> = {};
+  const filledKeys: Record<string, boolean> = {};
+  Object.entries(mapping).forEach(([questionKey, profileKey]) => {
+    const v = profile[profileKey];
+    if (v) { values[questionKey] = v; filledKeys[questionKey] = true; }
+  });
+  return { values, filledKeys };
+}
+
+// Dado un toolId y una key/value del wizard, persiste al perfil si la key está mapeada.
+function pushToProfile(toolId: string, questionKey: string, value: any) {
+  const mapping = PROFILE_MAPPING[toolId];
+  if (!mapping) return;
+  const profileKey = mapping[questionKey];
+  if (!profileKey) return;
+  if (typeof value !== 'string') return;
+  updateProfileField(profileKey, value);
+}
+
 function detectVague(key: string, value: any): string | null {
   if (!value || typeof value !== 'string') return null;
   const tr = value.trim();
@@ -675,6 +745,7 @@ export default function App() {
   const [vagueOverride, setVagueOverride] = useState<Record<string, boolean>>({});
   const [toolSearch, setToolSearch] = useState('');
   const [toolCatFilter, setToolCatFilter] = useState('');
+  const [profileFilled, setProfileFilled] = useState<Record<string, boolean>>({});
 
   const lng = (t as any)[lang];
   const currentTool = (TOOLS as any)[toolId];
@@ -713,6 +784,10 @@ export default function App() {
   const pickTool = (id: string) => {
     if (!(TOOLS as any)[id]) return;
     setToolId(id); setError('');
+    // Pre-llenar campos desde el perfil del negocio (si hay match)
+    const { values, filledKeys } = getProfilePrefill(id);
+    setData(prev => ({ ...prev, ...values }));
+    setProfileFilled(filledKeys);
     const tool = (TOOLS as any)[id];
     if (tool.requiresProfile) { setScreen('profile'); return; }
     if (tool.entryModes.length > 1) { setScreen('entry'); return; }
@@ -760,19 +835,20 @@ export default function App() {
   };
 
   const handleSkipPreload = () => { setError(''); setStepIdx(0); setScreen('wizard'); };
-  const clearField = (key: string) => { const nd={...data},nf={...autoFilled}; delete nd[key]; delete nf[key]; setData(nd); setAutoFilled(nf); };
+  const clearField = (key: string) => { const nd={...data},nf={...autoFilled},pf={...profileFilled}; delete nd[key]; delete nf[key]; delete pf[key]; setData(nd); setAutoFilled(nf); setProfileFilled(pf); };
 
   const handleNext = () => {
     if (curStep && !vagueOverride[curStep.key] && curStep.type==='textarea') {
       const w = detectVague(curStep.key, data[curStep.key]);
       if (w) { setVagueWarning(w); return; }
     }
+    if (curStep) pushToProfile(toolId, curStep.key, data[curStep.key]);
     if (stepIdx < visibleFlow.length-1) setStepIdx(stepIdx+1);
     else genReview();
   };
   const handleBack = () => { if (stepIdx>0) setStepIdx(stepIdx-1); };
   const handleSkipSection = () => { setSkipPhase(true); genReview(); };
-  const acceptVague = () => { setVagueOverride(p=>({...p,[curStep.key]:true})); setVagueWarning(null); if (stepIdx<visibleFlow.length-1) setStepIdx(stepIdx+1); else genReview(); };
+  const acceptVague = () => { if (curStep) pushToProfile(toolId, curStep.key, data[curStep.key]); setVagueOverride(p=>({...p,[curStep.key]:true})); setVagueWarning(null); if (stepIdx<visibleFlow.length-1) setStepIdx(stepIdx+1); else genReview(); };
   const refineVague = () => setVagueWarning(null);
 
   const genReview = async () => {
@@ -934,7 +1010,7 @@ export default function App() {
   };
 
   const backToToolbox = () => {
-    setData({}); setAutoFilled({}); setStepIdx(0); setSkipPhase(false);
+    setData({}); setAutoFilled({}); setProfileFilled({}); setStepIdx(0); setSkipPhase(false);
     setReviewText(''); setOutputs({}); setCurBlock(0); setChatMsgs([]);
     setPreloadUrl(''); setPreloadSocial(''); setPreloadStatus('');
     setError(''); setToolId(''); setEntryMode(''); setToolProfile('');
@@ -1200,6 +1276,7 @@ export default function App() {
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{q.title}</h2>
           <p className="text-zinc-400 mb-4">{q.desc}</p>
           {autoFilled[curStep.key]&&<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-400/10 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-medium mb-4"><Wand2 className="w-3.5 h-3.5"/><span>{lng.autoDetected}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
+          {!autoFilled[curStep.key]&&profileFilled[curStep.key]&&<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-400/10 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4"><Users className="w-3.5 h-3.5"/><span>{lng.fromProfile}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
           <div className="mt-2">
             {curStep.type==='textarea'&&<textarea value={val||''} onChange={e=>setData({...data,[curStep.key]:e.target.value})} placeholder={q.placeholder} rows={6} className="w-full px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600 resize-none"/>}
             {curStep.type==='select'&&<div className="space-y-2">{q.options.map((opt: string)=><button key={opt} onClick={()=>setData({...data,[curStep.key]:opt})} className={`w-full text-left px-5 py-4 rounded-xl border transition-all ${val===opt?'bg-yellow-400/10 border-yellow-400 text-white':'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300'}`}><div className="flex items-center justify-between"><span>{opt}</span>{val===opt&&<Check className="w-5 h-5 text-yellow-400"/>}</div></button>)}</div>}
