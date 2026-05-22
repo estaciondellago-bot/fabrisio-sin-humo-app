@@ -846,7 +846,7 @@ export default function App() {
     if (stepIdx < visibleFlow.length-1) setStepIdx(stepIdx+1);
     else genReview();
   };
-  const handleBack = () => { if (stepIdx>0) setStepIdx(stepIdx-1); };
+  const handleBack = () => { if (stepIdx>0) setStepIdx(stepIdx-1); else backToToolbox(); };
   const handleSkipSection = () => { setSkipPhase(true); genReview(); };
   const acceptVague = () => { if (curStep) pushToProfile(toolId, curStep.key, data[curStep.key]); setVagueOverride(p=>({...p,[curStep.key]:true})); setVagueWarning(null); if (stepIdx<visibleFlow.length-1) setStepIdx(stepIdx+1); else genReview(); };
   const refineVague = () => setVagueWarning(null);
@@ -1020,20 +1020,23 @@ export default function App() {
 
   const resetAll = () => { backToToolbox(); setBizType(''); setScreen('landing'); };
 
-  const Header = ({right=null}: any) => (
-    <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
-          <span className="font-bold text-sm">{lng.appName}</span>
+  const Header = ({right=null}: any) => {
+    const canGoHome = screen!=='landing' && screen!=='toolbox' && screen!=='biztype';
+    return (
+      <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <button onClick={()=>{ if (canGoHome) backToToolbox(); }} disabled={!canGoHome} className={`flex items-center gap-2 ${canGoHome?'hover:opacity-80 cursor-pointer':'cursor-default'} transition-opacity`} title={canGoHome?(lang==='es'?'Volver a herramientas':'Back to toolbox'):''}>
+            <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
+            <span className="font-bold text-sm">{lng.appName}</span>
+          </button>
+          <div className="flex items-center gap-3">
+            {right}
+            <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs"><Globe className="w-3 h-3"/>{lang==='es'?'ES':'EN'}</button>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {right}
-          <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs"><Globe className="w-3 h-3"/>{lang==='es'?'ES':'EN'}</button>
-        </div>
-      </div>
-    </header>
-  );
+      </header>
+    );
+  };
 
   if (screen==='landing') return (
     <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
@@ -1257,7 +1260,7 @@ export default function App() {
       <div className="min-h-screen bg-zinc-950 text-white">
         <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-sm">{lng.appName}</span></div>
+            <button onClick={()=>backToToolbox()} className="flex items-center gap-2 hover:opacity-80 cursor-pointer transition-opacity" title={lang==='es'?'Volver a herramientas':'Back to toolbox'}><div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-sm">{lng.appName}</span></button>
             <div className="flex items-center gap-3">
               <span className="text-xs text-zinc-500">{lng.step} {stepIdx+1} {lng.of} {visibleFlow.length}</span>
               {demoData&&<button onClick={()=>setData(p=>({...p,...demoData}))} className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-400/10 hover:bg-yellow-400/20 border border-yellow-400/30 text-yellow-400 rounded-md text-xs font-medium">🧪 Demo</button>}
@@ -1299,7 +1302,7 @@ export default function App() {
             </div>
           )}
           <div className="flex items-center justify-between mt-10 pt-6 border-t border-zinc-800">
-            <button onClick={handleBack} disabled={stepIdx===0} className="inline-flex items-center gap-2 px-4 py-2.5 text-zinc-400 hover:text-white disabled:opacity-30"><ChevronLeft className="w-4 h-4"/>{lng.back}</button>
+            <button onClick={handleBack} className="inline-flex items-center gap-2 px-4 py-2.5 text-zinc-400 hover:text-white"><ChevronLeft className="w-4 h-4"/>{stepIdx===0?lng.toolboxBack:lng.back}</button>
             <button onClick={handleNext} disabled={!canProceed&&!curStep.optional} className="inline-flex items-center gap-2 px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-lg">{stepIdx===visibleFlow.length-1?(lang==='es'?'Generar':'Generate'):lng.next}<ChevronRight className="w-4 h-4"/></button>
           </div>
         </div>
