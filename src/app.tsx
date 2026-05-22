@@ -264,13 +264,36 @@ const TOOLS = {
       {id:'viralIdeasList',title:{es:'Bloque 1: 10-15 Ideas Virales',en:'Block 1: 10-15 Viral Ideas'}},
       {id:'viralCalendar',title:{es:'Bloque 2: Calendario de Publicación (4 semanas)',en:'Block 2: Publishing Calendar (4 weeks)'}}
     ]
+  },
+  'ideas-instagram':{
+    id:'ideas-instagram',category:'marketing',
+    name:{es:'Ideas de Contenido para Instagram',en:'Instagram Content Ideas'},
+    description:{es:'15 ideas específicas para Instagram + estrategia de cuenta. Adaptado al algoritmo y formatos nativos.',en:'15 Instagram-specific ideas + account strategy. Adapted to algorithm and native formats.'},
+    level:'basico',time:'15-25',available:true,
+    recommendedFor:['ecommerce','service','health','local','education'],
+    illustrationId:'instagram',entryModes:['guided'],
+    questions:[
+      {phase:'account',key:'igAbout',type:'textarea'},
+      {phase:'account',key:'igIdealFollower',type:'textarea'},
+      {phase:'account',key:'igCurrentFollowers',type:'select'},
+      {phase:'goal',key:'igPriority',type:'select'},
+      {phase:'goal',key:'igFormatFocus',type:'multiselect'},
+      {phase:'style',key:'igVibe',type:'textarea',optional:true}
+    ],
+    phases:{
+      es:{account:'Tu cuenta',goal:'Objetivo de la etapa',style:'Estilo y referencias'},
+      en:{account:'Your account',goal:'Stage goal',style:'Style & references'}
+    },
+    outputBlocks:[
+      {id:'igIdeasList',title:{es:'Bloque 1: 15 Ideas de Contenido',en:'Block 1: 15 Content Ideas'}},
+      {id:'igStrategy',title:{es:'Bloque 2: Estrategia de Cuenta',en:'Block 2: Account Strategy'}}
+    ]
   }
 };
 
 const LOCKED_TOOLS = [
   {id:'optimizador-meta-ads',category:'marketing',level:'avanzado',time:'20-35',illustrationId:'paid-media',recommendedFor:['ecommerce','service']},
   {id:'ideas-virales-2',category:'marketing',level:'intermedio',time:'15-25',illustrationId:'viral',recommendedFor:['ecommerce','service','health']},
-  {id:'ideas-instagram',category:'marketing',level:'basico',time:'15-25',illustrationId:'instagram',recommendedFor:['ecommerce','service','health','local']},
   {id:'storytelling-heroe',category:'content',level:'intermedio',time:'25-35',illustrationId:'hero',recommendedFor:['service','b2b','education']},
   {id:'guiones-video-1',category:'content',level:'intermedio',time:'20-30',illustrationId:'video',recommendedFor:['ecommerce','service','health']},
   {id:'guiones-video-2',category:'content',level:'avanzado',time:'20-30',illustrationId:'video',recommendedFor:['ecommerce','service','health']},
@@ -282,7 +305,6 @@ const LOCKED_TOOLS = [
 const LOCKED_NAMES = {
   'optimizador-meta-ads':{es:{name:'Optimizador de Meta Ads',desc:'Auditoría y optimización de campañas existentes.'},en:{name:'Meta Ads Optimizer',desc:'Audit and optimize campaigns.'}},
   'ideas-virales-2':{es:{name:'Generador de Ideas Virales Pro',desc:'Versión avanzada con frameworks de viralidad.'},en:{name:'Viral Ideas Pro',desc:'Advanced viral frameworks.'}},
-  'ideas-instagram':{es:{name:'Ideas de Contenido Premium',desc:'Contenido de calidad para Instagram.'},en:{name:'Premium Content Ideas',desc:'Quality Instagram content.'}},
   'storytelling-heroe':{es:{name:'Storytelling: Viaje del Héroe',desc:'Aplicá el viaje del héroe a tu marca.'},en:{name:"Hero's Journey",desc:"Apply hero's journey."}},
   'guiones-video-1':{es:{name:'Guiones para Video Ads',desc:'Scripts listos para producir.'},en:{name:'Video Ad Scripts',desc:'Ready-to-produce scripts.'}},
   'guiones-video-2':{es:{name:'Guiones para Video Ads Pro',desc:'Versión avanzada con hooks.'},en:{name:'Video Scripts Pro',desc:'Advanced with hooks.'}},
@@ -345,7 +367,13 @@ const BIZ_Q = {
     viralTone:{title:'¿Cuál es el tono de tu marca?',desc:'Cómo querés sonar.',options:['Educativo y claro','Humorístico / irónico','Polémico / contrarian','Inspiracional / motivacional','Técnico / experto','Cercano / coloquial']},
     viralAngle:{title:'¿Algún tema o ángulo específico que querés explorar? (opcional)',desc:'Para enfocar las ideas en algo concreto.',placeholder:'Ej: errores comunes en la alimentación pre-carrera, mitos que escucho todos los días, cómo entrenar con un trabajo de oficina...'},
     viralFrequency:{title:'¿Con qué frecuencia podés publicar?',desc:'Para armar un calendario realista.',options:['1 post por semana','2-3 posts por semana','4-5 posts por semana','Diario (6-7 por semana)']},
-    viralBestPosts:{title:'¿Qué posts tuyos funcionaron mejor antes? (opcional)',desc:'Pegá títulos, descripciones o el ángulo. Sirve para detectar patrones.',placeholder:'Ej: Un Reel donde explicaba por qué la avena no es el mejor desayuno: 50k views, 200 comentarios. Un carrusel sobre suplementos: 30k...'}
+    viralBestPosts:{title:'¿Qué posts tuyos funcionaron mejor antes? (opcional)',desc:'Pegá títulos, descripciones o el ángulo. Sirve para detectar patrones.',placeholder:'Ej: Un Reel donde explicaba por qué la avena no es el mejor desayuno: 50k views, 200 comentarios. Un carrusel sobre suplementos: 30k...'},
+    igAbout:{title:'¿De qué se trata tu cuenta de Instagram?',desc:'Nicho + propuesta de valor.',placeholder:'Ej: Cuenta de cocina rápida para padres que trabajan. Recetas de 15 minutos con ingredientes de supermercado. Sin filtros raros ni cosas pretenciosas.'},
+    igIdealFollower:{title:'¿Quién es tu seguidor ideal?',desc:'Demografía + qué le interesa + por qué te seguiría.',placeholder:'Ej: Mamás y papás 30-45 años, trabajan jornada completa, llegan tarde a casa y no saben qué cocinar. Quieren comer bien sin pasar 1 hora en la cocina.'},
+    igCurrentFollowers:{title:'¿Cuántos seguidores tenés hoy?',desc:'Para adaptar la estrategia al tamaño de tu cuenta.',options:['Menos de 1.000','1.000 a 10.000','10.000 a 50.000','Más de 50.000','No importa / cuenta nueva']},
+    igPriority:{title:'¿Qué priorizás en esta etapa?',desc:'El objetivo principal manda la estrategia.',options:['Crecer en seguidores','Mejorar engagement','Vender (productos/servicios)','Construir comunidad','Posicionarme como experto/a']},
+    igFormatFocus:{title:'¿En qué formatos te querés enfocar?',desc:'Podés elegir varios. El plan se adapta al mix.',options:['Reels','Carruseles','Stories','Lives','Post de feed','Mix balanceado']},
+    igVibe:{title:'Estética, vibe o cuentas de referencia (opcional)',desc:'Para alinear el estilo con tu marca.',placeholder:'Ej: minimalista tipo @cuenta1, energía positiva tipo @cuenta2, profesional pero cercano. Evitar lo aspiracional fake de gurúes.'}
   },
   en:{
     product:{title:'What is your product or service?',desc:'Name and description.',placeholder:'Ex: Tech e-commerce...'},
@@ -400,7 +428,13 @@ const BIZ_Q = {
     viralTone:{title:'Brand tone',desc:'How you want to sound.',options:['Educational & clear','Humorous / ironic','Polemic / contrarian','Inspirational','Technical / expert','Casual / conversational']},
     viralAngle:{title:'Any specific topic or angle to explore? (optional)',desc:'To focus the ideas on something concrete.',placeholder:'Ex: common pre-race nutrition mistakes, myths I hear daily, training around a desk job...'},
     viralFrequency:{title:'How often can you publish?',desc:'For a realistic calendar.',options:['1 post per week','2-3 posts per week','4-5 posts per week','Daily (6-7 per week)']},
-    viralBestPosts:{title:'Posts of yours that worked best before? (optional)',desc:'Paste titles, captions, or the angle. Helps detect patterns.',placeholder:'Ex: A Reel explaining why oatmeal isn\'t the best breakfast: 50k views, 200 comments. A carousel on supplements: 30k...'}
+    viralBestPosts:{title:'Posts of yours that worked best before? (optional)',desc:'Paste titles, captions, or the angle. Helps detect patterns.',placeholder:'Ex: A Reel explaining why oatmeal isn\'t the best breakfast: 50k views, 200 comments. A carousel on supplements: 30k...'},
+    igAbout:{title:'What is your Instagram account about?',desc:'Niche + value proposition.',placeholder:'Ex: Quick cooking account for working parents. 15-minute recipes with supermarket ingredients. No weird filters or pretentious stuff.'},
+    igIdealFollower:{title:'Who is your ideal follower?',desc:'Demographics + interests + why they\'d follow you.',placeholder:'Ex: Working parents 30-45, full-time jobs, get home late and don\'t know what to cook. Want to eat well without spending an hour in the kitchen.'},
+    igCurrentFollowers:{title:'How many followers do you have today?',desc:'To adapt the strategy to your account size.',options:['Less than 1,000','1,000 to 10,000','10,000 to 50,000','More than 50,000','Doesn\'t matter / new account']},
+    igPriority:{title:'What do you prioritize this stage?',desc:'The main goal drives the strategy.',options:['Grow followers','Improve engagement','Sell (products/services)','Build community','Position myself as an expert']},
+    igFormatFocus:{title:'What formats do you want to focus on?',desc:'Multiple choice. Plan adapts to the mix.',options:['Reels','Carousels','Stories','Lives','Feed post','Balanced mix']},
+    igVibe:{title:'Aesthetic, vibe, or reference accounts (optional)',desc:'To align style with your brand.',placeholder:'Ex: minimalist like @account1, positive energy like @account2, professional but warm. Avoid the fake aspirational guru style.'}
   }
 };
 
@@ -555,6 +589,15 @@ function buildPrompt(lang: string, data: any, mode: string, bizType: string, too
     if (mode==='viralIdeasList') return vir+ctx+`\n\nGenerá BLOQUE 1 en Markdown:\n# 🔥 10-15 Ideas Virales\n\nPara cada idea (numerada del 1 al 10-15):\n## [Número]. [Título corto de la idea]\n**Hook (primeros 3s):** [frase exacta o pregunta exacta para abrir]\n**Estructura:** [3-5 bullets con qué pasa en cada momento]\n**Por qué podría funcionar:** [1-2 oraciones: qué patrón de viralidad explota, qué emoción dispara]\n**Formato:** [Reel / Carrusel / Short / etc — coherente con la plataforma elegida]\n\nAl final agregá:\n## ⚡ Tres ideas con MÁS potencial\nIndicá cuáles 3 priorizarías y por qué.`;
     if (mode==='viralCalendar') return vir+ctx+`\n\nGenerá BLOQUE 2 en Markdown:\n# 📅 Calendario de Publicación (4 semanas)\n\nUsá la frecuencia elegida por el usuario para definir cuántos posts por semana. Distribuí las ideas del Bloque 1 a lo largo de 4 semanas en una tabla:\n\n| Semana | Día | Idea (referencia # del Bloque 1) | Formato | Best time |\n|---|---|---|---|---|\n| 1 | Lunes | #3 | Reel | 18-20hs |\n| ... | ... | ... | ... | ... |\n\nDespués agregá:\n## 🎯 Mix recomendado\n- % educativo vs entretenimiento vs vende\n- Por qué este mix para esta audiencia\n## ⏰ Tips de timing\n- Mejores horarios para esta plataforma + zona horaria de Argentina (asumir UTC-3 si no se aclara)\n- Días fuertes vs días flojos\n## 📈 Qué medir\n- 3-5 métricas concretas para evaluar viralización en las primeras 24-48hs.`;
     if (mode==='refine') return vir+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura.`;
+  }
+
+  if (toolId==='ideas-instagram') {
+    const ig = base+`\n\nEspecialista en estrategia de Instagram con conocimiento profundo del algoritmo 2026 y formatos nativos (Reels, Carruseles, Stories, Lives, posts de feed).\n\nFILOSOFÍA NO NEGOCIABLE:\n1. Ideas ESPECÍFICAS para esta cuenta — NO genéricas tipo "5 tips de [nicho]". Buscar ángulos propios.\n2. Adaptar al tamaño de cuenta: cuentas chicas (<10k) priorizar discovery (Reels educativos + carruseles cortos). Cuentas medianas/grandes priorizar retención y comunidad (Lives, series, contenido más profundo).\n3. Cada idea coherente con el formato nativo elegido: Reels = hook + cambio rápido + payoff; Carruseles = primer slide gancho + slides con valor + último slide CTA; Stories = pregunta o sticker; Lives = tema concreto + invitado o solo; Feed = imagen fuerte + caption profundo.\n4. NUNCA proponer clichés del nicho ("3 errores que cometés con X" cuando ya lo dijeron 100 cuentas).\n5. CTA realista por formato (Reels: "guardalo y comentá", Stories: "respondé con un emoji", Lives: "venite con tu pregunta").`;
+    if (mode==='help') return ig+`\n\nUNA pregunta guía por turno. Si la respuesta es vaga, pedí concreto.`;
+    if (mode==='review') return ig+ctx+`\n\nRESUMEN EJECUTIVO en Markdown máx 5 bullets: cuenta (qué es), seguidor ideal, tamaño actual + objetivo de etapa, formatos elegidos, estética detectada. Cerrá con UNA frase del consultor: qué oportunidad ves para esta cuenta específica.`;
+    if (mode==='igIdeasList') return ig+ctx+`\n\nGenerá BLOQUE 1 en Markdown:\n# 📱 15 Ideas de Contenido\n\nDistribuir las 15 ideas según el mix de formatos elegido (ej. si pidió Reels+Carruseles, ~7 Reels + ~8 Carruseles; si pidió Mix balanceado, distribuir entre los 5 formatos principales).\n\nPara cada idea (numerada 1 al 15):\n## [#]. [Título corto] · *[Formato]*\n**Hook (3 primeros segundos / primer slide):** [texto exacto]\n**Estructura:** [3-5 bullets con qué pasa en cada momento, adaptado al formato]\n**Por qué funciona para esta cuenta:** [1-2 oraciones específicas a su nicho y tamaño]\n**CTA sugerido:** [acción concreta]\n\nAl final agregá:\n## ⚡ Top 3 ideas para empezar\nElegir las 3 con mayor probabilidad de funcionar para el objetivo declarado y por qué.`;
+    if (mode==='igStrategy') return ig+ctx+`\n\nGenerá BLOQUE 2 en Markdown:\n# 🎯 Estrategia de Cuenta\n\n## Mix recomendado de formatos\nTabla con % aproximado de cada formato según el objetivo y tamaño:\n| Formato | % semanal | Por qué |\n|---|---|---|\n\n## Ritmo de publicación\n- Frecuencia ideal según el tamaño actual\n- Por qué ese ritmo y no más/menos\n- Cuándo del día publicar (horarios fuertes para esta audiencia, asumir UTC-3 si no se aclara)\n\n## 3 hooks recurrentes (templates)\nFórmulas concretas que puede REUSAR cambiando el contenido. Ejemplo:\n- *"[Cosa que parece obvia] en realidad es [contradicción]. Mirá esto..."*\n\n## Qué evitar para no caer en cliché del nicho\n3-5 trampas comunes en el nicho del usuario y cómo diferenciarse.\n\n## Métricas a mirar las primeras 2 semanas\n3-5 indicadores concretos para evaluar si la estrategia funciona (no solo views/likes — engagement rate, saves, shares, perfil visits, etc.).`;
+    if (mode==='refine') return ig+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura.`;
   }
 
   return base;
