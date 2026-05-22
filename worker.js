@@ -86,12 +86,7 @@ export default {
     // Validar password
     const password = request.headers.get('X-Access-Password');
     if (!password || password !== env.ACCESS_PASSWORD) {
-      // DEBUG TEMPORAL: revela longitudes y existencia, NO la password real
-      const debug = `recvLen=${password ? password.length : 0} expLen=${env.ACCESS_PASSWORD ? env.ACCESS_PASSWORD.length : 0} envExists=${!!env.ACCESS_PASSWORD} headerExists=${!!password}`;
-      return new Response(
-        JSON.stringify({ error: 'Acceso no autorizado. Verificá tu contraseña.', debug }),
-        { status: 401, headers: { 'Content-Type': 'application/json', 'X-Debug-Auth': debug, ...corsHeaders } }
-      );
+      return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
     }
 
     // Leer body
