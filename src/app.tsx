@@ -62,7 +62,28 @@ const t = {
     fromProfile:'Tomado de tu perfil',
     vagueTitle:'Necesito más concreto', vagueRefine:'Refinar respuesta', vagueContinue:'Avanzar igual',
     profileTitle:'¿Cuál te representa mejor?',
-    profileDesc:'Las preguntas se adaptan según tu perfil.'
+    profileDesc:'Las preguntas se adaptan según tu perfil.',
+    myProfile:'Mi perfil',
+    myProfileTitle:'Perfil de tu negocio',
+    myProfileDesc:'Estos datos se reusan automáticamente en cada herramienta. Editá cuando cambien.',
+    myProfileFilledCount:'cargados de 5',
+    myProfileSave:'Guardar cambios',
+    myProfileSaved:'✓ Perfil guardado',
+    myProfileDelete:'Borrar perfil',
+    myProfileDeleteConfirm:'¿Seguro? Esto borra los 5 campos. No se puede deshacer.',
+    myProfileDeleteYes:'Sí, borrar todo',
+    myProfileDeleteCancel:'Cancelar',
+    myProfileEmpty:'(vacío)',
+    profileBusinessName:'Nombre del negocio o cuenta',
+    profileBusinessNamePh:'Ej: Estación Bit, @nutricion.real, Cabañas del Sol...',
+    profileBusinessDescription:'Qué hacés / qué ofrecés',
+    profileBusinessDescriptionPh:'Ej: E-commerce de tech accesible. Smartwatches, auriculares, accesorios. Ticket promedio $40k...',
+    profileIdealCustomer:'Cliente o seguidor ideal',
+    profileIdealCustomerPh:'Ej: Hombres y mujeres 25-45 años, AMBA, clase media, compran online, usan tech para deporte y trabajo...',
+    profileDifferential:'Qué te hace diferente',
+    profileDifferentialPh:'Ej: Respuesta de WhatsApp <10min vs 4hs competencia. Garantía local 6 meses. 4.8★ en 300 reseñas...',
+    profileMainPain:'Problema #1 que resolvés',
+    profileMainPainPh:'Ej: Acceso a tech moderna sin pagar precio premium de Apple/Samsung...'
   },
   en: {
     appName:'Fabrisio sin Humo', subtitle:'AI-powered strategy & consulting builder',
@@ -121,7 +142,28 @@ const t = {
     fromProfile:'From your profile',
     vagueTitle:'I need more specifics', vagueRefine:'Refine answer', vagueContinue:'Continue anyway',
     profileTitle:'Which represents you best?',
-    profileDesc:'Questions adapt to your profile.'
+    profileDesc:'Questions adapt to your profile.',
+    myProfile:'My profile',
+    myProfileTitle:'Your business profile',
+    myProfileDesc:'These fields are reused automatically across tools. Edit them when they change.',
+    myProfileFilledCount:'of 5 filled',
+    myProfileSave:'Save changes',
+    myProfileSaved:'✓ Profile saved',
+    myProfileDelete:'Delete profile',
+    myProfileDeleteConfirm:'Sure? This deletes all 5 fields. Can\'t be undone.',
+    myProfileDeleteYes:'Yes, delete all',
+    myProfileDeleteCancel:'Cancel',
+    myProfileEmpty:'(empty)',
+    profileBusinessName:'Business or account name',
+    profileBusinessNamePh:'Ex: TechShop, @real.nutrition, SunCabins...',
+    profileBusinessDescription:'What you do / what you offer',
+    profileBusinessDescriptionPh:'Ex: Accessible tech e-commerce. Smartwatches, headphones, accessories. Avg ticket $40...',
+    profileIdealCustomer:'Ideal customer or follower',
+    profileIdealCustomerPh:'Ex: Men and women 25-45, urban, middle class, buy online, use tech for sports and work...',
+    profileDifferential:'What makes you different',
+    profileDifferentialPh:'Ex: WhatsApp reply <10min vs 4h competitors. Local 6-month warranty. 4.8★ on 300 reviews...',
+    profileMainPain:'Problem #1 you solve',
+    profileMainPainPh:'Ex: Access to modern tech without paying Apple/Samsung premium...'
   }
 };
 
@@ -746,6 +788,9 @@ export default function App() {
   const [toolSearch, setToolSearch] = useState('');
   const [toolCatFilter, setToolCatFilter] = useState('');
   const [profileFilled, setProfileFilled] = useState<Record<string, boolean>>({});
+  const [myProfileDraft, setMyProfileDraft] = useState<Record<string, string>>({});
+  const [myProfileSaved, setMyProfileSaved] = useState(false);
+  const [myProfileDeleteAsk, setMyProfileDeleteAsk] = useState(false);
 
   const lng = (t as any)[lang];
   const currentTool = (TOOLS as any)[toolId];
@@ -1020,6 +1065,39 @@ export default function App() {
 
   const resetAll = () => { backToToolbox(); setBizType(''); setScreen('landing'); };
 
+  const openMyProfile = () => {
+    const current = loadProfile();
+    setMyProfileDraft({
+      businessName: current.businessName || '',
+      businessDescription: current.businessDescription || '',
+      idealCustomer: current.idealCustomer || '',
+      differential: current.differential || '',
+      mainPain: current.mainPain || '',
+    });
+    setMyProfileSaved(false);
+    setMyProfileDeleteAsk(false);
+    setScreen('myProfile');
+  };
+
+  const saveMyProfile = () => {
+    const cleaned: Record<string, string> = {};
+    (['businessName','businessDescription','idealCustomer','differential','mainPain'] as ProfileKey[]).forEach(k => {
+      const v = (myProfileDraft[k] || '').trim();
+      if (v) cleaned[k] = v;
+    });
+    saveProfile(cleaned);
+    setMyProfileSaved(true);
+    setTimeout(() => setMyProfileSaved(false), 2500);
+  };
+
+  const deleteMyProfile = () => {
+    saveProfile({});
+    setMyProfileDraft({ businessName:'', businessDescription:'', idealCustomer:'', differential:'', mainPain:'' });
+    setMyProfileDeleteAsk(false);
+    setMyProfileSaved(true);
+    setTimeout(() => setMyProfileSaved(false), 2500);
+  };
+
   const Header = ({right=null}: any) => {
     const canGoHome = screen!=='landing' && screen!=='toolbox' && screen!=='biztype';
     return (
@@ -1143,7 +1221,7 @@ export default function App() {
     };
 
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header/>
+      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={openMyProfile} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs text-zinc-300 border border-zinc-800"><Users className="w-3 h-3"/>{lng.myProfile}</button>}/>
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Briefcase className="w-3 h-3"/>{lng.toolboxSubtitle}</div>
@@ -1173,6 +1251,70 @@ export default function App() {
               })}
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (screen==='myProfile') {
+    const fields: { key: ProfileKey; label: string; placeholder: string }[] = [
+      { key: 'businessName',         label: lng.profileBusinessName,        placeholder: lng.profileBusinessNamePh },
+      { key: 'businessDescription',  label: lng.profileBusinessDescription, placeholder: lng.profileBusinessDescriptionPh },
+      { key: 'idealCustomer',        label: lng.profileIdealCustomer,       placeholder: lng.profileIdealCustomerPh },
+      { key: 'differential',         label: lng.profileDifferential,        placeholder: lng.profileDifferentialPh },
+      { key: 'mainPain',             label: lng.profileMainPain,            placeholder: lng.profileMainPainPh },
+    ];
+    const filledCount = fields.filter(f => (myProfileDraft[f.key] || '').trim()).length;
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-400/10 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-6">
+            <Users className="w-3 h-3"/>{filledCount} {lng.myProfileFilledCount}
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.myProfileTitle}</h2>
+          <p className="text-zinc-400 mb-8 leading-relaxed">{lng.myProfileDesc}</p>
+
+          <div className="space-y-5">
+            {fields.map(f => (
+              <div key={f.key}>
+                <label className="block text-sm font-semibold text-zinc-200 mb-2">{f.label}</label>
+                <textarea
+                  value={myProfileDraft[f.key] || ''}
+                  onChange={e => setMyProfileDraft(p => ({ ...p, [f.key]: e.target.value }))}
+                  placeholder={f.placeholder}
+                  rows={f.key === 'businessName' ? 1 : 3}
+                  className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600 resize-none text-sm leading-relaxed"
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 mt-8 pt-6 border-t border-zinc-800">
+            <button onClick={saveMyProfile} className="inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-lg">
+              <Check className="w-4 h-4"/>{lng.myProfileSave}
+            </button>
+            <button onClick={backToToolbox} className="inline-flex items-center gap-2 px-4 py-2.5 text-zinc-400 hover:text-white text-sm">
+              <ChevronLeft className="w-4 h-4"/>{lng.toolboxBack}
+            </button>
+            {myProfileSaved && (
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-300 text-xs font-medium">
+                {lng.myProfileSaved}
+              </span>
+            )}
+            <div className="flex-1"/>
+            {!myProfileDeleteAsk ? (
+              <button onClick={()=>setMyProfileDeleteAsk(true)} className="inline-flex items-center gap-2 px-4 py-2.5 text-red-400 hover:text-red-300 text-sm">
+                <Eraser className="w-4 h-4"/>{lng.myProfileDelete}
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0"/>
+                <span className="text-sm text-red-200">{lng.myProfileDeleteConfirm}</span>
+                <button onClick={deleteMyProfile} className="px-3 py-1.5 bg-red-500 hover:bg-red-400 text-white rounded-md text-xs font-semibold">{lng.myProfileDeleteYes}</button>
+                <button onClick={()=>setMyProfileDeleteAsk(false)} className="px-3 py-1.5 text-zinc-400 hover:text-white text-xs">{lng.myProfileDeleteCancel}</button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
