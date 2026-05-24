@@ -83,7 +83,15 @@ const t = {
     profileDifferential:'Qué te hace diferente',
     profileDifferentialPh:'Ej: Respuesta de WhatsApp <10min vs 4hs competencia. Garantía local 6 meses. 4.8★ en 300 reseñas...',
     profileMainPain:'Problema #1 que resolvés',
-    profileMainPainPh:'Ej: Acceso a tech moderna sin pagar precio premium de Apple/Samsung...'
+    profileMainPainPh:'Ej: Acceso a tech moderna sin pagar precio premium de Apple/Samsung...',
+    continueSessionTitle:'Tenés una sesión sin terminar',
+    continueSessionDesc:'Podés retomar donde dejaste o empezar de cero.',
+    continueSessionLast:'Última actividad',
+    continueSessionContinue:'Continuar donde dejaste',
+    continueSessionFresh:'Empezar de cero',
+    sessionBlockLabel:'Bloque',
+    sessionReviewLabel:'Resumen ejecutivo',
+    sessionDoneLabel:'Completado',
   },
   en: {
     appName:'Fabrisio sin Humo', subtitle:'AI-powered strategy & consulting builder',
@@ -163,7 +171,15 @@ const t = {
     profileDifferential:'What makes you different',
     profileDifferentialPh:'Ex: WhatsApp reply <10min vs 4h competitors. Local 6-month warranty. 4.8★ on 300 reviews...',
     profileMainPain:'Problem #1 you solve',
-    profileMainPainPh:'Ex: Access to modern tech without paying Apple/Samsung premium...'
+    profileMainPainPh:'Ex: Access to modern tech without paying Apple/Samsung premium...',
+    continueSessionTitle:'You have an unfinished session',
+    continueSessionDesc:'Pick up where you left off, or start fresh.',
+    continueSessionLast:'Last activity',
+    continueSessionContinue:'Continue where you left off',
+    continueSessionFresh:'Start fresh',
+    sessionBlockLabel:'Block',
+    sessionReviewLabel:'Executive summary',
+    sessionDoneLabel:'Completed',
   }
 };
 
@@ -608,6 +624,83 @@ function pushToProfile(toolId: string, questionKey: string, value: any) {
   updateProfileField(profileKey, value);
 }
 
+// ============ SESIONES (persistencia de outputs entre cierres del tab) ============
+const SESSIONS_STORAGE_KEY = 'fshumo_sessions';
+const SESSIONS_SCHEMA_VERSION = 1;
+
+type SavedSession = {
+  schemaVersion: number;
+  toolId: string;
+  data: Record<string, any>;
+  reviewText: string;
+  outputs: Record<string, string>;
+  curBlock: number;
+  stepIdx: number;
+  screen: string;
+  entryMode: string;
+  toolProfile: string;
+  skipPhase: boolean;
+  autoFilled: Record<string, boolean>;
+  profileFilled: Record<string, boolean>;
+  vagueOverride: Record<string, boolean>;
+  savedAt: number;
+};
+
+function loadAllSessions(): Record<string, SavedSession> {
+  try {
+    const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function loadSession(toolId: string): SavedSession | null {
+  const sessions = loadAllSessions();
+  const s = sessions[toolId];
+  if (!s || s.schemaVersion !== SESSIONS_SCHEMA_VERSION) return null;
+  // Sólo devolvemos sesiones que realmente tienen progreso (data o reviewText o outputs)
+  const hasProgress = Object.keys(s.data || {}).length > 0 || !!s.reviewText || Object.keys(s.outputs || {}).length > 0;
+  if (!hasProgress) return null;
+  return s;
+}
+
+function saveSessionData(toolId: string, snap: Omit<SavedSession, 'schemaVersion' | 'toolId' | 'savedAt'>) {
+  const sessions = loadAllSessions();
+  sessions[toolId] = { ...snap, toolId, schemaVersion: SESSIONS_SCHEMA_VERSION, savedAt: Date.now() };
+  try { localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(sessions)); } catch {}
+}
+
+function deleteSessionData(toolId: string) {
+  const sessions = loadAllSessions();
+  delete sessions[toolId];
+  try { localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(sessions)); } catch {}
+}
+
+function getSessionSummary(toolId: string, session: SavedSession, lng: any): string {
+  const tool = (TOOLS as any)[toolId];
+  if (session.screen === 'final') return lng.sessionDoneLabel || 'Completed';
+  if (session.screen === 'output') {
+    const total = tool?.outputBlocks?.length || 0;
+    return `${lng.sessionBlockLabel || 'Block'} ${session.curBlock + 1}/${total}`;
+  }
+  if (session.screen === 'review') return lng.sessionReviewLabel || 'Executive summary';
+  if (session.screen === 'wizard') {
+    const total = tool?.questions?.length || 0;
+    return `${lng.step || 'Step'} ${session.stepIdx + 1}/${total}`;
+  }
+  return '';
+}
+
+function timeAgo(timestamp: number, lang: string): string {
+  const diff = Date.now() - timestamp;
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return lang === 'es' ? 'recién' : 'just now';
+  if (m < 60) return lang === 'es' ? `hace ${m} min` : `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return lang === 'es' ? `hace ${h} h` : `${h} h ago`;
+  const d = Math.floor(h / 24);
+  return lang === 'es' ? `hace ${d} d` : `${d} d ago`;
+}
+
 function detectVague(key: string, value: any): string | null {
   if (!value || typeof value !== 'string') return null;
   const tr = value.trim();
@@ -800,6 +893,17 @@ export default function App() {
     if (saved) setAccessPassword(saved);
   }, []);
 
+  // Auto-save de la sesión activa: cada cambio relevante persiste a localStorage
+  useEffect(() => {
+    if (!toolId) return;
+    if (!['wizard','review','output','final'].includes(screen)) return;
+    saveSessionData(toolId, {
+      data, reviewText, outputs, curBlock, stepIdx, screen,
+      entryMode, toolProfile, skipPhase, autoFilled, profileFilled, vagueOverride,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toolId, screen, stepIdx, curBlock, data, reviewText, outputs, entryMode, toolProfile, skipPhase, autoFilled, profileFilled, vagueOverride]);
+
   const getQ = (key: string) => {
     if (toolId==='brand-story' && toolProfile) {
       const bq = (BIZ_Q as any)[lang];
@@ -826,19 +930,59 @@ export default function App() {
   };
   const pickBiz = (t: string) => { setBizType(t); setScreen('toolbox'); };
 
-  const pickTool = (id: string) => {
-    if (!(TOOLS as any)[id]) return;
-    setToolId(id); setError('');
-    // Pre-llenar campos desde el perfil del negocio (si hay match)
+  const startToolFresh = (id: string) => {
     const { values, filledKeys } = getProfilePrefill(id);
-    setData(prev => ({ ...prev, ...values }));
+    setData(values);
     setProfileFilled(filledKeys);
+    setAutoFilled({});
+    setReviewText('');
+    setOutputs({});
+    setCurBlock(0);
+    setStepIdx(0);
+    setSkipPhase(false);
+    setVagueWarning(null);
+    setVagueOverride({});
     const tool = (TOOLS as any)[id];
     if (tool.requiresProfile) { setScreen('profile'); return; }
     if (tool.entryModes.length > 1) { setScreen('entry'); return; }
     setEntryMode(tool.entryModes[0]);
     if (tool.entryModes[0]==='preload') setScreen('preload');
-    else { setStepIdx(0); setScreen('wizard'); }
+    else { setScreen('wizard'); }
+  };
+
+  const pickTool = (id: string) => {
+    if (!(TOOLS as any)[id]) return;
+    setToolId(id); setError('');
+    // ¿Hay sesión guardada para esta tool? Si sí, mostrar pantalla intermedia.
+    const saved = loadSession(id);
+    if (saved) {
+      setScreen('continueSession');
+      return;
+    }
+    // Sin sesión guardada: flujo normal
+    startToolFresh(id);
+  };
+
+  const continueSavedSession = () => {
+    const s = loadSession(toolId);
+    if (!s) { backToToolbox(); return; }
+    setData(s.data || {});
+    setReviewText(s.reviewText || '');
+    setOutputs(s.outputs || {});
+    setCurBlock(s.curBlock || 0);
+    setStepIdx(s.stepIdx || 0);
+    setEntryMode(s.entryMode || '');
+    setToolProfile(s.toolProfile || '');
+    setSkipPhase(s.skipPhase || false);
+    setAutoFilled(s.autoFilled || {});
+    setProfileFilled(s.profileFilled || {});
+    setVagueOverride(s.vagueOverride || {});
+    setScreen(s.screen || 'wizard');
+  };
+
+  const startFreshSession = () => {
+    deleteSessionData(toolId);
+    startToolFresh(toolId);
   };
 
   const pickProfile = (pid: string) => {
@@ -1251,6 +1395,42 @@ export default function App() {
               })}
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (screen==='continueSession') {
+    const session = loadSession(toolId);
+    if (!session) { startToolFresh(toolId); return null; }
+    const toolName = getToolName(toolId);
+    const summary = getSessionSummary(toolId, session, lng);
+    const last = timeAgo(session.savedAt, lang);
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+        <div className="max-w-2xl mx-auto px-6 py-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-medium mb-6">
+            <RefreshCw className="w-3 h-3"/>{lng.continueSessionTitle}
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">{toolName}</h2>
+          <p className="text-zinc-400 mb-8">{lng.continueSessionDesc}</p>
+
+          <div className="p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl mb-8">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs text-zinc-500 uppercase tracking-wider">{lng.continueSessionLast}</span>
+              <span className="text-xs text-zinc-400">{last}</span>
+            </div>
+            <div className="text-lg font-semibold text-white">{summary}</div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button onClick={continueSavedSession} className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-xl">
+              <ArrowRight className="w-4 h-4"/>{lng.continueSessionContinue}
+            </button>
+            <button onClick={startFreshSession} className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 rounded-xl">
+              <Eraser className="w-4 h-4"/>{lng.continueSessionFresh}
+            </button>
+          </div>
         </div>
       </div>
     );
