@@ -115,6 +115,10 @@ const t = {
     journeyDoneTitle:'¡Camino completado!',
     journeyDoneDesc:'Terminaste todos los pasos del camino sugerido. Podés ver las entregas de cada herramienta o empezar otro camino.',
     journeyNextStepCta:'Continuar con el camino: próximo paso',
+    tipFabrisio:'Tip de Fabrisio',
+    tipDismiss:'Entendido',
+    tipsReset:'Mostrar tips otra vez',
+    tipsResetDone:'✓ Tips reseteados — aparecerán de nuevo al entrar a cada tool',
   },
   en: {
     appName:'Fabrisio sin Humo', subtitle:'AI-powered strategy & consulting builder',
@@ -226,6 +230,10 @@ const t = {
     journeyDoneTitle:'Path completed!',
     journeyDoneDesc:'You finished all the suggested steps. You can review each tool\'s output or start another path.',
     journeyNextStepCta:'Continue path: next step',
+    tipFabrisio:'Tip from Fabrisio',
+    tipDismiss:'Got it',
+    tipsReset:'Show tips again',
+    tipsResetDone:'✓ Tips reset — they\'ll appear again when you enter each tool',
   }
 };
 
@@ -798,6 +806,51 @@ function deleteJourneyData() {
   try { localStorage.removeItem(JOURNEY_STORAGE_KEY); } catch {}
 }
 
+// ============ TIPS DE FABRISIO (banner contextual primera vez por tool) ============
+const TOOL_TIPS: Record<string, { es: string; en: string }> = {
+  'brand-story': {
+    es: 'Tu voz es sagrada acá. Respondé como hablás, no como creés que "queda bien". Si una respuesta te suena genérica, refinala con detalles personales — ahí está la magia.',
+    en: 'Your voice is sacred here. Answer how you talk, not how you think "sounds right". If an answer feels generic, refine it with personal details — that\'s where the magic is.',
+  },
+  'foda-estrategico': {
+    es: 'Cuanto más concretas tus fortalezas y debilidades (con datos), más útil el plan. "Buena atención" no sirve; "4.8★ en 300 reseñas" sí.',
+    en: 'The more concrete your strengths and weaknesses (with data), the more useful the plan. "Good service" is useless; "4.8★ in 300 reviews" works.',
+  },
+  'paid-media-strategy': {
+    es: 'Si ya hacés ads, pegá métricas reales (ROAS, CPL, CTR). Si no, respondé "arranco de cero" — el output se adapta a tu situación.',
+    en: 'If you already run ads, paste real metrics (ROAS, CPL, CTR). If not, answer "starting from scratch" — output adapts to your situation.',
+  },
+  'ideas-virales-1': {
+    es: 'Cuanto más específico tu nicho y audiencia, más afiladas las ideas. Evitá descripciones genéricas tipo "gente que quiere mejorar".',
+    en: 'The more specific your niche and audience, the sharper the ideas. Avoid generic descriptions like "people who want to improve".',
+  },
+  'ideas-instagram': {
+    es: 'Si tenés posts viejos que funcionaron, pegá el dato (views, comentarios). Mejor detectar patrones tuyos que best-practices genéricas.',
+    en: 'If you have old posts that worked, paste the data (views, comments). Better to detect your own patterns than generic best-practices.',
+  },
+};
+
+const TIPS_SEEN_STORAGE_KEY = 'fshumo_tips_seen';
+
+function loadTipsSeen(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(TIPS_SEEN_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function markTipSeen(toolId: string) {
+  try {
+    const seen = loadTipsSeen();
+    seen[toolId] = true;
+    localStorage.setItem(TIPS_SEEN_STORAGE_KEY, JSON.stringify(seen));
+  } catch {}
+}
+
+function resetTipsSeen() {
+  try { localStorage.removeItem(TIPS_SEEN_STORAGE_KEY); } catch {}
+}
+
 function detectVague(key: string, value: any): string | null {
   if (!value || typeof value !== 'string') return null;
   const tr = value.trim();
@@ -984,6 +1037,7 @@ export default function App() {
   const [journey, setJourney] = useState<SavedJourney | null>(null);
   const [journeyDraftObjective, setJourneyDraftObjective] = useState<string>('');
   const [journeyAbandonAsk, setJourneyAbandonAsk] = useState(false);
+  const [tipsSeen, setTipsSeen] = useState<Record<string, boolean>>({});
 
   const lng = (t as any)[lang];
   const currentTool = (TOOLS as any)[toolId];
@@ -992,7 +1046,18 @@ export default function App() {
     const saved = sessionStorage.getItem('fshumo_pw');
     if (saved) setAccessPassword(saved);
     setJourney(loadJourney());
+    setTipsSeen(loadTipsSeen());
   }, []);
+
+  const dismissTip = (id: string) => {
+    markTipSeen(id);
+    setTipsSeen(prev => ({ ...prev, [id]: true }));
+  };
+
+  const resetAllTips = () => {
+    resetTipsSeen();
+    setTipsSeen({});
+  };
 
   // Auto-save de la sesión activa: cada cambio relevante persiste a localStorage
   useEffect(() => {
@@ -1726,6 +1791,15 @@ export default function App() {
               </div>
             )}
           </div>
+
+          <div className="mt-6 pt-4 border-t border-zinc-800/50 flex items-center gap-3">
+            <button onClick={resetAllTips} className="inline-flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-500 hover:text-yellow-400">
+              <Sparkles className="w-3 h-3"/>{lng.tipsReset}
+            </button>
+            {Object.keys(tipsSeen).length === 0 && myProfileSaved && (
+              <span className="text-xs text-emerald-400">{lng.tipsResetDone}</span>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -1823,6 +1897,16 @@ export default function App() {
           <div className="h-1 bg-zinc-800"><div className="h-full bg-yellow-400 transition-all duration-300" style={{width:`${progress}%`}}/></div>
         </header>
         <div className="max-w-3xl mx-auto px-6 py-12">
+          {stepIdx===0 && TOOL_TIPS[toolId] && !tipsSeen[toolId] && (
+            <div className="mb-6 p-4 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-xl flex items-start gap-3">
+              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-1">💡 {lng.tipFabrisio}</div>
+                <p className="text-sm text-zinc-200 leading-relaxed">{(TOOL_TIPS[toolId] as any)[lang] || TOOL_TIPS[toolId].es}</p>
+              </div>
+              <button onClick={()=>dismissTip(toolId)} className="text-xs text-zinc-400 hover:text-white px-2 py-1 rounded hover:bg-zinc-800 flex-shrink-0">{lng.tipDismiss}</button>
+            </div>
+          )}
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-xs text-zinc-400 mb-6">
             <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full"/>
             {phaseLabels[curStep.phase]}
