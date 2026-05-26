@@ -92,6 +92,29 @@ const t = {
     sessionBlockLabel:'Bloque',
     sessionReviewLabel:'Resumen ejecutivo',
     sessionDoneLabel:'Completado',
+    guideMeBtn:'¿No sabés por dónde? Te guío',
+    guideMeBtnShort:'Te guío',
+    journeyPickTitle:'¿Qué querés lograr?',
+    journeyPickDesc:'Elegí tu objetivo y te armo un camino estratégico con las herramientas en el orden que más rinde.',
+    journeyObj_brandClarity:'Clarificar mi marca y mensaje',
+    journeyObj_attractCustomers:'Atraer más clientes / vender más',
+    journeyObj_createContent:'Crear contenido que conecte',
+    journeyObj_diagnose:'Diagnosticar dónde estoy parado',
+    journeyObj_growSocial:'Crecer en redes sociales',
+    journeyPlanTitle:'Tu camino sugerido',
+    journeyPlanDesc:'Cada paso prepara el terreno para el siguiente. Podés saltar uno si ya lo hiciste antes.',
+    journeyStart:'Empezar primer paso',
+    journeyActiveTitle:'Tu camino en curso',
+    journeyActiveProgress:'completado',
+    journeyActiveNext:'Próximo paso',
+    journeyActiveContinue:'Continuar',
+    journeyActiveAbandon:'Abandonar este camino',
+    journeyAbandonConfirm:'¿Seguro que querés abandonar? El progreso de cada herramienta queda guardado igual.',
+    journeyAbandonYes:'Sí, abandonar',
+    journeyAbandonCancel:'Cancelar',
+    journeyDoneTitle:'¡Camino completado!',
+    journeyDoneDesc:'Terminaste todos los pasos del camino sugerido. Podés ver las entregas de cada herramienta o empezar otro camino.',
+    journeyNextStepCta:'Continuar con el camino: próximo paso',
   },
   en: {
     appName:'Fabrisio sin Humo', subtitle:'AI-powered strategy & consulting builder',
@@ -180,6 +203,29 @@ const t = {
     sessionBlockLabel:'Block',
     sessionReviewLabel:'Executive summary',
     sessionDoneLabel:'Completed',
+    guideMeBtn:"Don't know where to start? I'll guide you",
+    guideMeBtnShort:"Guide me",
+    journeyPickTitle:'What do you want to achieve?',
+    journeyPickDesc:"Pick your goal and I'll build a strategic path with the tools in the order that works best.",
+    journeyObj_brandClarity:'Clarify my brand and message',
+    journeyObj_attractCustomers:'Attract more customers / sell more',
+    journeyObj_createContent:'Create content that connects',
+    journeyObj_diagnose:'Diagnose where I stand',
+    journeyObj_growSocial:'Grow on social media',
+    journeyPlanTitle:'Your suggested path',
+    journeyPlanDesc:'Each step sets up the next. You can skip one if you already did it before.',
+    journeyStart:'Start first step',
+    journeyActiveTitle:'Your active path',
+    journeyActiveProgress:'completed',
+    journeyActiveNext:'Next step',
+    journeyActiveContinue:'Continue',
+    journeyActiveAbandon:'Abandon this path',
+    journeyAbandonConfirm:'Sure? Each tool\'s progress stays saved anyway.',
+    journeyAbandonYes:'Yes, abandon',
+    journeyAbandonCancel:'Cancel',
+    journeyDoneTitle:'Path completed!',
+    journeyDoneDesc:'You finished all the suggested steps. You can review each tool\'s output or start another path.',
+    journeyNextStepCta:'Continue path: next step',
   }
 };
 
@@ -701,6 +747,57 @@ function timeAgo(timestamp: number, lang: string): string {
   return lang === 'es' ? `hace ${d} d` : `${d} d ago`;
 }
 
+// ============ JOURNEY (modo guiado) ============
+type JourneyStep = { toolId: string; reason: { es: string; en: string } };
+const JOURNEY_PLANS: Record<string, JourneyStep[]> = {
+  'brand-clarity': [
+    { toolId: 'brand-story',         reason: { es: 'Tu historia y posicionamiento real son la base de todo lo demás', en: 'Your real story and positioning are the base of everything else' } },
+    { toolId: 'foda-estrategico',    reason: { es: 'Una vez clara la voz, detectá fortalezas y diferenciales para amplificar', en: 'Once the voice is clear, detect strengths and differentials to amplify' } },
+  ],
+  'attract-customers': [
+    { toolId: 'brand-story',         reason: { es: 'Primero definí cómo te presentás. Sin claridad no hay campaña que rinda', en: "First define how you present yourself. Without clarity no campaign performs" } },
+    { toolId: 'foda-estrategico',    reason: { es: 'Mapeá oportunidades reales del mercado antes de invertir presupuesto', en: 'Map real market opportunities before investing budget' } },
+    { toolId: 'paid-media-strategy', reason: { es: 'Activá adquisición con campañas estratégicas en Meta, Google y TikTok', en: 'Activate acquisition with strategic campaigns on Meta, Google and TikTok' } },
+  ],
+  'create-content': [
+    { toolId: 'brand-story',         reason: { es: 'Tu voz y diferencial son la base del contenido que va a destacar', en: 'Your voice and differential are the foundation of content that stands out' } },
+    { toolId: 'ideas-virales-1',     reason: { es: 'Generá ideas con potencial viral adaptadas a tu marca y plataforma', en: 'Generate viral ideas adapted to your brand and platform' } },
+    { toolId: 'ideas-instagram',     reason: { es: 'Estrategia específica para Instagram con mix de formatos nativos', en: 'IG-specific strategy with native formats mix' } },
+  ],
+  'diagnose': [
+    { toolId: 'foda-estrategico',    reason: { es: 'FODA + matriz CAME + plan de acción priorizado por impacto y esfuerzo', en: 'SWOT + CAME matrix + action plan prioritized by impact and effort' } },
+    { toolId: 'brand-story',         reason: { es: 'Validá que tu mensaje se alinea con el diagnóstico estratégico', en: 'Validate your message aligns with the strategic diagnosis' } },
+  ],
+  'grow-social': [
+    { toolId: 'ideas-instagram',     reason: { es: 'Empezá con una estrategia de cuenta IG sólida y mix de formatos', en: 'Start with a solid IG account strategy and format mix' } },
+    { toolId: 'ideas-virales-1',     reason: { es: 'Sumá ideas para escalar a TikTok, Shorts y otras plataformas', en: 'Add ideas to scale to TikTok, Shorts and other platforms' } },
+  ],
+};
+
+type SavedJourney = { schemaVersion: number; objective: string; tools: string[]; currentIndex: number; savedAt: number };
+const JOURNEY_STORAGE_KEY = 'fshumo_journey';
+const JOURNEY_SCHEMA_VERSION = 1;
+
+function loadJourney(): SavedJourney | null {
+  try {
+    const raw = localStorage.getItem(JOURNEY_STORAGE_KEY);
+    if (!raw) return null;
+    const j = JSON.parse(raw);
+    if (j.schemaVersion !== JOURNEY_SCHEMA_VERSION) return null;
+    return j;
+  } catch { return null; }
+}
+
+function saveJourneyData(j: Omit<SavedJourney, 'schemaVersion' | 'savedAt'>) {
+  try {
+    localStorage.setItem(JOURNEY_STORAGE_KEY, JSON.stringify({ ...j, schemaVersion: JOURNEY_SCHEMA_VERSION, savedAt: Date.now() }));
+  } catch {}
+}
+
+function deleteJourneyData() {
+  try { localStorage.removeItem(JOURNEY_STORAGE_KEY); } catch {}
+}
+
 function detectVague(key: string, value: any): string | null {
   if (!value || typeof value !== 'string') return null;
   const tr = value.trim();
@@ -884,6 +981,9 @@ export default function App() {
   const [myProfileDraft, setMyProfileDraft] = useState<Record<string, string>>({});
   const [myProfileSaved, setMyProfileSaved] = useState(false);
   const [myProfileDeleteAsk, setMyProfileDeleteAsk] = useState(false);
+  const [journey, setJourney] = useState<SavedJourney | null>(null);
+  const [journeyDraftObjective, setJourneyDraftObjective] = useState<string>('');
+  const [journeyAbandonAsk, setJourneyAbandonAsk] = useState(false);
 
   const lng = (t as any)[lang];
   const currentTool = (TOOLS as any)[toolId];
@@ -891,6 +991,7 @@ export default function App() {
   useEffect(() => {
     const saved = sessionStorage.getItem('fshumo_pw');
     if (saved) setAccessPassword(saved);
+    setJourney(loadJourney());
   }, []);
 
   // Auto-save de la sesión activa: cada cambio relevante persiste a localStorage
@@ -1242,6 +1343,40 @@ export default function App() {
     setTimeout(() => setMyProfileSaved(false), 2500);
   };
 
+  // ============ JOURNEY handlers ============
+  const openJourneyPick = () => { setJourneyDraftObjective(''); setScreen('journeyPick'); };
+  const pickJourneyObjective = (objective: string) => { setJourneyDraftObjective(objective); setScreen('journeyPlan'); };
+  const startJourney = () => {
+    const plan = JOURNEY_PLANS[journeyDraftObjective];
+    if (!plan || plan.length === 0) return;
+    const tools = plan.map(s => s.toolId);
+    saveJourneyData({ objective: journeyDraftObjective, tools, currentIndex: 0 });
+    setJourney(loadJourney());
+    pickTool(tools[0]);
+  };
+  const continueJourney = () => {
+    if (!journey) return;
+    const next = journey.tools[journey.currentIndex];
+    if (next) pickTool(next);
+  };
+  const advanceJourneyAfterTool = () => {
+    if (!journey) return;
+    const newIdx = journey.currentIndex + 1;
+    if (newIdx >= journey.tools.length) {
+      // Camino completado, lo borramos
+      deleteJourneyData();
+      setJourney(null);
+      return;
+    }
+    saveJourneyData({ objective: journey.objective, tools: journey.tools, currentIndex: newIdx });
+    setJourney(loadJourney());
+  };
+  const abandonJourney = () => {
+    deleteJourneyData();
+    setJourney(null);
+    setJourneyAbandonAsk(false);
+  };
+
   const Header = ({right=null}: any) => {
     const canGoHome = screen!=='landing' && screen!=='toolbox' && screen!=='biztype';
     return (
@@ -1373,6 +1508,47 @@ export default function App() {
             <p className="text-zinc-400 leading-relaxed text-lg max-w-2xl">{lng.toolboxDesc}</p>
             {bizType&&<div className="mt-4 inline-flex items-center gap-2 text-xs text-zinc-500"><span>{lang==='es'?'Negocio:':'Business:'}</span><span className="text-yellow-400 font-medium">{lng.bizTypes[bizType].label}</span><button onClick={()=>setScreen('biztype')} className="text-zinc-600 hover:text-yellow-400 underline">{lang==='es'?'cambiar':'change'}</button></div>}
           </div>
+
+          {journey ? (
+            <div className="mb-8 p-5 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-2xl">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-yellow-400/15 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-semibold mb-3"><Compass className="w-3 h-3"/>{lng.journeyActiveTitle}</div>
+                  <h3 className="text-lg font-bold text-white mb-1">{(lng as any)['journeyObj_'+journey.objective.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]}</h3>
+                  <p className="text-sm text-zinc-400">{journey.currentIndex}/{journey.tools.length} {lng.journeyActiveProgress}</p>
+                  {journey.currentIndex < journey.tools.length && (
+                    <p className="text-sm text-zinc-300 mt-2"><span className="text-zinc-500">{lng.journeyActiveNext}:</span> <span className="font-semibold text-yellow-400">{getToolName(journey.tools[journey.currentIndex])}</span></p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2 flex-shrink-0">
+                  <button onClick={continueJourney} disabled={journey.currentIndex >= journey.tools.length} className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-lg text-sm"><ArrowRight className="w-4 h-4"/>{lng.journeyActiveContinue}</button>
+                  {!journeyAbandonAsk ? (
+                    <button onClick={()=>setJourneyAbandonAsk(true)} className="text-xs text-zinc-500 hover:text-red-400">{lng.journeyActiveAbandon}</button>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-[11px] text-zinc-400">{lng.journeyAbandonConfirm}</span>
+                      <div className="flex gap-2">
+                        <button onClick={abandonJourney} className="px-2.5 py-1 bg-red-500 hover:bg-red-400 text-white rounded text-xs font-semibold">{lng.journeyAbandonYes}</button>
+                        <button onClick={()=>setJourneyAbandonAsk(false)} className="px-2.5 py-1 text-zinc-400 hover:text-white text-xs">{lng.journeyAbandonCancel}</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <button onClick={openJourneyPick} className="w-full mb-8 p-5 bg-zinc-900 hover:bg-zinc-900/70 border border-zinc-800 hover:border-yellow-400/40 rounded-2xl text-left transition-all group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-yellow-400/10 border border-yellow-400/30 rounded-xl flex items-center justify-center flex-shrink-0"><Compass className="w-6 h-6 text-yellow-400"/></div>
+                <div className="flex-1">
+                  <div className="font-semibold text-white mb-0.5">{lng.guideMeBtn}</div>
+                  <p className="text-sm text-zinc-400">{lng.journeyPickDesc}</p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform flex-shrink-0"/>
+              </div>
+            </button>
+          )}
+
           <div className="mb-8 space-y-3">
             <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"/><input type="text" value={toolSearch} onChange={e=>setToolSearch(e.target.value)} placeholder={lng.toolboxSearch} className="w-full pl-11 pr-5 py-3 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600"/></div>
             <div className="flex flex-wrap gap-2">
@@ -1395,6 +1571,61 @@ export default function App() {
               })}
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  if (screen==='journeyPick') {
+    const objectives: { key: string; labelKey: string; icon: any }[] = [
+      { key: 'brand-clarity',      labelKey: 'journeyObj_brandClarity',      icon: Sparkles },
+      { key: 'attract-customers',  labelKey: 'journeyObj_attractCustomers',  icon: Target },
+      { key: 'create-content',     labelKey: 'journeyObj_createContent',     icon: FileEdit },
+      { key: 'diagnose',           labelKey: 'journeyObj_diagnose',          icon: BarChart3 },
+      { key: 'grow-social',        labelKey: 'journeyObj_growSocial',        icon: TrendingUp },
+    ];
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Compass className="w-3 h-3"/>{lng.guideMeBtnShort}</div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPickTitle}</h2>
+          <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPickDesc}</p>
+          <div className="space-y-3">
+            {objectives.map(o => (
+              <button key={o.key} onClick={()=>pickJourneyObjective(o.key)} className="w-full text-left p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-yellow-400/50 hover:bg-zinc-900/80 transition-all flex items-center gap-4 group">
+                <div className="w-12 h-12 bg-yellow-400/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-400/20"><o.icon className="w-5 h-5 text-yellow-400"/></div>
+                <div className="flex-1 font-semibold text-white">{(lng as any)[o.labelKey]}</div>
+                <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform"/>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen==='journeyPlan') {
+    const plan = JOURNEY_PLANS[journeyDraftObjective];
+    if (!plan) { setScreen('journeyPick'); return null; }
+    const objectiveLabel = (lng as any)['journeyObj_'+journeyDraftObjective.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())];
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={()=>setScreen('journeyPick')} className="text-xs text-zinc-500 hover:text-yellow-400">← {lang==='es'?'Cambiar objetivo':'Change goal'}</button>}/>
+        <div className="max-w-3xl mx-auto px-6 py-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Compass className="w-3 h-3"/>{objectiveLabel}</div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPlanTitle}</h2>
+          <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPlanDesc}</p>
+          <div className="space-y-4 mb-8">
+            {plan.map((step, idx) => (
+              <div key={idx} className="flex gap-4 p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
+                <div className="w-10 h-10 bg-yellow-400 text-zinc-950 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">{idx+1}</div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white mb-1">{getToolName(step.toolId)}</h3>
+                  <p className="text-sm text-zinc-400 leading-relaxed">{(step.reason as any)[lang] || step.reason.es}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button onClick={startJourney} className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-xl"><ArrowRight className="w-4 h-4"/>{lng.journeyStart}</button>
         </div>
       </div>
     );
@@ -1708,6 +1939,31 @@ export default function App() {
     <div className="min-h-screen bg-zinc-950 text-white"><Header/>
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-12"><div className="inline-flex w-16 h-16 bg-yellow-400/10 rounded-2xl items-center justify-center mb-4"><Trophy className="w-8 h-8 text-yellow-400"/></div><h2 className="text-4xl font-bold mb-3">{lng.finalTitle}</h2><p className="text-zinc-400 text-lg">{lng.finalDesc}</p></div>
+        {journey && journey.tools[journey.currentIndex] === toolId && (() => {
+          const isLast = journey.currentIndex + 1 >= journey.tools.length;
+          const nextToolId = !isLast ? journey.tools[journey.currentIndex + 1] : null;
+          return (
+            <div className="max-w-2xl mx-auto mb-10 p-5 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-2xl flex items-center gap-4 flex-wrap">
+              <div className="w-12 h-12 bg-yellow-400 text-zinc-950 rounded-xl flex items-center justify-center flex-shrink-0"><Compass className="w-6 h-6"/></div>
+              <div className="flex-1 min-w-0">
+                {isLast ? (
+                  <>
+                    <div className="font-semibold text-white mb-0.5">{lng.journeyDoneTitle}</div>
+                    <p className="text-sm text-zinc-400">{lng.journeyDoneDesc}</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-xs text-yellow-400 font-semibold mb-1">{journey.currentIndex + 1}/{journey.tools.length} · {lng.journeyActiveProgress}</div>
+                    <div className="font-semibold text-white mb-0.5">{lng.journeyActiveNext}: {getToolName(nextToolId!)}</div>
+                  </>
+                )}
+              </div>
+              <button onClick={()=>{ advanceJourneyAfterTool(); if (nextToolId) pickTool(nextToolId); else backToToolbox(); }} className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-lg text-sm">
+                <ArrowRight className="w-4 h-4"/>{isLast ? lng.toolboxBack : lng.journeyNextStepCta}
+              </button>
+            </div>
+          );
+        })()}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
           {toolId==='brand-story'
             ? <button onClick={()=>exportHtml(true)} className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-xl shadow-lg shadow-yellow-400/20"><FileText className="w-5 h-5"/>{lng.exportEditorial}</button>
