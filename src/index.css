@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+/* ============================================================
+   Tier 1 — Design Engineering polish (Emil Kowalski principles)
+   ============================================================
+   - Press feedback on all buttons (scale 0.97 on :active)
+   - Custom easing curves with more punch than CSS defaults
+   - Specific transitions instead of `transition: all`
+   - Respects prefers-reduced-motion
+*/
+
+@theme {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@layer base {
+  /* All interactive buttons get press feedback + cohesive timing.
+     Transitions are listed explicitly (not `all`) so we get
+     hardware-accelerated transform + smooth color/border changes. */
+  button:not(:disabled),
+  a[role="button"]:not([aria-disabled="true"]) {
+    transition-property: transform, background-color, border-color, color, box-shadow, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  /* Press feedback — instant tactile response.
+     Skip when disabled or when user has dragged-to-cancel. */
+  button:not(:disabled):active,
+  a[role="button"]:not([aria-disabled="true"]):active {
+    transform: scale(0.97);
+  }
+
+  /* Accessibility: users who prefer reduced motion don't get scale. */
+  @media (prefers-reduced-motion: reduce) {
+    button:not(:disabled),
+    a[role="button"]:not([aria-disabled="true"]) {
+      transition-duration: 0ms;
+    }
+    button:not(:disabled):active,
+    a[role="button"]:not([aria-disabled="true"]):active {
+      transform: none;
+    }
+  }
+}
