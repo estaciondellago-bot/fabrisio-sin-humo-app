@@ -1517,9 +1517,9 @@ export default function App() {
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.bizTypeTitle}</h2>
           <p className="text-zinc-400 mb-10">{lng.bizTypeDesc}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-            {types.map(tp=>{
+            {types.map((tp,i)=>{
               const info=lng.bizTypes[tp.key]; const sel=bizType===tp.key;
-              return <button key={tp.key} onClick={()=>setBizType(tp.key)} className={`text-left p-5 rounded-xl border transition-all ${sel?'bg-yellow-400/10 border-yellow-400':'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
+              return <button key={tp.key} onClick={()=>setBizType(tp.key)} style={{animationDelay:`${i*40}ms`}} className={`stagger-item text-left p-5 rounded-xl border ${sel?'bg-yellow-400/10 border-yellow-400':'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
                 <div className="flex items-start gap-4"><div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${sel?'bg-yellow-400/20':'bg-zinc-800'}`}>{tp.icon}</div>
                   <div className="flex-1"><div className="flex items-center gap-2 mb-1"><h3 className="font-semibold text-white">{info.label}</h3>{sel&&<Check className="w-4 h-4 text-yellow-400"/>}</div><p className="text-sm text-zinc-400">{info.desc}</p></div></div>
               </button>;
@@ -1541,10 +1541,10 @@ export default function App() {
     const levelMap = {basico:lng.toolLevelBasico,intermedio:lng.toolLevelIntermedio,avanzado:lng.toolLevelAvanzado};
     const cats = [{id:'diagnosis',label:lng.catDiagnosis,desc:lng.catDiagnosisDesc,icon:Compass},{id:'marketing',label:lng.catMarketing,desc:lng.catMarketingDesc,icon:Megaphone},{id:'content',label:lng.catContent,desc:lng.catContentDesc,icon:Film},{id:'operations',label:lng.catOperations,desc:lng.catOperationsDesc,icon:PieChart},{id:'growth',label:lng.catGrowth,desc:lng.catGrowthDesc,icon:TrendingUp}];
 
-    const CardComp = ({tool}: any) => {
+    const CardComp = ({tool, index}: any) => {
       const locked = !tool.available;
       return (
-        <button onClick={()=>tool.available&&pickTool(tool.id)} disabled={locked} className={`group relative text-left rounded-2xl border transition-all overflow-hidden ${locked?'bg-zinc-900/30 border-zinc-800/60 cursor-not-allowed opacity-70':'bg-zinc-900 border-zinc-800 hover:border-yellow-400/50 hover:bg-zinc-900/90 cursor-pointer hover:shadow-lg hover:shadow-yellow-400/5'}`}>
+        <button onClick={()=>tool.available&&pickTool(tool.id)} disabled={locked} style={{animationDelay:`${(index||0)*40}ms`}} className={`stagger-item group relative text-left rounded-2xl border overflow-hidden ${locked?'bg-zinc-900/30 border-zinc-800/60 cursor-not-allowed opacity-70':'bg-zinc-900 border-zinc-800 hover:border-yellow-400/50 hover:bg-zinc-900/90 cursor-pointer hover:shadow-lg hover:shadow-yellow-400/5'}`}>
           <div className={`relative h-32 overflow-hidden ${locked?'bg-gradient-to-br from-zinc-900 to-zinc-950':'bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950'}`}>
             {!locked&&<div className="absolute inset-0 opacity-30" style={{backgroundImage:'radial-gradient(circle at 30% 50%, rgba(250,204,21,0.15) 0%, transparent 60%)'}}/>}
             <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'linear-gradient(rgba(250,204,21,1) 1px,transparent 1px),linear-gradient(90deg,rgba(250,204,21,1) 1px,transparent 1px)',backgroundSize:'14px 14px'}}/>
@@ -1624,7 +1624,7 @@ export default function App() {
           {recommended.length>0&&!toolSearch&&!toolCatFilter&&(
             <div className="mb-12">
               <div className="flex items-center gap-2 mb-4"><Sparkles className="w-4 h-4 text-yellow-400"/><h3 className="text-sm font-bold text-yellow-400 uppercase tracking-wider">{lng.toolboxRecommended}</h3></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{recommended.map(tl=><CardComp key={tl.id} tool={tl}/>)}</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{recommended.map((tl,i)=><CardComp key={tl.id} tool={tl} index={i}/>)}</div>
             </div>
           )}
           {filtered.length===0?<div className="text-center py-16 text-zinc-500"><Search className="w-12 h-12 mx-auto mb-4 text-zinc-700"/><p>{lng.toolboxEmpty}</p></div>:(
@@ -1632,7 +1632,7 @@ export default function App() {
               {cats.map(cat=>{
                 const catTools=filtered.filter(tl=>tl.category===cat.id);
                 if (!catTools.length) return null;
-                return <div key={cat.id}><div className="flex items-center gap-3 mb-5 pb-3 border-b border-zinc-800"><div className="w-10 h-10 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center"><cat.icon className="w-5 h-5 text-yellow-400"/></div><div><h3 className="text-lg font-bold text-white">{cat.label}</h3><p className="text-xs text-zinc-500">{cat.desc}</p></div></div><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{catTools.map(tl=><CardComp key={tl.id} tool={tl}/>)}</div></div>;
+                return <div key={cat.id}><div className="flex items-center gap-3 mb-5 pb-3 border-b border-zinc-800"><div className="w-10 h-10 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center"><cat.icon className="w-5 h-5 text-yellow-400"/></div><div><h3 className="text-lg font-bold text-white">{cat.label}</h3><p className="text-xs text-zinc-500">{cat.desc}</p></div></div><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{catTools.map((tl,i)=><CardComp key={tl.id} tool={tl} index={i}/>)}</div></div>;
               })}
             </div>
           )}
@@ -1656,8 +1656,8 @@ export default function App() {
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPickTitle}</h2>
           <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPickDesc}</p>
           <div className="space-y-3">
-            {objectives.map(o => (
-              <button key={o.key} onClick={()=>pickJourneyObjective(o.key)} className="w-full text-left p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-yellow-400/50 hover:bg-zinc-900/80 transition-all flex items-center gap-4 group">
+            {objectives.map((o,i) => (
+              <button key={o.key} onClick={()=>pickJourneyObjective(o.key)} style={{animationDelay:`${i*40}ms`}} className="stagger-item w-full text-left p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-yellow-400/50 hover:bg-zinc-900/80 flex items-center gap-4 group">
                 <div className="w-12 h-12 bg-yellow-400/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-400/20"><o.icon className="w-5 h-5 text-yellow-400"/></div>
                 <div className="flex-1 font-semibold text-white">{(lng as any)[o.labelKey]}</div>
                 <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform"/>
@@ -1681,7 +1681,7 @@ export default function App() {
           <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPlanDesc}</p>
           <div className="space-y-4 mb-8">
             {plan.map((step, idx) => (
-              <div key={idx} className="flex gap-4 p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
+              <div key={idx} style={{animationDelay:`${idx*80}ms`}} className="stagger-item flex gap-4 p-5 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
                 <div className="w-10 h-10 bg-yellow-400 text-zinc-950 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">{idx+1}</div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-white mb-1">{getToolName(step.toolId)}</h3>
@@ -1773,7 +1773,7 @@ export default function App() {
               <ChevronLeft className="w-4 h-4"/>{lng.toolboxBack}
             </button>
             {myProfileSaved && (
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-300 text-xs font-medium">
+              <span className="smooth-enter inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-300 text-xs font-medium">
                 {lng.myProfileSaved}
               </span>
             )}
@@ -1815,8 +1815,8 @@ export default function App() {
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.profileTitle}</h2>
           <p className="text-zinc-400 mb-10">{lng.profileDesc}</p>
           <div className="space-y-3">
-            {profiles.map((p: any)=>(
-              <button key={p.id} onClick={()=>pickProfile(p.id)} className="w-full text-left p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-yellow-400/50 transition-all flex items-start gap-4 group">
+            {profiles.map((p: any,i: number)=>(
+              <button key={p.id} onClick={()=>pickProfile(p.id)} style={{animationDelay:`${i*40}ms`}} className="stagger-item w-full text-left p-5 bg-zinc-900 border border-zinc-800 rounded-xl hover:border-yellow-400/50 flex items-start gap-4 group">
                 <div className="w-12 h-12 bg-yellow-400/10 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 group-hover:bg-yellow-400/20">{(icons as any)[p.id]||'✨'}</div>
                 <div className="flex-1"><h3 className="font-semibold text-white mb-1">{p.label}</h3><p className="text-sm text-zinc-400">{p.desc}</p></div>
                 <ArrowRight className="w-5 h-5 text-yellow-400 group-hover:translate-x-1 transition-transform mt-3"/>
@@ -1898,7 +1898,7 @@ export default function App() {
         </header>
         <div className="max-w-3xl mx-auto px-6 py-12">
           {stepIdx===0 && TOOL_TIPS[toolId] && !tipsSeen[toolId] && (
-            <div className="mb-6 p-4 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-xl flex items-start gap-3">
+            <div className="smooth-enter mb-6 p-4 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-xl flex items-start gap-3">
               <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-1">💡 {lng.tipFabrisio}</div>
@@ -1915,8 +1915,8 @@ export default function App() {
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{q.title}</h2>
           <p className="text-zinc-400 mb-4">{q.desc}</p>
-          {autoFilled[curStep.key]&&<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-400/10 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-medium mb-4"><Wand2 className="w-3.5 h-3.5"/><span>{lng.autoDetected}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
-          {!autoFilled[curStep.key]&&profileFilled[curStep.key]&&<div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-400/10 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4"><Users className="w-3.5 h-3.5"/><span>{lng.fromProfile}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
+          {autoFilled[curStep.key]&&<div className="smooth-enter inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-400/10 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-medium mb-4"><Wand2 className="w-3.5 h-3.5"/><span>{lng.autoDetected}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
+          {!autoFilled[curStep.key]&&profileFilled[curStep.key]&&<div className="smooth-enter inline-flex items-center gap-2 px-3 py-1.5 bg-blue-400/10 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4"><Users className="w-3.5 h-3.5"/><span>{lng.fromProfile}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
           <div className="mt-2">
             {curStep.type==='textarea'&&<textarea value={val||''} onChange={e=>setData({...data,[curStep.key]:e.target.value})} placeholder={q.placeholder} rows={6} className="w-full px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600 resize-none"/>}
             {curStep.type==='select'&&<div className="space-y-2">{q.options.map((opt: string)=><button key={opt} onClick={()=>setData({...data,[curStep.key]:opt})} className={`w-full text-left px-5 py-4 rounded-xl border transition-all ${val===opt?'bg-yellow-400/10 border-yellow-400 text-white':'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300'}`}><div className="flex items-center justify-between"><span>{opt}</span>{val===opt&&<Check className="w-5 h-5 text-yellow-400"/>}</div></button>)}</div>}
@@ -1927,7 +1927,7 @@ export default function App() {
             {curStep.skippable&&<button onClick={handleSkipSection} className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-sm text-zinc-300"><SkipForward className="w-4 h-4"/>{lang==='es'?'Saltar sección':'Skip section'}</button>}
           </div>
           {vagueWarning&&(
-            <div className="mt-6 p-5 bg-yellow-400/10 border-2 border-yellow-400/40 rounded-xl">
+            <div className="smooth-enter mt-6 p-5 bg-yellow-400/10 border-2 border-yellow-400/40 rounded-xl">
               <div className="flex items-start gap-3 mb-3">
                 <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5"/>
                 <div><h4 className="font-semibold text-yellow-300 mb-1">{lng.vagueTitle}</h4><p className="text-sm text-yellow-100/90 leading-relaxed">{vagueWarning}</p></div>
