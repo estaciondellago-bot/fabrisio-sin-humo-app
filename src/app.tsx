@@ -1461,7 +1461,7 @@ export default function App() {
   };
 
   if (screen==='landing') return (
-    <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
+    <div className="screen-enter min-h-screen bg-zinc-950 text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(250,204,21,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(250,204,21,0.03)_1px,transparent_1px)] bg-[size:40px_40px]"/>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-yellow-500/10 rounded-full blur-[120px]"/>
       <div className="relative max-w-6xl mx-auto px-6 py-6">
@@ -1491,7 +1491,7 @@ export default function App() {
   );
 
   if (screen==='apikey') return (
-    <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
+    <div className="screen-enter min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-10">
           <div className="inline-flex w-20 h-20 bg-yellow-400 rounded-2xl items-center justify-center mb-5"><Flame className="w-10 h-10 text-zinc-950" strokeWidth={2.5}/></div>
@@ -1511,7 +1511,7 @@ export default function App() {
   if (screen==='biztype') {
     const types = [{key:'ecommerce',icon:'🛒'},{key:'service',icon:'💼'},{key:'b2b',icon:'🏢'},{key:'health',icon:'🏥'},{key:'education',icon:'🎓'},{key:'local',icon:'🏠'}];
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
         <div className="max-w-4xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Target className="w-3 h-3"/>{lang==='es'?'Paso 1':'Step 1'}</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.bizTypeTitle}</h2>
@@ -1565,7 +1565,7 @@ export default function App() {
     };
 
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={openMyProfile} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs text-zinc-300 border border-zinc-800"><Users className="w-3 h-3"/>{lng.myProfile}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={openMyProfile} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs text-zinc-300 border border-zinc-800"><Users className="w-3 h-3"/>{lng.myProfile}</button>}/>
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Briefcase className="w-3 h-3"/>{lng.toolboxSubtitle}</div>
@@ -1650,7 +1650,7 @@ export default function App() {
       { key: 'grow-social',        labelKey: 'journeyObj_growSocial',        icon: TrendingUp },
     ];
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Compass className="w-3 h-3"/>{lng.guideMeBtnShort}</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPickTitle}</h2>
@@ -1674,7 +1674,7 @@ export default function App() {
     if (!plan) { setScreen('journeyPick'); return null; }
     const objectiveLabel = (lng as any)['journeyObj_'+journeyDraftObjective.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())];
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={()=>setScreen('journeyPick')} className="text-xs text-zinc-500 hover:text-yellow-400">← {lang==='es'?'Cambiar objetivo':'Change goal'}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={()=>setScreen('journeyPick')} className="text-xs text-zinc-500 hover:text-yellow-400">← {lang==='es'?'Cambiar objetivo':'Change goal'}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Compass className="w-3 h-3"/>{objectiveLabel}</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPlanTitle}</h2>
@@ -1703,7 +1703,7 @@ export default function App() {
     const summary = getSessionSummary(toolId, session, lng);
     const last = timeAgo(session.savedAt, lang);
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-2xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-medium mb-6">
             <RefreshCw className="w-3 h-3"/>{lng.continueSessionTitle}
@@ -1742,7 +1742,7 @@ export default function App() {
     ];
     const filledCount = fields.filter(f => (myProfileDraft[f.key] || '').trim()).length;
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-400/10 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-6">
             <Users className="w-3 h-3"/>{filledCount} {lng.myProfileFilledCount}
@@ -1809,7 +1809,7 @@ export default function App() {
     const profiles = currentTool.profiles[lang]||currentTool.profiles.es;
     const icons = {entrepreneur:'🚀',professional:'💼',seller:'🤝',personalBrand:'🎙️'};
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6">{getToolName(toolId)}</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.profileTitle}</h2>
@@ -1832,7 +1832,7 @@ export default function App() {
     const modes = currentTool.entryModes;
     const cfg = {preload:{icon:Wand2,title:lng.entryPreload,desc:lng.entryPreloadDesc},guided:{icon:ListChecks,title:lng.entryGuided,desc:lng.entryGuidedDesc}};
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6">{getToolName(toolId)}</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.entryTitle}</h2>
@@ -1854,7 +1854,7 @@ export default function App() {
   if (screen==='preload') {
     const isFetching=preloadStatus==='fetching', isAnalyzing=preloadStatus==='analyzing', isDone=preloadStatus==='done', isWorking=isFetching||isAnalyzing;
     return (
-      <div className="min-h-screen bg-zinc-950 text-white"><Header/>
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
         <div className="max-w-3xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Sparkles className="w-3 h-3"/>{getToolName(toolId)}</div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3 flex items-center gap-3"><Wand2 className="w-8 h-8 text-yellow-400"/>{lng.entryPreload}</h2>
@@ -1884,7 +1884,7 @@ export default function App() {
     const demoData = (DEMO as any)[toolId];
 
     return (
-      <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white">
         <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
             <button onClick={()=>backToToolbox()} className="flex items-center gap-2 hover:opacity-80 cursor-pointer transition-opacity" title={lang==='es'?'Volver a herramientas':'Back to toolbox'}><div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-sm">{lng.appName}</span></button>
@@ -1962,7 +1962,7 @@ export default function App() {
   }
 
   if (screen==='review') return (
-    <div className="min-h-screen bg-zinc-950 text-white"><Header/>
+    <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
       <div className="max-w-4xl mx-auto px-6 py-12">
         <h2 className="text-3xl font-bold mb-2">{lng.reviewTitle}</h2><p className="text-zinc-400 mb-8">{lng.reviewDesc}</p>
         {loading&&<div className="flex flex-col items-center py-20 gap-4"><Loader2 className="w-10 h-10 animate-spin text-yellow-400"/><p className="text-zinc-400">{lng.generating}</p></div>}
@@ -1983,7 +1983,7 @@ export default function App() {
   if (screen==='output') {
     const blocks = currentTool.outputBlocks;
     return (
-      <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="screen-enter min-h-screen bg-zinc-950 text-white">
         <Header right={<div className="flex items-center gap-2">{blocks.map((_: any,n: number)=><div key={n} className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${n<curBlock?'bg-yellow-400 border-yellow-400 text-zinc-950':n===curBlock?'bg-yellow-400/20 border-yellow-400 text-yellow-400':'bg-zinc-900 border-zinc-800 text-zinc-600'}`}>{n<curBlock?<Check className="w-3.5 h-3.5"/>:n+1}</div>)}</div>}/>
         <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
           {blocks.map((block: any,bi: number)=>{
@@ -2020,7 +2020,7 @@ export default function App() {
   }
 
   if (screen==='final') return (
-    <div className="min-h-screen bg-zinc-950 text-white"><Header/>
+    <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-12"><div className="inline-flex w-16 h-16 bg-yellow-400/10 rounded-2xl items-center justify-center mb-4"><Trophy className="w-8 h-8 text-yellow-400"/></div><h2 className="text-4xl font-bold mb-3">{lng.finalTitle}</h2><p className="text-zinc-400 text-lg">{lng.finalDesc}</p></div>
         {journey && journey.tools[journey.currentIndex] === toolId && (() => {
