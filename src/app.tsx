@@ -1147,26 +1147,42 @@ function detectVague(key: string, value: any): string | null {
   return null;
 }
 
-async function fetchSite(url: string) {
+// Llama al endpoint /fetch-site del Worker (que hace el fetch server-side, sin CORS).
+// El Worker devuelve contenido estructurado: title, description, og:tags, schema.org, headings, bodyText.
+// Si el sitio está bloqueado por anti-bot (CF, Vercel BotID, etc.), tira BLOCKED_BY_ANTIBOT.
+async function fetchSite(url: string, accessPassword: string): Promise<string> {
   let u = url.trim();
-  if (!u.startsWith('http')) u = 'https://'+u;
-  for (const fetchFn of [
-    () => fetch(u, {mode:'cors'}),
-    () => fetch(`https://corsproxy.io/?${encodeURIComponent(u)}`),
-    () => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`).then(r=>r.json()).then(d=>({ok:!!d.contents,text:()=>d.contents}))
-  ]) {
-    try { const r = await fetchFn(); if (r && r.ok) { const h = await r.text(); return cleanHtml(h); } } catch(e: any) {}
-  }
-  throw new Error('CORS_BLOCKED');
-}
+  if (!u.startsWith('http')) u = 'https://' + u;
 
-function cleanHtml(html: string) {
-  let c = html.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<!--[\s\S]*?-->/g,'');
-  const tm = c.match(/<title[^>]*>([^<]+)<\/title>/i);
-  const dm = c.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i);
-  let t = c.replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
-  if (t.length>7000) t=t.substring(0,7000)+'...';
-  return (tm?`TITLE: ${tm[1]}\n`:'')+(dm?`META: ${dm[1]}\n`:'')+`\nCONTENT:\n${t}`;
+  const r = await fetch(`${WORKER_URL}/fetch-site`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Access-Password': accessPassword },
+    body: JSON.stringify({ url: u }),
+  });
+
+  if (!r.ok) {
+    let msg = `Error ${r.status}`;
+    try { const e = await r.json(); msg = e.error || msg; } catch {}
+    throw new Error(msg);
+  }
+
+  const d: any = await r.json();
+  if (d.blocked) throw new Error('BLOCKED_BY_ANTIBOT');
+
+  // Reconstruir un texto estructurado para Claude (mejor jerarquía que el viejo cleanHtml).
+  const parts: string[] = [];
+  if (d.title) parts.push(`TITLE: ${d.title}`);
+  if (d.description) parts.push(`META DESCRIPTION: ${d.description}`);
+  if (d.ogTitle && d.ogTitle !== d.title) parts.push(`OG TITLE: ${d.ogTitle}`);
+  if (d.ogDescription && d.ogDescription !== d.description) parts.push(`OG DESCRIPTION: ${d.ogDescription}`);
+  if (d.ogType) parts.push(`OG TYPE: ${d.ogType}`);
+  if (d.ogSiteName) parts.push(`SITE NAME: ${d.ogSiteName}`);
+  if (d.schemas) parts.push(`SCHEMA.ORG (JSON-LD):\n${d.schemas}`);
+  if (d.headings) parts.push(`HEADINGS (h1-h3):\n${d.headings}`);
+  if (d.bodyText) parts.push(`CONTENT:\n${d.bodyText}`);
+  if (d.finalUrl && d.finalUrl !== u) parts.push(`(URL final tras redirects: ${d.finalUrl})`);
+
+  return parts.join('\n\n');
 }
 
 async function callClaude(accessPassword: string, messages: any[], sys: string) {
@@ -1519,23 +1535,72 @@ export default function App() {
     let webContent = '';
     if (preloadUrl.trim()) {
       setPreloadStatus('fetching');
-      try { webContent = await fetchSite(preloadUrl); }
-      catch(e: any) {
-        if (e.message==='CORS_BLOCKED') { setPreloadStatus('fetch_failed'); if (!preloadSocial.trim()) { setError(lng.preloadFailed); setPreloadStatus(''); return; } }
-        else { setError(e.message); setPreloadStatus(''); return; }
+      try {
+        webContent = await fetchSite(preloadUrl, accessPassword);
+      } catch (e: any) {
+        const msg = e?.message || '';
+        // Si está bloqueado por anti-bot, o el sitio dio error fetch — caemos al fallback.
+        // Si no hay contenido manual de redes, mostramos error claro.
+        const isBlocked = msg === 'BLOCKED_BY_ANTIBOT';
+        const friendlyMsg = isBlocked
+          ? (lang === 'es'
+              ? 'El sitio bloquea el acceso automático (anti-bot). Pegá el contenido de tu sitio o redes manualmente en el campo de abajo.'
+              : 'Site blocks automated access (anti-bot). Paste your site/social content manually below.')
+          : (lang === 'es'
+              ? `No pude leer el sitio: ${msg}. Pegá el contenido manualmente abajo.`
+              : `Couldn't read the site: ${msg}. Paste content manually below.`);
+        setPreloadStatus('fetch_failed');
+        if (!preloadSocial.trim()) {
+          setError(friendlyMsg);
+          setPreloadStatus('');
+          return;
+        }
+        // Si hay contenido manual, seguimos sin webContent.
       }
     }
     setPreloadStatus('analyzing');
     try {
-      const combined = [webContent?`=== SITIO (${preloadUrl}) ===\n${webContent}`:'', preloadSocial.trim()?`=== REDES ===\n${preloadSocial.trim()}`:''].filter(Boolean).join('\n\n');
-      const result = await callClaude(accessPassword, [{role:'user',content:combined}], buildPrompt(lang,{},'preload',bizType,toolId));
-      let cleaned = result.trim().replace(/^```json\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/i,'').trim();
-      const parsed = JSON.parse(cleaned);
-      const nd={...data}, nf={...autoFilled};
-      Object.entries(parsed as Record<string, any>).forEach(([k,v])=>{ if (v&&(Array.isArray(v)?v.length>0:v.toString().trim())) { nd[k]=v; nf[k]=true; } });
+      const combined = [
+        webContent ? `=== SITIO (${preloadUrl}) ===\n${webContent}` : '',
+        preloadSocial.trim() ? `=== REDES / CONTENIDO MANUAL ===\n${preloadSocial.trim()}` : '',
+      ].filter(Boolean).join('\n\n');
+
+      const sys = buildPrompt(lang, {}, 'preload', bizType, toolId);
+      const tryParse = (raw: string) => {
+        const cleaned = raw.trim()
+          .replace(/^```json\s*/i, '')
+          .replace(/^```\s*/i, '')
+          .replace(/```\s*$/i, '')
+          .trim();
+        return JSON.parse(cleaned);
+      };
+
+      let parsed: Record<string, any>;
+      const first = await callClaude(accessPassword, [{ role: 'user', content: combined }], sys);
+      try {
+        parsed = tryParse(first);
+      } catch {
+        // Retry: el LLM agregó texto extra o markdown raro. Forzamos JSON puro.
+        const retryPrompt = lang === 'es'
+          ? `Tu respuesta anterior no era JSON válido:\n\n${first}\n\nDevolvé EXCLUSIVAMENTE el objeto JSON, sin markdown, sin explicaciones, sin código de bloque. Solo el { ... } parseable directo.`
+          : `Your previous reply wasn't valid JSON:\n\n${first}\n\nReturn EXCLUSIVELY the JSON object, no markdown, no explanations, no code fences. Just the { ... } directly parseable.`;
+        const retry = await callClaude(accessPassword, [{ role: 'user', content: retryPrompt }], sys);
+        parsed = tryParse(retry);
+      }
+
+      const nd = { ...data }, nf = { ...autoFilled };
+      Object.entries(parsed).forEach(([k, v]) => {
+        if (v && (Array.isArray(v) ? v.length > 0 : v.toString().trim())) {
+          nd[k] = v;
+          nf[k] = true;
+        }
+      });
       setData(nd); setAutoFilled(nf); setPreloadStatus('done');
-      setTimeout(()=>{ setStepIdx(0); setScreen('wizard'); }, 1500);
-    } catch(e: any) { setError(`${lng.error}: ${e.message}`); setPreloadStatus(''); }
+      setTimeout(() => { setStepIdx(0); setScreen('wizard'); }, 1500);
+    } catch (e: any) {
+      setError(`${lng.error}: ${e.message}`);
+      setPreloadStatus('');
+    }
   };
 
   const handleSkipPreload = () => { setError(''); setStepIdx(0); setScreen('wizard'); };
