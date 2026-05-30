@@ -433,6 +433,32 @@ const TOOLS = {
       {id:'gsoOffer',title:{es:'Bloque 2: Tu Grand Slam Offer reconstruida',en:'Block 2: Your Rebuilt Grand Slam Offer'}},
       {id:'gsoLaunch',title:{es:'Bloque 3: Plan de lanzamiento (2 semanas)',en:'Block 3: Launch Plan (2 weeks)'}}
     ]
+  },
+  'copy-storytelling-ventas':{
+    id:'copy-storytelling-ventas',category:'sales',
+    name:{es:'Copy + Storytelling para Ventas',en:'Copy + Storytelling for Sales'},
+    description:{es:'Genera copy de ventas con storytelling que conecta y vende. Sin lenguaje corporativo, sin clichés, con tensión real.',en:'Generate sales copy with storytelling that connects and sells. No corporate jargon, no clichés, with real tension.'},
+    level:'intermedio',time:'25-40',available:true,
+    recommendedFor:['ecommerce','service','b2b','health','education','local'],
+    illustrationId:'copy-pen',entryModes:['guided'],
+    questions:[
+      {phase:'product',key:'copyWhatSell',type:'textarea'},
+      {phase:'product',key:'copyTransformation',type:'textarea'},
+      {phase:'audience',key:'copyTarget',type:'textarea'},
+      {phase:'audience',key:'copyDeepPain',type:'textarea'},
+      {phase:'format',key:'copyChannel',type:'select'},
+      {phase:'story',key:'copyPersonalStory',type:'textarea',optional:true},
+      {phase:'story',key:'copyTone',type:'select'}
+    ],
+    phases:{
+      es:{product:'1. Qué vendés',audience:'2. A quién le hablás',format:'3. Canal',story:'4. Historia y tono'},
+      en:{product:'1. What you sell',audience:'2. Who you talk to',format:'3. Channel',story:'4. Story & tone'}
+    },
+    outputBlocks:[
+      {id:'copyMainPiece',title:{es:'Bloque 1: Copy principal listo para usar',en:'Block 1: Main copy ready to use'}},
+      {id:'copyStories',title:{es:'Bloque 2: Storytelling pieces (3 micro-historias)',en:'Block 2: Storytelling pieces (3 micro-stories)'}},
+      {id:'copyVariants',title:{es:'Bloque 3: Variantes A/B + secuencia + scarcity',en:'Block 3: A/B variants + sequence + scarcity'}}
+    ]
   }
 };
 
@@ -526,7 +552,14 @@ const BIZ_Q = {
     gsoCurrentGuarantee:{title:'¿Qué garantía ofrecés? (opcional)',desc:'Si no ofrecés ninguna, dejalo vacío. Si ofrecés, copiá el texto exacto.',placeholder:'Ej: "Si en 30 días no estás conforme, te devolvemos el 100%". O dejá vacío.'},
     gsoMarketPricing:{title:'¿En qué rango se mueve tu categoría en el mercado?',desc:'Para que el output sepa cómo posicionarse en pricing.',options:['Premium (los más caros del mercado)','Medio-alto','Medio','Medio-bajo','Económico (precio bajo es el diferencial)']},
     gsoSocialProof:{title:'¿Qué prueba social tenés HOY?',desc:'Casos, métricas, testimonios, reviews, cantidad de clientes. Pegá lo más concreto que tengas. Si no tenés mucho, está OK decirlo.',placeholder:'Ej: "120 clientes desde 2022. 4.7★ promedio en 38 reseñas Google. Caso destacado: María bajó 12kg en 4 meses sin recaer (foto + video). No tengo testimonios en video todavía".'},
-    gsoLowCostBonuses:{title:'¿Qué bonos podés agregar con BAJO costo de entrega para vos? (opcional)',desc:'Hormozi: alto valor percibido, bajo costo real. Pensá: contenido grabado, plantillas, accesos, sesiones grupales (no 1-a-1), herramientas que ya tenés.',placeholder:'Ej: Guía PDF "10 errores comunes" / Plantilla Excel de tracking / Acceso a comunidad privada / Webinar mensual / Cheatsheet de objeciones.'}
+    gsoLowCostBonuses:{title:'¿Qué bonos podés agregar con BAJO costo de entrega para vos? (opcional)',desc:'Hormozi: alto valor percibido, bajo costo real. Pensá: contenido grabado, plantillas, accesos, sesiones grupales (no 1-a-1), herramientas que ya tenés.',placeholder:'Ej: Guía PDF "10 errores comunes" / Plantilla Excel de tracking / Acceso a comunidad privada / Webinar mensual / Cheatsheet de objeciones.'},
+    copyWhatSell:{title:'¿Qué vas a vender exactamente?',desc:'Producto/servicio + precio. Descripción honesta, sin maquillaje.',placeholder:'Ej: Mentoría grupal 8 semanas para emprendedores, $300k ARS. Curso digital "Vender por WhatsApp", $50k. Servicio de diseño de marca, $800k.'},
+    copyTransformation:{title:'¿Qué transformación ofrecés?',desc:'NO descripción del producto. La transformación que el cliente vive antes vs después.',placeholder:'Ej: De "mando mensajes y no responden" → "tengo agenda llena de prospectos calificados". De "vendo barato porque me da culpa cobrar" → "cobro premium con clientes que valoran".'},
+    copyTarget:{title:'¿A quién apuntás? + ¿Qué desea en secreto?',desc:'Audiencia ideal + deseo emocional egoísta (soberbia, estatus, tiempo libre, venganza, libertad, control).',placeholder:'Ej: Coaches que cobran $30k/sesión y quieren cobrar $300k. Deseo secreto: dejar de sentirse "uno más" en LinkedIn y que los persigan a ellos.'},
+    copyDeepPain:{title:'¿Qué dolor o miedo profundo tienen?',desc:'No el problema superficial, el dolor real (vergüenza, frustración recurrente, miedo a quedarse atrás).',placeholder:'Ej: Vergüenza de decir lo que cobra. Miedo a que la competencia más joven los pase. Frustración de trabajar 60hs y ganar lo mismo que un junior asalariado.'},
+    copyChannel:{title:'¿Para qué canal querés el copy?',desc:'Define formato y tono de la pieza principal.',options:['Email diario / newsletter','Landing page / sales page','Anuncio social (Meta/IG/TikTok)','Carta de ventas larga','Bio + post pinned (perfil)','Multi-canal (texto base adaptable)']},
+    copyPersonalStory:{title:'¿Tenés alguna historia personal relacionada? (opcional)',desc:'Anécdota real tuya o de un cliente. Cualquier cosa cotidiana sirve. Si no tenés, lo dejo vacío y armo metáforas.',placeholder:'Ej: "Mi primer cliente me pagaba $5k y yo agradecía. Hoy le cobro $300k y agradece él". O un caso de cliente: "Juan venía de 3 mentorías sin resultado, en 6 semanas conmigo..."'},
+    copyTone:{title:'Tono de la marca',desc:'Cómo querés sonar.',options:['Confrontativo / contrarian','Irónico / humor seco','Cercano / coloquial','Profesional / autoridad','Inspiracional / energético','Crudo / sin filtros']}
   },
   en:{
     product:{title:'What is your product or service?',desc:'Name and description.',placeholder:'Ex: Tech e-commerce...'},
@@ -595,7 +628,14 @@ const BIZ_Q = {
     gsoCurrentGuarantee:{title:'What guarantee do you offer? (optional)',desc:'If none, leave empty. If you do offer one, copy the exact wording.',placeholder:'Ex: "If you\'re not happy within 30 days, full refund". Or leave empty.'},
     gsoMarketPricing:{title:'What range does your category move in the market?',desc:'So the output knows how to position pricing.',options:['Premium (top of market)','Mid-high','Mid','Mid-low','Economy (low price is the differential)']},
     gsoSocialProof:{title:'What social proof do you have TODAY?',desc:'Cases, metrics, testimonials, reviews, customer count. Paste the most concrete you have. If you don\'t have much, it\'s OK to say so.',placeholder:'Ex: "120 customers since 2022. 4.7★ avg on 38 Google reviews. Standout case: Maria lost 25 lbs in 4 months without relapsing (photo + video). No video testimonials yet".'},
-    gsoLowCostBonuses:{title:'What bonuses can you add with LOW delivery cost for you? (optional)',desc:'Hormozi: high perceived value, low real cost. Think: recorded content, templates, access, group sessions (not 1-on-1), tools you already have.',placeholder:'Ex: PDF guide "10 common mistakes" / Excel tracking template / Access to private community / Monthly webinar / Objections cheatsheet.'}
+    gsoLowCostBonuses:{title:'What bonuses can you add with LOW delivery cost for you? (optional)',desc:'Hormozi: high perceived value, low real cost. Think: recorded content, templates, access, group sessions (not 1-on-1), tools you already have.',placeholder:'Ex: PDF guide "10 common mistakes" / Excel tracking template / Access to private community / Monthly webinar / Objections cheatsheet.'},
+    copyWhatSell:{title:'What exactly are you selling?',desc:'Product/service + price. Honest description.',placeholder:'Ex: 8-week group mentoring for entrepreneurs, $300. Digital course "WhatsApp Sales", $50. Brand design service, $800.'},
+    copyTransformation:{title:'What transformation do you offer?',desc:'NOT product description. The transformation before vs after.',placeholder:'Ex: From "I send messages and no one replies" → "I have a full calendar of qualified leads".'},
+    copyTarget:{title:'Who is your target + what do they secretly want?',desc:'Ideal audience + selfish emotional desire (pride, status, free time, revenge, freedom, control).',placeholder:'Ex: Coaches charging $30/session who want to charge $300. Secret desire: stop being "one more" on LinkedIn and be the ones chased.'},
+    copyDeepPain:{title:'What deep pain or fear do they have?',desc:'Not the surface problem, the real pain (shame, recurring frustration, fear of being left behind).',placeholder:'Ex: Shame of saying what they charge. Fear of younger competition surpassing them.'},
+    copyChannel:{title:'What channel is the copy for?',desc:'Defines format and tone of the main piece.',options:['Daily email / newsletter','Landing page / sales page','Social ad (Meta/IG/TikTok)','Long-form sales letter','Bio + pinned post (profile)','Multi-channel (adaptable base)']},
+    copyPersonalStory:{title:'Do you have a related personal story? (optional)',desc:'Real anecdote of yours or a client. Anything everyday works.',placeholder:'Ex: "My first client paid me $50 and I was grateful. Today I charge $3000 and they thank me". Or a client case.'},
+    copyTone:{title:'Brand tone',desc:'How you want to sound.',options:['Confrontational / contrarian','Ironic / dry humor','Warm / conversational','Professional / authority','Inspirational / energetic','Raw / unfiltered']}
   }
 };
 
@@ -879,6 +919,10 @@ const TOOL_TIPS: Record<string, { es: string; en: string }> = {
     es: 'Hormozi dice: "la mayoría falla porque vende el Resultado Soñado pero ignora el Tiempo y el Esfuerzo". Cuanto MÁS exhaustivo seas listando obstáculos del cliente (antes/durante/después), mejor el output. No tengas miedo de poner cosas obvias.',
     en: 'Hormozi says: "most fail because they sell the Dream Outcome but ignore Time Delay and Effort". The more EXHAUSTIVE you are listing customer obstacles (before/during/after), the better the output. Don\'t be afraid to state the obvious.',
   },
+  'copy-storytelling-ventas': {
+    es: 'Regla de oro del notebook: si lo entendería un chico de 12 años, está bien. Si suena a "leverage sinérgico para tu pipeline", está mal. Y olvidate de mostrar features — atacá el deseo emocional egoísta (estatus, venganza, tiempo libre).',
+    en: 'Notebook rule: if a 12-year-old would understand it, it\'s good. If it sounds like "synergistic leverage for your pipeline", it\'s wrong. And forget about features — go for the selfish emotional desire (status, revenge, free time).',
+  },
 };
 
 const TIPS_SEEN_STORAGE_KEY = 'fshumo_tips_seen';
@@ -1016,6 +1060,16 @@ function buildPrompt(lang: string, data: any, mode: string, bizType: string, too
     if (mode==='refine') return gso+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura. NO te alejes del framework Hormozi.`;
   }
 
+  if (toolId==='copy-storytelling-ventas') {
+    const cp = base+`\n\nSos copywriter experto en ventas con dominio total de los principios del notebook "Copywriting & Storytelling para Ventas".\n\nPRINCIPIOS DE COPYWRITING (no negociables):\n1. NO mostrar necesidad. Autoridad sin desesperación. Mejor "pedir el no" que rogar.\n2. Lenguaje conversacional como tomar café con un amigo. Si un chico de 12 años no lo entiende, reescribilo.\n3. Atacar el BENEFICIO EMOCIONAL EGOÍSTA (soberbia, estatus, tiempo, venganza). NO características.\n4. Tensión real con escasez/urgencia honestas (cierre de plazas, subida de precio). NUNCA falsa escasez.\n5. Email diario > esperar meses "dando valor". Acostumbrar a vender desde el día 1.\n6. Anti-storytelling cuando rompe el patrón vende: línea en blanco, "Sí" rotundo, frases cortas.\n\nPRINCIPIOS DE STORYTELLING:\n7. HACER SENTIR, no describir. Nunca "estaba triste" → usar sensaciones físicas (latidos, ahogo, silencio).\n8. VIAJE DEL VILLANO (no del héroe): empezar en la cima, narrar la caída por soberbia. Letal en B2B.\n9. DAVID vs GOLIAT desde el orgullo/determinación, JAMÁS desde el victimismo.\n10. Intención + Obstáculo + Conflicto. Sin drama no hay historia.\n11. MacGuffin: dejar a medias, con cuentagotas, para que la mente del lector fabule.\n12. Convertir lo ORDINARIO en extraordinario. Cualquier anécdota cotidiana sirve.\n13. Metáforas únicas (no mezclar). "Es un barco sin luces en la noche" > 3 párrafos técnicos.\n\nNUNCA:\n- Uses lenguaje corporativo o tecnicismos para parecer inteligente\n- Empieces describiendo features\n- Inventes urgencia falsa ("solo hoy" sin razón)\n- Mezcles metáforas\n- Pongas storytelling genérico tipo "Un día decidí cambiar mi vida..."\n- Uses verbos blandos cuando podés usar imágenes`;
+    if (mode==='help') return cp+`\n\nUNA pregunta guía por turno. Si la respuesta es corporativa o genérica, pedí especificidad cruda.`;
+    if (mode==='review') return cp+ctx+`\n\nRESUMEN EJECUTIVO en Markdown máx 5 bullets: qué vende + precio, transformación detectada, audiencia + deseo egoísta, dolor profundo, canal + tono. Cerrá con UNA frase del consultor: qué ángulo de copy tiene MÁS potencial para esta combinación.`;
+    if (mode==='copyMainPiece') return cp+ctx+`\n\nGenerá BLOQUE 1 en Markdown:\n# ✍️ Copy principal — listo para usar\n\n[Pieza completa adaptada al canal elegido. Si es email diario: subject + cuerpo 200-350 palabras + PS. Si es landing: headline + sub + sección de dolor + agitación + oferta + garantía + CTA. Si es ad: 3 versiones (corta 30 palabras / media 80 / larga 150). Si es carta de ventas: estructura completa con sub-headings. Si es bio: 3-5 líneas + un post pinned listo.]\n\nUsá storytelling embebido cuando aplique. Lenguaje conversacional. NUNCA descripciones de features. Beneficio emocional egoísta en el cuerpo. CTA específico (no "Compralo ahora" genérico).\n\nAl final agregá:\n## 🎯 Por qué funciona\n3-5 bullets explicando QUÉ principio aplicaste y dónde — para que el user aprenda el patrón.`;
+    if (mode==='copyStories') return cp+ctx+`\n\nGenerá BLOQUE 2 en Markdown:\n# 📖 3 micro-historias para insertar\n\n## Historia 1: Caso de cliente (viaje del villano o transformación)\n[Historia 80-150 palabras. NO clichés. Empezá con detalle físico o frase de impacto. Mostrá la caída/conflicto. Cerrá con punto de inflexión específico. SIN moraleja explícita — que el lector la saque.]\n\n## Historia 2: Tuya / del fundador (anécdota personal)\n[Si el user dio una historia personal, ampliala con principios. Si no, creá una verosímil usando los datos del wizard. 80-150 palabras. Tono coherente con el seleccionado.]\n\n## Historia 3: Metáfora única\n[UNA metáfora potente que comunique la transformación. 1-3 oraciones máximo. Tiene que ser visual y memorable. Ej: "Lo que hacés es como gritar más fuerte en una sala llena de gente gritando. Te queda la voz, pero nadie te escucha."]\n\n## 📌 Dónde insertarlas\nSugerí 3-5 lugares concretos donde meter cada historia (apertura de email, sección de landing, en respuesta a objeción específica, etc.).`;
+    if (mode==='copyVariants') return cp+ctx+`\n\nGenerá BLOQUE 3 en Markdown:\n# 🧪 Variantes + Secuencia + Scarcity\n\n## 5 headlines/hooks A/B testeables\nFrases de 1 línea cada una, distintas en ÁNGULO (no solo palabras). Ej: una confrontativa, una con dato shocking, una con metáfora, una contrarian, una con pregunta abierta.\n\n## Secuencia de 3 emails (si aplica al canal)\nTres emails encadenados con UN solo objetivo: cerrar la venta. Cada uno con:\n- Subject\n- Apertura (frase 1)\n- Ángulo central\n- CTA específico\n- Cuándo enviarlo (día/intervalo)\n\n## ⚡ Pieces de scarcity/urgency HONESTOS\n- 3 razones reales para que el cliente actúe ahora (cierre de cupos, fecha límite real, subida de precio anunciada, bonus que desaparece)\n- 2 piezas de copy concretas para activarlas (frase tipo "Cierro el grupo el viernes 22:00 y la próxima cohorte abre recién en Mayo")\n\n## 🚫 Errores a evitar en este nicho\n3-5 trampas comunes del nicho del usuario y cómo el copy generado las evita.`;
+    if (mode==='refine') return cp+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura. NO te alejes de los principios.`;
+  }
+
   return base;
 }
 
@@ -1056,7 +1110,8 @@ function ToolIllustration({illustrationId,isLocked}: {illustrationId: string; is
     'reel':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="75" y="15" width="50" height="70" rx="4" fill="none" stroke={gold} strokeWidth="1.5"/><circle cx="100" cy="50" r="14" fill={gold} opacity="0.2"/><polygon points="95,42 95,58 110,50" fill={gold}/></svg>),
     'ai-video':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="25" width="100" height="50" rx="4" fill="none" stroke={gold} strokeWidth="1.5"/><polygon points="92,40 92,60 112,50" fill={gold}/><text x="100" y="86" fontSize="8" fill={gold} textAnchor="middle" fontWeight="bold">AI</text></svg>),
     'growth':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="30" y="75" width="22" height="12" fill={dim} opacity="0.4" rx="1"/><rect x="52" y="63" width="22" height="24" fill={dim} opacity="0.55" rx="1"/><rect x="74" y="51" width="22" height="36" fill={dim} opacity="0.7" rx="1"/><rect x="96" y="39" width="22" height="48" fill={gold} opacity="0.85" rx="1"/><rect x="118" y="27" width="22" height="60" fill={gold} rx="1"/><path d="M155 35 L168 22 L168 30 L175 25 L172 35 L180 38 L168 41 L168 49 Z" fill={gold}/></svg>),
-    'offer-stack':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="72" width="100" height="14" fill={dim} opacity="0.35" rx="2"/><rect x="55" y="56" width="90" height="14" fill={dim} opacity="0.55" rx="2"/><rect x="60" y="40" width="80" height="14" fill={gold} opacity="0.75" rx="2"/><rect x="65" y="24" width="70" height="14" fill={gold} rx="2"/><circle cx="100" cy="14" r="6" fill={gold}/><path d="M97 11 L100 17 L103 11 Z" fill="#0a0a0b"/><line x1="50" y1="90" x2="150" y2="90" stroke={gold} strokeWidth="0.5" opacity="0.3"/></svg>)
+    'offer-stack':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="72" width="100" height="14" fill={dim} opacity="0.35" rx="2"/><rect x="55" y="56" width="90" height="14" fill={dim} opacity="0.55" rx="2"/><rect x="60" y="40" width="80" height="14" fill={gold} opacity="0.75" rx="2"/><rect x="65" y="24" width="70" height="14" fill={gold} rx="2"/><circle cx="100" cy="14" r="6" fill={gold}/><path d="M97 11 L100 17 L103 11 Z" fill="#0a0a0b"/><line x1="50" y1="90" x2="150" y2="90" stroke={gold} strokeWidth="0.5" opacity="0.3"/></svg>),
+    'copy-pen':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="40" y="25" width="120" height="55" rx="4" fill="none" stroke={gold} strokeWidth="1.5" opacity="0.8"/><line x1="50" y1="38" x2="115" y2="38" stroke={gold} strokeWidth="1.2" opacity="0.6"/><line x1="50" y1="48" x2="140" y2="48" stroke={gold} strokeWidth="1.2" opacity="0.5"/><line x1="50" y1="58" x2="125" y2="58" stroke={gold} strokeWidth="1.2" opacity="0.4"/><line x1="50" y1="68" x2="100" y2="68" stroke={gold} strokeWidth="1.2" opacity="0.3"/><path d="M155 18 L175 38 L165 48 L145 28 Z" fill={gold}/><path d="M145 28 L150 33 L155 28" fill={dim}/></svg>)
   };
   return <div className="w-full h-full flex items-center justify-center">{(svgs as any)[illustrationId]||<svg viewBox="0 0 200 100" className="w-full h-full"><rect x="80" y="35" width="40" height="30" fill={gold} opacity="0.3" rx="3"/></svg>}</div>;
 }
