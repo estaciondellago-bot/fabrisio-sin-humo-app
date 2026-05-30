@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, Download, MessageCircle, X, Send, SkipForward, Flame, Users, Trophy, BarChart3, FileText, ArrowRight, AlertCircle, Link2, Wand2, Eraser, Zap, Target, Search, Clock, Megaphone, Compass, TrendingUp, Briefcase, PieChart, Lock, FileEdit, Film, ListChecks, DollarSign } from 'lucide-react';
 
-const WORKER_URL = 'https://fabrisio-proxy.fabrisioroche.workers.dev';
+const WORKER_URL = 'https://api.fabrisiosinhumo.com';
 
 const t = {
   es: {
