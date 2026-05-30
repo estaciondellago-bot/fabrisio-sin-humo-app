@@ -459,6 +459,33 @@ const TOOLS = {
       {id:'copyStories',title:{es:'Bloque 2: Storytelling pieces (3 micro-historias)',en:'Block 2: Storytelling pieces (3 micro-stories)'}},
       {id:'copyVariants',title:{es:'Bloque 3: Variantes A/B + secuencia + scarcity',en:'Block 3: A/B variants + sequence + scarcity'}}
     ]
+  },
+  'cardone-sales-engine':{
+    id:'cardone-sales-engine',category:'sales',
+    name:{es:'Sales Engine (Cardone)',en:'Sales Engine (Cardone)'},
+    description:{es:'Construí tu motor de ventas con la filosofía de Cardone: massive action + manejo de objeciones + cierre. "Todo en la vida es una venta."',en:"Build your sales engine with Cardone's philosophy: massive action + objection handling + closing. \"Everything in life is a sale.\""},
+    level:'avanzado',time:'30-45',available:true,
+    recommendedFor:['service','b2b','health','education','local'],
+    illustrationId:'sales-engine',entryModes:['guided'],
+    questions:[
+      {phase:'mindset',key:'cardSellYourself',type:'select'},
+      {phase:'mindset',key:'cardOnNo',type:'textarea'},
+      {phase:'process',key:'cardProduct',type:'textarea'},
+      {phase:'process',key:'cardIdealProspect',type:'textarea'},
+      {phase:'process',key:'cardCurrentProcess',type:'textarea'},
+      {phase:'volume',key:'cardWeeklyOutreach',type:'select'},
+      {phase:'volume',key:'cardFollowUps',type:'select'},
+      {phase:'objections',key:'cardTopObjections',type:'textarea'}
+    ],
+    phases:{
+      es:{mindset:'1. Mindset (self-selling)',process:'2. Producto y proceso actual',volume:'3. Volumen y follow-up',objections:'4. Objeciones reales'},
+      en:{mindset:'1. Mindset (self-selling)',process:'2. Product & current process',volume:'3. Volume & follow-up',objections:'4. Real objections'}
+    },
+    outputBlocks:[
+      {id:'cardAudit',title:{es:'Bloque 1: Auditoría de tu sales process',en:'Block 1: Sales process audit'}},
+      {id:'cardMassivePlan',title:{es:'Bloque 2: Plan de Massive Action (60 días)',en:'Block 2: Massive Action plan (60 days)'}},
+      {id:'cardClosingKit',title:{es:'Bloque 3: Closing toolkit + objection handling',en:'Block 3: Closing toolkit + objection handling'}}
+    ]
   }
 };
 
@@ -559,7 +586,15 @@ const BIZ_Q = {
     copyDeepPain:{title:'¿Qué dolor o miedo profundo tienen?',desc:'No el problema superficial, el dolor real (vergüenza, frustración recurrente, miedo a quedarse atrás).',placeholder:'Ej: Vergüenza de decir lo que cobra. Miedo a que la competencia más joven los pase. Frustración de trabajar 60hs y ganar lo mismo que un junior asalariado.'},
     copyChannel:{title:'¿Para qué canal querés el copy?',desc:'Define formato y tono de la pieza principal.',options:['Email diario / newsletter','Landing page / sales page','Anuncio social (Meta/IG/TikTok)','Carta de ventas larga','Bio + post pinned (perfil)','Multi-canal (texto base adaptable)']},
     copyPersonalStory:{title:'¿Tenés alguna historia personal relacionada? (opcional)',desc:'Anécdota real tuya o de un cliente. Cualquier cosa cotidiana sirve. Si no tenés, lo dejo vacío y armo metáforas.',placeholder:'Ej: "Mi primer cliente me pagaba $5k y yo agradecía. Hoy le cobro $300k y agradece él". O un caso de cliente: "Juan venía de 3 mentorías sin resultado, en 6 semanas conmigo..."'},
-    copyTone:{title:'Tono de la marca',desc:'Cómo querés sonar.',options:['Confrontativo / contrarian','Irónico / humor seco','Cercano / coloquial','Profesional / autoridad','Inspiracional / energético','Crudo / sin filtros']}
+    copyTone:{title:'Tono de la marca',desc:'Cómo querés sonar.',options:['Confrontativo / contrarian','Irónico / humor seco','Cercano / coloquial','Profesional / autoridad','Inspiracional / energético','Crudo / sin filtros']},
+    cardSellYourself:{title:'¿Te creés vos mismo el producto que vendés?',desc:'Cardone: antes de venderle a otros, tenés que estar 100% convencido vos mismo. Sé honesto.',options:['Totalmente, lo compraría/lo compré yo mismo','En general sí, pero con dudas en algunas cosas','A veces sí, a veces no','La verdad, no del todo','No, lo vendo porque tengo que vender']},
+    cardOnNo:{title:'Cuando un prospecto te dice "no", ¿qué hacés?',desc:'Tu reacción real, no la teóricamente correcta.',placeholder:'Ej: Le agradezco y paso al siguiente. / Me bajonea y tardo días en volver a contactar. / Le pregunto por qué no y trato de reabrir. / Le sigo mandando contenido sin pedir nada por 3 meses.'},
+    cardProduct:{title:'¿Qué vendés? Producto + precio + ticket promedio',desc:'Sin maquillaje. Cuanto más concreto, mejor diagnóstico.',placeholder:'Ej: Servicio de marketing digital, retainer mensual $400k-$1.2M. Ticket promedio $600k. 80% son retainers de 6 meses, 20% proyectos one-shot.'},
+    cardIdealProspect:{title:'¿Quién es tu prospecto ideal?',desc:'Demografía + necesidad + capacidad de pago.',placeholder:'Ej: PyMEs argentinas 5-20 empleados, facturación $50M-$300M/año, dueño 35-55 que ya invierte en publicidad pero sin proceso claro. Decisor único.'},
+    cardCurrentProcess:{title:'Tu proceso de venta actual (etapas + % conversión)',desc:'Cómo va un prospecto desde el primer contacto al pago. Si no medís, anotá tu mejor estimación.',placeholder:'Ej: Leads orgánicos (~30/mes) → llamada de descubrimiento 30min (60% acepta) → propuesta enviada (40% responde) → llamada de cierre (50% firma). Total: ~3.6% del lead inicial paga.'},
+    cardWeeklyOutreach:{title:'¿Cuántos contactos NUEVOS hacés por semana?',desc:'Cardone: massive action. Sin volumen no hay venta. Sé honesto.',options:['0-5 / semana','6-15 / semana','16-30 / semana','31-50 / semana','50+ / semana']},
+    cardFollowUps:{title:'¿Cuántas veces seguís a un prospecto antes de descartar?',desc:'La mayoría de las ventas se cierran después del 5to follow-up. Cuántos hacés en serio.',options:['1 (si no responde, descarto)','2-3','4-6','7-10','Más de 10 (los persigo hasta que cierran o me bloquean)']},
+    cardTopObjections:{title:'Top 3 objeciones más frecuentes',desc:'Las que escuchás todo el tiempo. Pega el texto LITERAL del prospecto si podés.',placeholder:'Ej: "Está fuera de mi presupuesto" / "Ya tengo a alguien haciéndolo" / "Necesito consultarlo con mi socio" / "Lo voy a pensar" / "Mandame más info por mail"'}
   },
   en:{
     product:{title:'What is your product or service?',desc:'Name and description.',placeholder:'Ex: Tech e-commerce...'},
@@ -635,7 +670,15 @@ const BIZ_Q = {
     copyDeepPain:{title:'What deep pain or fear do they have?',desc:'Not the surface problem, the real pain (shame, recurring frustration, fear of being left behind).',placeholder:'Ex: Shame of saying what they charge. Fear of younger competition surpassing them.'},
     copyChannel:{title:'What channel is the copy for?',desc:'Defines format and tone of the main piece.',options:['Daily email / newsletter','Landing page / sales page','Social ad (Meta/IG/TikTok)','Long-form sales letter','Bio + pinned post (profile)','Multi-channel (adaptable base)']},
     copyPersonalStory:{title:'Do you have a related personal story? (optional)',desc:'Real anecdote of yours or a client. Anything everyday works.',placeholder:'Ex: "My first client paid me $50 and I was grateful. Today I charge $3000 and they thank me". Or a client case.'},
-    copyTone:{title:'Brand tone',desc:'How you want to sound.',options:['Confrontational / contrarian','Ironic / dry humor','Warm / conversational','Professional / authority','Inspirational / energetic','Raw / unfiltered']}
+    copyTone:{title:'Brand tone',desc:'How you want to sound.',options:['Confrontational / contrarian','Ironic / dry humor','Warm / conversational','Professional / authority','Inspirational / energetic','Raw / unfiltered']},
+    cardSellYourself:{title:'Do you buy your own product?',desc:'Cardone: before selling to others, you must be 100% convinced yourself. Be honest.',options:['Totally, I\'d buy/I bought it myself','Generally yes, but with doubts on some things','Sometimes yes, sometimes no','Honestly, not really','No, I sell it because I have to sell']},
+    cardOnNo:{title:'When a prospect says "no", what do you do?',desc:'Your real reaction, not the theoretically correct one.',placeholder:'Ex: I thank them and move to the next. / It crushes me and I take days to follow up again. / I ask why not and try to reopen. / I keep sending content for 3 months without asking.'},
+    cardProduct:{title:'What do you sell? Product + price + average ticket',desc:'No makeup. The more concrete, the better the diagnosis.',placeholder:'Ex: Digital marketing service, monthly retainer $400-$1200. Average ticket $600. 80% retainers, 20% one-shots.'},
+    cardIdealProspect:{title:'Who is your ideal prospect?',desc:'Demographics + need + ability to pay.',placeholder:'Ex: SMBs 5-20 employees, $50M-$300M revenue, owner 35-55 already investing in ads without clear process. Sole decision maker.'},
+    cardCurrentProcess:{title:'Your current sales process (stages + % conversion)',desc:'How a prospect goes from first contact to payment. If you don\'t measure, write your best estimate.',placeholder:'Ex: Organic leads (~30/month) → discovery call 30min (60% accept) → proposal sent (40% respond) → closing call (50% sign). Total: ~3.6% of initial lead pays.'},
+    cardWeeklyOutreach:{title:'How many NEW contacts do you make per week?',desc:'Cardone: massive action. No volume, no sale. Be honest.',options:['0-5 / week','6-15 / week','16-30 / week','31-50 / week','50+ / week']},
+    cardFollowUps:{title:'How many times do you follow up with a prospect before giving up?',desc:'Most sales close after the 5th follow-up. How many do you really do.',options:['1 (if no answer, drop)','2-3','4-6','7-10','More than 10 (chase until they close or block me)']},
+    cardTopObjections:{title:'Top 3 most frequent objections',desc:'The ones you hear all the time. Paste the LITERAL prospect text if you can.',placeholder:'Ex: "Outside my budget" / "I already have someone" / "Need to check with my partner" / "Let me think about it" / "Send more info by email"'}
   }
 };
 
@@ -923,6 +966,10 @@ const TOOL_TIPS: Record<string, { es: string; en: string }> = {
     es: 'Regla de oro del notebook: si lo entendería un chico de 12 años, está bien. Si suena a "leverage sinérgico para tu pipeline", está mal. Y olvidate de mostrar features — atacá el deseo emocional egoísta (estatus, venganza, tiempo libre).',
     en: 'Notebook rule: if a 12-year-old would understand it, it\'s good. If it sounds like "synergistic leverage for your pipeline", it\'s wrong. And forget about features — go for the selfish emotional desire (status, revenge, free time).',
   },
+  'cardone-sales-engine': {
+    es: 'Cardone: "el que se rinde después del primer NO ya perdió la venta. La mayoría se cierran después del 5to follow-up". Si tu reflejo es bajonearte con un no, ahí está tu cuello de botella — no en el producto, no en el precio.',
+    en: 'Cardone: "whoever quits after the first NO already lost the sale. Most close after the 5th follow-up". If your reflex is to crumble at a no, that\'s your bottleneck — not the product, not the price.',
+  },
 };
 
 const TIPS_SEEN_STORAGE_KEY = 'fshumo_tips_seen';
@@ -1070,6 +1117,16 @@ function buildPrompt(lang: string, data: any, mode: string, bizType: string, too
     if (mode==='refine') return cp+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura. NO te alejes de los principios.`;
   }
 
+  if (toolId==='cardone-sales-engine') {
+    const cd = base+`\n\nSos coach de ventas con dominio total del libro "Vendes o Vendes" de Grant Cardone.\n\nPRINCIPIOS NO NEGOCIABLES:\n1. "TODO en la vida es una venta" — la venta no es una técnica, es una mentalidad universal.\n2. VENDETE A VOS MISMO PRIMERO. Si no te crés tu producto al 100%, ni intentes vender.\n3. MASSIVE ACTION. La razón #1 por la que la gente no vende es porque no hace suficientes contactos. Sin volumen masivo no hay venta. Cuando otros frenan, vos aceleras.\n4. MANEJO DEL RECHAZO. El "no" no es personal, es información. El que se queda con el "no" pierde. El que insiste con valor, gana.\n5. EFICIENCIA / ACORTAR CICLO. Cada interacción tiene que avanzar el deal. No follow-ups vacíos.\n6. La mayoría de las ventas se cierran después del 5to follow-up. El que se rinde antes, pierde por default.\n7. Mentalidad de cazador, no de víctima. Las "malas economías" son excusa, no realidad.\n\nNUNCA:\n- Aceptes "el cliente no está listo" como excusa\n- Aceptes volúmenes de outreach bajos sin desafiarlos\n- Pongas técnicas de cierre antes de arreglar el mindset\n- Recomiendes "esperar al momento correcto"\n- Justifiques la falta de follow-up\n- Promociones manipulación — Cardone NO es engaño, es persistencia con valor`;
+    if (mode==='help') return cd+`\n\nUNA pregunta guía por turno. Si la respuesta refleja mindset de víctima ("la economía está mal", "los clientes no tienen plata"), confrontalo directo con cita de Cardone.`;
+    if (mode==='review') return cd+ctx+`\n\nRESUMEN EJECUTIVO en Markdown máx 6 bullets: producto + ticket promedio, prospecto ideal, conversión actual del funnel, volumen semanal de outreach, follow-ups promedio, top objeciones. Cerrá con UN diagnóstico crudo estilo Cardone: dónde está perdiendo el negocio más ventas (no diplomático, directo).`;
+    if (mode==='cardAudit') return cd+ctx+`\n\nGenerá BLOQUE 1 en Markdown:\n# 🔍 Auditoría del Sales Process\n\n## Score (1-10) en los 5 pilares de Cardone\n| Pilar | Score | Por qué | Acción inmediata |\n|---|---|---|---|\n| Self-selling (te crés el producto) | X/10 | ... | ... |\n| Massive Action (volumen) | X/10 | ... | ... |\n| Manejo del rechazo | X/10 | ... | ... |\n| Follow-up persistente | X/10 | ... | ... |\n| Eficiencia del ciclo | X/10 | ... | ... |\n\n## ⚠️ Brechas críticas (top 3)\nLas 3 cosas que MÁS le hacen perder ventas hoy. Específicas, accionables.\n\n## 📉 Cálculo de costo de oportunidad\nSi conversión actual es X% y volumen actual es Y/semana, ¿cuántas ventas extras tendría con conversión 1.5× y volumen 2×? Pintar el número concreto.\n\n## 🎯 Veredicto Cardone\nUn párrafo crudo. ¿El problema es mindset, sistema, o ambos? ¿Cuál ataca primero?`;
+    if (mode==='cardMassivePlan') return cd+ctx+`\n\nGenerá BLOQUE 2 en Markdown:\n# 🔥 Plan de Massive Action — 60 días\n\n## Meta cuantitativa\n- Outreach semanal nuevo: de X actual → meta Y (justificar el salto)\n- Follow-ups por prospecto: de X actual → mínimo 7\n- Calls de descubrimiento agendadas/semana: meta Z\n- Cierres esperados al fin de 60 días\n\n## Plan semana por semana (8 semanas)\nTabla con qué tiene que hacer cada semana. Concreto, medible.\n\n| Semana | Outreach nuevo | Follow-ups activos | Calls | Pipeline target |\n|---|---|---|---|---|\n\n## 📞 Stack de canales de outreach\n5-7 canales concretos para hacer outreach (no genérico — específico al prospecto ideal del usuario). Para cada uno: cómo abordar, frecuencia, ejemplo de mensaje.\n\n## 🧠 Rutina diaria de mindset (15-20 min/día)\nQué leer/escuchar/hacer cada mañana antes de empezar el outreach. Anti-bajón. Reforzar self-belief.\n\n## ⛔ Trampas en las que NO caer\nLas 5 excusas más comunes con las que va a sabotear el plan + cómo detectarlas en uno mismo + qué hacer.`;
+    if (mode==='cardClosingKit') return cd+ctx+`\n\nGenerá BLOQUE 3 en Markdown:\n# 💰 Closing Toolkit\n\n## 🛡️ Objection Handling — top 3 objeciones del usuario\nPara cada una de las 3 objeciones que el usuario marcó:\n\n### Objeción: "[texto literal]"\n**Lo que REALMENTE significa:** [traducción honesta — qué hay detrás]\n**Respuesta paso a paso:**\n1. Acknowledge (no pelear)\n2. Reframe (cambiar el frame de la conversación)\n3. Pregunta de cierre (volver al lado del prospecto)\n**Script exacto (3-5 oraciones):**\n> [texto exacto que puede leer/usar]\n\n## 🎯 10 técnicas de cierre adaptadas\nDe las técnicas clásicas (asumido, alternativa, urgencia real, summary, takeaway, etc.), elegí las 10 más aplicables al producto del usuario. Para cada una:\n- Nombre + descripción de 1 línea\n- Cuándo usarla (señal del prospecto)\n- Script ejemplo adaptado al producto del usuario\n\n## 📞 Secuencia de follow-up (10 toques)\nQué decir/hacer en los 10 follow-ups. Cada uno con propósito distinto (no copy-paste del anterior). Mix de canales (email/WhatsApp/llamada/voice note/contenido).\n\n## 🚨 Señales de "es un no real" vs "es un no fácil"\nCriterios concretos para descartar un prospecto vs seguir insistiendo. Sin esto el plan se vuelve acoso.`;
+    if (mode==='refine') return cd+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura. NO te alejes del enfoque Cardone (massive action + mindset + persistencia).`;
+  }
+
   return base;
 }
 
@@ -1111,7 +1168,8 @@ function ToolIllustration({illustrationId,isLocked}: {illustrationId: string; is
     'ai-video':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="25" width="100" height="50" rx="4" fill="none" stroke={gold} strokeWidth="1.5"/><polygon points="92,40 92,60 112,50" fill={gold}/><text x="100" y="86" fontSize="8" fill={gold} textAnchor="middle" fontWeight="bold">AI</text></svg>),
     'growth':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="30" y="75" width="22" height="12" fill={dim} opacity="0.4" rx="1"/><rect x="52" y="63" width="22" height="24" fill={dim} opacity="0.55" rx="1"/><rect x="74" y="51" width="22" height="36" fill={dim} opacity="0.7" rx="1"/><rect x="96" y="39" width="22" height="48" fill={gold} opacity="0.85" rx="1"/><rect x="118" y="27" width="22" height="60" fill={gold} rx="1"/><path d="M155 35 L168 22 L168 30 L175 25 L172 35 L180 38 L168 41 L168 49 Z" fill={gold}/></svg>),
     'offer-stack':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="72" width="100" height="14" fill={dim} opacity="0.35" rx="2"/><rect x="55" y="56" width="90" height="14" fill={dim} opacity="0.55" rx="2"/><rect x="60" y="40" width="80" height="14" fill={gold} opacity="0.75" rx="2"/><rect x="65" y="24" width="70" height="14" fill={gold} rx="2"/><circle cx="100" cy="14" r="6" fill={gold}/><path d="M97 11 L100 17 L103 11 Z" fill="#0a0a0b"/><line x1="50" y1="90" x2="150" y2="90" stroke={gold} strokeWidth="0.5" opacity="0.3"/></svg>),
-    'copy-pen':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="40" y="25" width="120" height="55" rx="4" fill="none" stroke={gold} strokeWidth="1.5" opacity="0.8"/><line x1="50" y1="38" x2="115" y2="38" stroke={gold} strokeWidth="1.2" opacity="0.6"/><line x1="50" y1="48" x2="140" y2="48" stroke={gold} strokeWidth="1.2" opacity="0.5"/><line x1="50" y1="58" x2="125" y2="58" stroke={gold} strokeWidth="1.2" opacity="0.4"/><line x1="50" y1="68" x2="100" y2="68" stroke={gold} strokeWidth="1.2" opacity="0.3"/><path d="M155 18 L175 38 L165 48 L145 28 Z" fill={gold}/><path d="M145 28 L150 33 L155 28" fill={dim}/></svg>)
+    'copy-pen':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="40" y="25" width="120" height="55" rx="4" fill="none" stroke={gold} strokeWidth="1.5" opacity="0.8"/><line x1="50" y1="38" x2="115" y2="38" stroke={gold} strokeWidth="1.2" opacity="0.6"/><line x1="50" y1="48" x2="140" y2="48" stroke={gold} strokeWidth="1.2" opacity="0.5"/><line x1="50" y1="58" x2="125" y2="58" stroke={gold} strokeWidth="1.2" opacity="0.4"/><line x1="50" y1="68" x2="100" y2="68" stroke={gold} strokeWidth="1.2" opacity="0.3"/><path d="M155 18 L175 38 L165 48 L145 28 Z" fill={gold}/><path d="M145 28 L150 33 L155 28" fill={dim}/></svg>),
+    'sales-engine':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><circle cx="100" cy="50" r="28" fill="none" stroke={gold} strokeWidth="2"/><circle cx="100" cy="50" r="18" fill="none" stroke={gold} strokeWidth="1.5" opacity="0.6"/><circle cx="100" cy="50" r="6" fill={gold}/><path d="M100 22 L100 14" stroke={gold} strokeWidth="2.5" strokeLinecap="round"/><path d="M100 78 L100 86" stroke={gold} strokeWidth="2.5" strokeLinecap="round"/><path d="M72 50 L64 50" stroke={gold} strokeWidth="2.5" strokeLinecap="round"/><path d="M128 50 L136 50" stroke={gold} strokeWidth="2.5" strokeLinecap="round"/><path d="M80 30 L74 24" stroke={gold} strokeWidth="2" strokeLinecap="round" opacity="0.6"/><path d="M120 30 L126 24" stroke={gold} strokeWidth="2" strokeLinecap="round" opacity="0.6"/><path d="M80 70 L74 76" stroke={gold} strokeWidth="2" strokeLinecap="round" opacity="0.6"/><path d="M120 70 L126 76" stroke={gold} strokeWidth="2" strokeLinecap="round" opacity="0.6"/></svg>)
   };
   return <div className="w-full h-full flex items-center justify-center">{(svgs as any)[illustrationId]||<svg viewBox="0 0 200 100" className="w-full h-full"><rect x="80" y="35" width="40" height="30" fill={gold} opacity="0.3" rx="3"/></svg>}</div>;
 }
