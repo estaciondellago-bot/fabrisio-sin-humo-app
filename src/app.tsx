@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, Download, MessageCircle, X, Send, SkipForward, Flame, Users, Trophy, BarChart3, FileText, ArrowRight, AlertCircle, Link2, Wand2, Eraser, Zap, Target, Search, Clock, Megaphone, Compass, TrendingUp, Briefcase, PieChart, Lock, FileEdit, Film, ListChecks } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, Download, MessageCircle, X, Send, SkipForward, Flame, Users, Trophy, BarChart3, FileText, ArrowRight, AlertCircle, Link2, Wand2, Eraser, Zap, Target, Search, Clock, Megaphone, Compass, TrendingUp, Briefcase, PieChart, Lock, FileEdit, Film, ListChecks, DollarSign } from 'lucide-react';
 
 const WORKER_URL = 'https://fabrisio-proxy.fabrisioroche.workers.dev';
 
@@ -31,6 +31,8 @@ const t = {
     toolTimeMin:'min',
     catDiagnosis:'Diagnóstico y Estrategia', catMarketing:'Marketing y Captación',
     catContent:'Contenido y Producción', catOperations:'Operaciones y Análisis',
+    catSales:'Ventas y Ofertas',
+    catSalesDesc:'Construí ofertas irresistibles y cerrá más',
     catGrowth:'Crecimiento y Escalamiento',
     catDiagnosisDesc:'Entendé dónde estás parado', catMarketingDesc:'Atraé clientes y vendé más',
     catContentDesc:'Creá contenido que conecta', catOperationsDesc:'Optimizá la salud de tu negocio',
@@ -147,6 +149,8 @@ const t = {
     toolTimeMin:'min',
     catDiagnosis:'Diagnosis & Strategy', catMarketing:'Marketing & Acquisition',
     catContent:'Content & Production', catOperations:'Operations & Analysis',
+    catSales:'Sales & Offers',
+    catSalesDesc:'Build irresistible offers and close more',
     catGrowth:'Growth & Scaling',
     catDiagnosisDesc:'Understand where you stand', catMarketingDesc:'Attract customers',
     catContentDesc:'Create content that connects', catOperationsDesc:'Optimize business health',
@@ -402,6 +406,33 @@ const TOOLS = {
       {id:'igIdeasList',title:{es:'Bloque 1: 15 Ideas de Contenido',en:'Block 1: 15 Content Ideas'}},
       {id:'igStrategy',title:{es:'Bloque 2: Estrategia de Cuenta',en:'Block 2: Account Strategy'}}
     ]
+  },
+  'hormozi-grand-slam-offer':{
+    id:'hormozi-grand-slam-offer',category:'sales',
+    name:{es:'Grand Slam Offer (Hormozi)',en:'Grand Slam Offer (Hormozi)'},
+    description:{es:'Reconstruí tu oferta con el framework de Hormozi: value stack, garantía agresiva, bonos estratégicos, pricing premium justificado.',en:"Rebuild your offer with Hormozi's framework: value stack, aggressive guarantee, strategic bonuses, justified premium pricing."},
+    level:'intermedio',time:'30-45',available:true,
+    recommendedFor:['ecommerce','service','b2b','health','education','local'],
+    illustrationId:'offer-stack',entryModes:['guided'],
+    questions:[
+      {phase:'dream',key:'gsoDreamOutcome',type:'textarea'},
+      {phase:'dream',key:'gsoDreamLooksLike',type:'textarea'},
+      {phase:'problems',key:'gsoObstacles',type:'textarea'},
+      {phase:'current',key:'gsoCurrentOffer',type:'textarea'},
+      {phase:'current',key:'gsoCurrentGuarantee',type:'textarea',optional:true},
+      {phase:'market',key:'gsoMarketPricing',type:'select'},
+      {phase:'market',key:'gsoSocialProof',type:'textarea'},
+      {phase:'ops',key:'gsoLowCostBonuses',type:'textarea',optional:true}
+    ],
+    phases:{
+      es:{dream:'1. Resultado Soñado',problems:'2. Obstáculos del cliente',current:'3. Oferta actual',market:'4. Mercado y prueba social',ops:'5. Operativa para bonos'},
+      en:{dream:'1. Dream Outcome',problems:'2. Customer Obstacles',current:'3. Current Offer',market:'4. Market & Social Proof',ops:'5. Bonus Operations'}
+    },
+    outputBlocks:[
+      {id:'gsoDiagnosis',title:{es:'Bloque 1: Diagnóstico de tu oferta actual (Value Equation)',en:'Block 1: Current Offer Diagnosis (Value Equation)'}},
+      {id:'gsoOffer',title:{es:'Bloque 2: Tu Grand Slam Offer reconstruida',en:'Block 2: Your Rebuilt Grand Slam Offer'}},
+      {id:'gsoLaunch',title:{es:'Bloque 3: Plan de lanzamiento (2 semanas)',en:'Block 3: Launch Plan (2 weeks)'}}
+    ]
   }
 };
 
@@ -487,7 +518,15 @@ const BIZ_Q = {
     igCurrentFollowers:{title:'¿Cuántos seguidores tenés hoy?',desc:'Para adaptar la estrategia al tamaño de tu cuenta.',options:['Menos de 1.000','1.000 a 10.000','10.000 a 50.000','Más de 50.000','No importa / cuenta nueva']},
     igPriority:{title:'¿Qué priorizás en esta etapa?',desc:'El objetivo principal manda la estrategia.',options:['Crecer en seguidores','Mejorar engagement','Vender (productos/servicios)','Construir comunidad','Posicionarme como experto/a']},
     igFormatFocus:{title:'¿En qué formatos te querés enfocar?',desc:'Podés elegir varios. El plan se adapta al mix.',options:['Reels','Carruseles','Stories','Lives','Post de feed','Mix balanceado']},
-    igVibe:{title:'Estética, vibe o cuentas de referencia (opcional)',desc:'Para alinear el estilo con tu marca.',placeholder:'Ej: minimalista tipo @cuenta1, energía positiva tipo @cuenta2, profesional pero cercano. Evitar lo aspiracional fake de gurúes.'}
+    igVibe:{title:'Estética, vibe o cuentas de referencia (opcional)',desc:'Para alinear el estilo con tu marca.',placeholder:'Ej: minimalista tipo @cuenta1, energía positiva tipo @cuenta2, profesional pero cercano. Evitar lo aspiracional fake de gurúes.'},
+    gsoDreamOutcome:{title:'¿Qué resultado profundo busca tu cliente?',desc:'NO qué compra. Qué quiere LOGRAR. Hormozi: "no venden taladros, venden agujeros en la pared". Apuntá al deseo real.',placeholder:'Ej: "Volver a sentir control sobre su salud sin renunciar a comer rico" (NO "perder 5kg"). "Tener un sistema que vende solo mientras duerme" (NO "más tráfico web").'},
+    gsoDreamLooksLike:{title:'¿Cómo se ve "haberlo logrado" desde el lado del cliente?',desc:'Especificidad máxima. Día concreto, escena concreta. Cuanto más vívido, mejor.',placeholder:'Ej: "Un sábado a la mañana se mira al espejo después de bañarse y por primera vez en años se gusta. Saca foto y se la manda a una amiga sin filtros". Sin clichés tipo "se sienten plenos".'},
+    gsoObstacles:{title:'Listá TODOS los obstáculos que tu cliente enfrenta',desc:'Antes / durante / después de usar tu producto. Hormozi insiste: lista exhaustiva. Cuanto más larga, mejor el output.',placeholder:'Ej:\n- Antes: no sabe por dónde empezar, ya probó X y no funcionó, le da vergüenza...\n- Durante: aburrido, sin tiempo, recae a la semana, su pareja no lo apoya...\n- Después: vuelve a viejas costumbres, no sabe cómo mantenerlo...'},
+    gsoCurrentOffer:{title:'¿Qué le vendés HOY?',desc:'Precio + qué incluye + cómo lo entregás. Sin maquillaje, descripción honesta.',placeholder:'Ej: "Mentoría grupal 8 semanas, $300k ARS, 1 clase por semana de 90min vía Zoom + grupo de WhatsApp + 2 sesiones 1-a-1 + workbook PDF".'},
+    gsoCurrentGuarantee:{title:'¿Qué garantía ofrecés? (opcional)',desc:'Si no ofrecés ninguna, dejalo vacío. Si ofrecés, copiá el texto exacto.',placeholder:'Ej: "Si en 30 días no estás conforme, te devolvemos el 100%". O dejá vacío.'},
+    gsoMarketPricing:{title:'¿En qué rango se mueve tu categoría en el mercado?',desc:'Para que el output sepa cómo posicionarse en pricing.',options:['Premium (los más caros del mercado)','Medio-alto','Medio','Medio-bajo','Económico (precio bajo es el diferencial)']},
+    gsoSocialProof:{title:'¿Qué prueba social tenés HOY?',desc:'Casos, métricas, testimonios, reviews, cantidad de clientes. Pegá lo más concreto que tengas. Si no tenés mucho, está OK decirlo.',placeholder:'Ej: "120 clientes desde 2022. 4.7★ promedio en 38 reseñas Google. Caso destacado: María bajó 12kg en 4 meses sin recaer (foto + video). No tengo testimonios en video todavía".'},
+    gsoLowCostBonuses:{title:'¿Qué bonos podés agregar con BAJO costo de entrega para vos? (opcional)',desc:'Hormozi: alto valor percibido, bajo costo real. Pensá: contenido grabado, plantillas, accesos, sesiones grupales (no 1-a-1), herramientas que ya tenés.',placeholder:'Ej: Guía PDF "10 errores comunes" / Plantilla Excel de tracking / Acceso a comunidad privada / Webinar mensual / Cheatsheet de objeciones.'}
   },
   en:{
     product:{title:'What is your product or service?',desc:'Name and description.',placeholder:'Ex: Tech e-commerce...'},
@@ -548,7 +587,15 @@ const BIZ_Q = {
     igCurrentFollowers:{title:'How many followers do you have today?',desc:'To adapt the strategy to your account size.',options:['Less than 1,000','1,000 to 10,000','10,000 to 50,000','More than 50,000','Doesn\'t matter / new account']},
     igPriority:{title:'What do you prioritize this stage?',desc:'The main goal drives the strategy.',options:['Grow followers','Improve engagement','Sell (products/services)','Build community','Position myself as an expert']},
     igFormatFocus:{title:'What formats do you want to focus on?',desc:'Multiple choice. Plan adapts to the mix.',options:['Reels','Carousels','Stories','Lives','Feed post','Balanced mix']},
-    igVibe:{title:'Aesthetic, vibe, or reference accounts (optional)',desc:'To align style with your brand.',placeholder:'Ex: minimalist like @account1, positive energy like @account2, professional but warm. Avoid the fake aspirational guru style.'}
+    igVibe:{title:'Aesthetic, vibe, or reference accounts (optional)',desc:'To align style with your brand.',placeholder:'Ex: minimalist like @account1, positive energy like @account2, professional but warm. Avoid the fake aspirational guru style.'},
+    gsoDreamOutcome:{title:'What deep result does your customer want?',desc:'NOT what they buy. What they want to ACHIEVE. Hormozi: "they don\'t sell drills, they sell holes in the wall".',placeholder:'Ex: "Feel in control of their health again without giving up tasty food" (NOT "lose 10 lbs"). "Have a system that sells while they sleep" (NOT "more web traffic").'},
+    gsoDreamLooksLike:{title:'What does "having achieved it" look like from the customer\'s side?',desc:'Maximum specificity. Concrete day, concrete scene. The more vivid, the better.',placeholder:'Ex: "On a Saturday morning he looks in the mirror after showering and for the first time in years he likes himself. Takes a photo and sends it to a friend with no filters". No clichés like "they feel fulfilled".'},
+    gsoObstacles:{title:'List ALL the obstacles your customer faces',desc:'Before / during / after using your product. Hormozi insists: exhaustive list. The longer, the better the output.',placeholder:'Ex:\n- Before: doesn\'t know where to start, tried X and it didn\'t work, feels embarrassed...\n- During: bored, no time, relapses in a week, partner doesn\'t support...\n- After: returns to old habits, doesn\'t know how to maintain...'},
+    gsoCurrentOffer:{title:'What do you sell TODAY?',desc:'Price + what\'s included + how you deliver. No makeup, honest description.',placeholder:'Ex: "Group mentoring 8 weeks, $300, 1 class/week 90min via Zoom + WhatsApp group + 2 1-on-1 sessions + PDF workbook".'},
+    gsoCurrentGuarantee:{title:'What guarantee do you offer? (optional)',desc:'If none, leave empty. If you do offer one, copy the exact wording.',placeholder:'Ex: "If you\'re not happy within 30 days, full refund". Or leave empty.'},
+    gsoMarketPricing:{title:'What range does your category move in the market?',desc:'So the output knows how to position pricing.',options:['Premium (top of market)','Mid-high','Mid','Mid-low','Economy (low price is the differential)']},
+    gsoSocialProof:{title:'What social proof do you have TODAY?',desc:'Cases, metrics, testimonials, reviews, customer count. Paste the most concrete you have. If you don\'t have much, it\'s OK to say so.',placeholder:'Ex: "120 customers since 2022. 4.7★ avg on 38 Google reviews. Standout case: Maria lost 25 lbs in 4 months without relapsing (photo + video). No video testimonials yet".'},
+    gsoLowCostBonuses:{title:'What bonuses can you add with LOW delivery cost for you? (optional)',desc:'Hormozi: high perceived value, low real cost. Think: recorded content, templates, access, group sessions (not 1-on-1), tools you already have.',placeholder:'Ex: PDF guide "10 common mistakes" / Excel tracking template / Access to private community / Monthly webinar / Objections cheatsheet.'}
   }
 };
 
@@ -828,6 +875,10 @@ const TOOL_TIPS: Record<string, { es: string; en: string }> = {
     es: 'Si tenés posts viejos que funcionaron, pegá el dato (views, comentarios). Mejor detectar patrones tuyos que best-practices genéricas.',
     en: 'If you have old posts that worked, paste the data (views, comments). Better to detect your own patterns than generic best-practices.',
   },
+  'hormozi-grand-slam-offer': {
+    es: 'Hormozi dice: "la mayoría falla porque vende el Resultado Soñado pero ignora el Tiempo y el Esfuerzo". Cuanto MÁS exhaustivo seas listando obstáculos del cliente (antes/durante/después), mejor el output. No tengas miedo de poner cosas obvias.',
+    en: 'Hormozi says: "most fail because they sell the Dream Outcome but ignore Time Delay and Effort". The more EXHAUSTIVE you are listing customer obstacles (before/during/after), the better the output. Don\'t be afraid to state the obvious.',
+  },
 };
 
 const TIPS_SEEN_STORAGE_KEY = 'fshumo_tips_seen';
@@ -955,6 +1006,16 @@ function buildPrompt(lang: string, data: any, mode: string, bizType: string, too
     if (mode==='refine') return ig+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura.`;
   }
 
+  if (toolId==='hormozi-grand-slam-offer') {
+    const gso = base+`\n\nSos consultor con DOMINIO COMPLETO del framework Grand Slam Offer de Alex Hormozi (libro "$100M Offers"). NO inventás cosas que no estén en el framework.\n\nVALUE EQUATION (núcleo no negociable):\nValor percibido = (Dream Outcome × Perceived Likelihood of Achievement) / (Time Delay × Effort & Sacrifice)\n- Numerador MAXIMIZAR: resultado soñado del cliente × qué tan creíble es lograrlo\n- Denominador MINIMIZAR a cero: tiempo que tarda × esfuerzo/sacrificio\n\nREGLAS NO NEGOCIABLES:\n1. La mayoría de ofertas FALLAN porque solo enfocan el Dream Outcome ignorando Time Delay y Effort. NUNCA cometas ese error.\n2. Cobrar caro NO es problema si el valor percibido es exponencialmente mayor. NUNCA recomiendes "bajar el precio para ser competitivo".\n3. "Trim and Stack": de la lista de problemas → soluciones → quedate solo con las de alto valor para el cliente Y bajo costo para el negocio. Apilá esas en el value stack.\n4. Garantías agresivas reducen el riesgo percibido a CERO. Tipos: money-back incondicional, performance-based ("trabajo gratis hasta que veas X"), service guarantee ("si no funciona en 30 días, te devolvemos el doble").\n5. Bonos estratégicos: alto valor percibido $$, bajo costo real de entrega. Ejemplos: contenido grabado, plantillas, accesos a comunidad, cheatsheets.\n6. Scarcity (cupos limitados) y urgency (fecha de cierre) BLINDAN la oferta. Sin ellas el prospecto procrastina.\n7. Pricing premium se justifica con value stack 10× el precio. Mostrar valor total $XXX, luego "tu inversión: $X" como anchor.\n\nNUNCA:\n- Bajes el precio para "ser competitivo"\n- Aceptes ofertas sin garantía explícita\n- Saltees listar problemas/obstáculos del cliente\n- Recomiendes descuentos por defecto`;
+    if (mode==='help') return gso+`\n\nUNA pregunta guía por turno. Si la respuesta es genérica, pedí especificidad estilo Hormozi (dato concreto, escena específica, número).`;
+    if (mode==='review') return gso+ctx+`\n\nRESUMEN EJECUTIVO en Markdown máx 5 bullets: dream outcome detectado, principales obstáculos (top 3), oferta actual + precio, prueba social disponible, mercado/pricing range. Cerrá con UNA frase del consultor estilo Hormozi: qué oportunidad ves para 10× el valor sin tocar el costo de entrega.`;
+    if (mode==='gsoDiagnosis') return gso+ctx+`\n\nGenerá BLOQUE 1 en Markdown:\n# 🔍 Diagnóstico Value Equation — Tu oferta actual\n\n## Scoring (1-10) en las 4 variables\n| Variable | Score | Por qué |\n|---|---|---|\n| Dream Outcome (claridad + magnitud) | X/10 | ... |\n| Perceived Likelihood of Achievement | X/10 | ... |\n| Time Delay (penaliza si es alto) | X/10 | ... |\n| Effort & Sacrifice (penaliza si es alto) | X/10 | ... |\n\nNota: time delay y effort se invierten — un score 10 significa "muy bajo time delay" (bueno).\n\n## ⚠️ Brechas detectadas\nLista las 3-5 brechas más grandes con explicación concreta de qué falla.\n\n## 🎯 Veredicto\nSeñalá honestamente: ¿es una Grand Slam Offer, una oferta promedio, o una oferta débil? Justificá en 2-3 oraciones con datos del wizard.`;
+    if (mode==='gsoOffer') return gso+ctx+`\n\nGenerá BLOQUE 2 en Markdown:\n# 💎 Tu Grand Slam Offer reconstruida\n\n## Headline de la oferta\n[Una frase que comunique el dream outcome + tiempo + sin esfuerzo. Estilo Hormozi.]\n\n## Value Stack ordenado\nTabla con todos los componentes en orden jerárquico (los de más valor primero):\n\n| # | Componente | Valor percibido | Costo real para vos |\n|---|---|---|---|\n| 1 | ... | $XXX | bajo |\n\nTotal valor percibido: $XXX\n\n## 🛡️ Garantía agresiva (lista para copiar)\n[Texto exacto de la garantía, redactado profesional. Si la oferta lo permite, incluí "trabajo gratis hasta que veas X" o money-back doble. Cada garantía con su trigger condition claro.]\n\n## 🎁 Bonos estratégicos (3-5)\nPara cada bono:\n- **Nombre del bono** (valor percibido $XXX)\n- Qué resuelve\n- Por qué tiene bajo costo de entrega para vos\n\n## 💰 Pricing recomendado\n- Precio sugerido: $XXX\n- Justificación: por qué este precio (anchor del value stack, comparable de mercado, posicionamiento premium/medio)\n- Cómo presentarlo: "Valor total: $XXX. Tu inversión hoy: $X."\n- Scarcity/urgency a aplicar: cupos limitados, fecha de cierre, bonus que desaparece, etc.`;
+    if (mode==='gsoLaunch') return gso+ctx+`\n\nGenerá BLOQUE 3 en Markdown:\n# 🚀 Plan de lanzamiento (2 semanas)\n\n## Semana 1: Calentamiento (días 1-7)\nTabla día a día con qué publicar/hacer:\n| Día | Canal | Acción | Mensaje clave |\n|---|---|---|---|\n\n## Semana 2: Apertura y cierre (días 8-14)\nIgual estructura, con énfasis en urgency creciente hacia el día de cierre.\n\n## 📧 Email/post de anuncio (listo para usar)\nTexto completo de ~250-400 palabras, tono coherente con la marca del usuario (deducir del wizard). Estructura: gancho + dolor + oferta + garantía + bonos + scarcity + CTA.\n\n## ❓ 3 objeciones probables + respuesta\nPara cada una:\n- Objeción exacta como la pensaría el cliente\n- Respuesta corta + cómo enmarcarla\n\n## 🎣 5 hooks para anuncios\nFrases de 1 línea cada una para usar en ads/posts orgánicos. Estilo Hormozi: provocadoras, específicas, con número o contradicción.\n\n## 📈 Métricas para medir el lanzamiento\n5-7 KPIs concretos a trackear: CTR de hooks, tasa de respuesta al email, conversión a llamada/checkout, % que toma el upsell, etc. Cómo interpretar cada uno.`;
+    if (mode==='refine') return gso+ctx+`\n\nDevolvé el bloque ACTUALIZADO en Markdown incorporando el ajuste del usuario. Mantené la estructura. NO te alejes del framework Hormozi.`;
+  }
+
   return base;
 }
 
@@ -994,7 +1055,8 @@ function ToolIllustration({illustrationId,isLocked}: {illustrationId: string; is
     'video':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="20" width="100" height="60" rx="4" fill="none" stroke={gold} strokeWidth="1.5"/><line x1="60" y1="40" x2="120" y2="40" stroke={gold} strokeWidth="1" opacity="0.6"/><line x1="60" y1="50" x2="135" y2="50" stroke={gold} strokeWidth="1" opacity="0.6"/><line x1="60" y1="60" x2="110" y2="60" stroke={gold} strokeWidth="1" opacity="0.6"/><polygon points="135,42 145,48 135,54" fill={gold}/></svg>),
     'reel':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="75" y="15" width="50" height="70" rx="4" fill="none" stroke={gold} strokeWidth="1.5"/><circle cx="100" cy="50" r="14" fill={gold} opacity="0.2"/><polygon points="95,42 95,58 110,50" fill={gold}/></svg>),
     'ai-video':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="25" width="100" height="50" rx="4" fill="none" stroke={gold} strokeWidth="1.5"/><polygon points="92,40 92,60 112,50" fill={gold}/><text x="100" y="86" fontSize="8" fill={gold} textAnchor="middle" fontWeight="bold">AI</text></svg>),
-    'growth':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="30" y="75" width="22" height="12" fill={dim} opacity="0.4" rx="1"/><rect x="52" y="63" width="22" height="24" fill={dim} opacity="0.55" rx="1"/><rect x="74" y="51" width="22" height="36" fill={dim} opacity="0.7" rx="1"/><rect x="96" y="39" width="22" height="48" fill={gold} opacity="0.85" rx="1"/><rect x="118" y="27" width="22" height="60" fill={gold} rx="1"/><path d="M155 35 L168 22 L168 30 L175 25 L172 35 L180 38 L168 41 L168 49 Z" fill={gold}/></svg>)
+    'growth':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="30" y="75" width="22" height="12" fill={dim} opacity="0.4" rx="1"/><rect x="52" y="63" width="22" height="24" fill={dim} opacity="0.55" rx="1"/><rect x="74" y="51" width="22" height="36" fill={dim} opacity="0.7" rx="1"/><rect x="96" y="39" width="22" height="48" fill={gold} opacity="0.85" rx="1"/><rect x="118" y="27" width="22" height="60" fill={gold} rx="1"/><path d="M155 35 L168 22 L168 30 L175 25 L172 35 L180 38 L168 41 L168 49 Z" fill={gold}/></svg>),
+    'offer-stack':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full"><rect x="50" y="72" width="100" height="14" fill={dim} opacity="0.35" rx="2"/><rect x="55" y="56" width="90" height="14" fill={dim} opacity="0.55" rx="2"/><rect x="60" y="40" width="80" height="14" fill={gold} opacity="0.75" rx="2"/><rect x="65" y="24" width="70" height="14" fill={gold} rx="2"/><circle cx="100" cy="14" r="6" fill={gold}/><path d="M97 11 L100 17 L103 11 Z" fill="#0a0a0b"/><line x1="50" y1="90" x2="150" y2="90" stroke={gold} strokeWidth="0.5" opacity="0.3"/></svg>)
   };
   return <div className="w-full h-full flex items-center justify-center">{(svgs as any)[illustrationId]||<svg viewBox="0 0 200 100" className="w-full h-full"><rect x="80" y="35" width="40" height="30" fill={gold} opacity="0.3" rx="3"/></svg>}</div>;
 }
@@ -1539,7 +1601,7 @@ export default function App() {
     const recommended = bizType ? allTools.filter(tl=>tl.available&&tl.recommendedFor?.includes(bizType)).slice(0,3) : [];
     const levelColors = {basico:'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',intermedio:'bg-blue-500/10 text-blue-400 border-blue-500/30',avanzado:'bg-orange-500/10 text-orange-400 border-orange-500/30'};
     const levelMap = {basico:lng.toolLevelBasico,intermedio:lng.toolLevelIntermedio,avanzado:lng.toolLevelAvanzado};
-    const cats = [{id:'diagnosis',label:lng.catDiagnosis,desc:lng.catDiagnosisDesc,icon:Compass},{id:'marketing',label:lng.catMarketing,desc:lng.catMarketingDesc,icon:Megaphone},{id:'content',label:lng.catContent,desc:lng.catContentDesc,icon:Film},{id:'operations',label:lng.catOperations,desc:lng.catOperationsDesc,icon:PieChart},{id:'growth',label:lng.catGrowth,desc:lng.catGrowthDesc,icon:TrendingUp}];
+    const cats = [{id:'diagnosis',label:lng.catDiagnosis,desc:lng.catDiagnosisDesc,icon:Compass},{id:'marketing',label:lng.catMarketing,desc:lng.catMarketingDesc,icon:Megaphone},{id:'sales',label:lng.catSales,desc:lng.catSalesDesc,icon:DollarSign},{id:'content',label:lng.catContent,desc:lng.catContentDesc,icon:Film},{id:'operations',label:lng.catOperations,desc:lng.catOperationsDesc,icon:PieChart},{id:'growth',label:lng.catGrowth,desc:lng.catGrowthDesc,icon:TrendingUp}];
 
     const CardComp = ({tool, index}: any) => {
       const locked = !tool.available;
