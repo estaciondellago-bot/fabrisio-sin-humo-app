@@ -40,6 +40,9 @@ const t = {
     loginTitle:'Acceso a Fabrisio sin Humo',
     loginDesc:'Ingresá tu contraseña de acceso para continuar.',
     loginPlaceholder:'Contraseña de acceso...', loginBtn:'Acceder',
+    loginValidating:'Validando...',
+    loginInvalid:'Contraseña incorrecta o desactivada.',
+    loginNetworkError:'No pude conectar con el servidor. Revisá tu conexión y reintentá.',
     loginContact:'¿No tenés acceso? Contactá a Fabrisio en WhatsApp.',
     error:'Algo salió mal', retry:'Reintentar', generating:'Fabrisio está pensando...', cancel:'Cancelar',
     entryTitle:'¿Cómo querés arrancar?', entryDesc:'Elegí el modo que más te convenga.',
@@ -158,6 +161,9 @@ const t = {
     loginTitle:'Access Fabrisio sin Humo',
     loginDesc:'Enter your access password to continue.',
     loginPlaceholder:'Access password...', loginBtn:'Access',
+    loginValidating:'Validating...',
+    loginInvalid:'Wrong or disabled password.',
+    loginNetworkError:"Couldn't reach the server. Check your connection and retry.",
     loginContact:"Don't have access? Contact Fabrisio on WhatsApp.",
     error:'Something went wrong', retry:'Retry', generating:'Fabrisio is thinking...', cancel:'Cancel',
     entryTitle:'How do you want to start?', entryDesc:'Pick the mode that suits you.',
@@ -1408,6 +1414,7 @@ export default function App() {
   const [journeyDraftObjective, setJourneyDraftObjective] = useState<string>('');
   const [journeyAbandonAsk, setJourneyAbandonAsk] = useState(false);
   const [tipsSeen, setTipsSeen] = useState<Record<string, boolean>>({});
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const lng = (t as any)[lang];
   const currentTool = (TOOLS as any)[toolId];
@@ -1456,13 +1463,28 @@ export default function App() {
   const curStep = visibleFlow[stepIdx];
 
   const handleStart = () => { setError(''); if (!accessPassword) setScreen('apikey'); else setScreen('biztype'); };
-  const handleLogin = () => {
-    if (!passwordInput.trim()) return;
+  const handleLogin = async () => {
+    const pw = passwordInput.trim();
+    if (!pw || loggingIn) return;
     setError('');
-    setAccessPassword(passwordInput.trim());
-    sessionStorage.setItem('fshumo_pw', passwordInput.trim());
-    setPasswordInput('');
-    setScreen('biztype');
+    setLoggingIn(true);
+    try {
+      const r = await fetch(`${WORKER_URL}/ping`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Access-Password': pw },
+        body: '{}',
+      });
+      if (r.status === 401) { setError(lng.loginInvalid); setLoggingIn(false); return; }
+      if (!r.ok) { setError(lng.loginNetworkError); setLoggingIn(false); return; }
+      setAccessPassword(pw);
+      sessionStorage.setItem('fshumo_pw', pw);
+      setPasswordInput('');
+      setLoggingIn(false);
+      setScreen('biztype');
+    } catch {
+      setError(lng.loginNetworkError);
+      setLoggingIn(false);
+    }
   };
   const pickBiz = (t: string) => { setBizType(t); setScreen('toolbox'); };
 
@@ -1918,8 +1940,8 @@ export default function App() {
           <p className="text-zinc-400 text-sm">{lng.loginDesc}</p>
         </div>
         <div className="space-y-4">
-          <input type="password" value={passwordInput} onChange={e=>setPasswordInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&passwordInput.trim()&&handleLogin()} placeholder={lng.loginPlaceholder} className="w-full px-4 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-lg text-center tracking-widest" autoFocus/>
-          <button onClick={handleLogin} disabled={!passwordInput.trim()} className="w-full py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-bold text-lg rounded-xl transition-colors">{lng.loginBtn}</button>
+          <input type="password" value={passwordInput} disabled={loggingIn} onChange={e=>setPasswordInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&passwordInput.trim()&&!loggingIn&&handleLogin()} placeholder={lng.loginPlaceholder} className="w-full px-4 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-lg text-center tracking-widest disabled:opacity-50" autoFocus/>
+          <button onClick={handleLogin} disabled={!passwordInput.trim()||loggingIn} className="w-full py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-bold text-lg rounded-xl transition-colors">{loggingIn?lng.loginValidating:lng.loginBtn}</button>
           {error&&<div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-center"><p className="text-red-300 text-sm">{error}</p></div>}
           <p className="text-center text-xs text-zinc-600">{lng.loginContact}</p>
         </div>

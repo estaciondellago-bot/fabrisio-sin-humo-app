@@ -20,6 +20,8 @@
  * Endpoints expuestos:
  *   POST /              → Proxy a Anthropic. Body: { model, max_tokens, system, messages }
  *                         Headers: X-Access-Password (chequea KV, fallback a ACCESS_PASSWORD)
+ *   POST /ping          → Valida la password sin hacer ninguna acción. Devuelve { ok, name } o 401.
+ *                         Usado por el frontend en el login para validar antes de mostrar la app.
  *   POST /fetch-site    → Fetch + extracción estructurada de un sitio web.
  *                         Body: { url }
  *                         Returns: { ok, blocked, title, description, ogTitle, ogType, headings, bodyText, schemas }
@@ -518,6 +520,10 @@ export default {
     }
 
     // Routing
+    if (endpoint === '/ping') {
+      // Si llegamos hasta acá la password ya fue validada arriba — solo devolvemos OK.
+      return jsonOk({ ok: true, name: validation.name, source: validation.source }, corsHeaders);
+    }
     if (endpoint === '/fetch-site') {
       return handleFetchSite(request, env, corsHeaders, ip);
     }
