@@ -65,6 +65,13 @@ function jsonOk(data, corsHeaders) {
   });
 }
 
+// Structured logging. Cada llamada emite UNA línea JSON visible en
+// Cloudflare → Worker fabrisio-proxy → Logs (live tail + búsqueda histórica).
+// Nunca loguear password ni body completo (privacidad + costo de log).
+function log(event, data) {
+  try { console.log(JSON.stringify({ event, ts: Date.now(), ...data })); } catch {}
+}
+
 // Detecta páginas típicas de anti-bot / challenge / acceso denegado
 function isBlockedPage(html) {
   if (!html) return true;
@@ -144,11 +151,13 @@ function extractContent(html) {
 }
 
 // Handler para POST /fetch-site
-async function handleFetchSite(request, env, corsHeaders) {
+async function handleFetchSite(request, env, corsHeaders, ip) {
+  const startTime = Date.now();
   let body;
   try {
     body = await request.json();
   } catch {
+    log('fetch_site_bad_body', { ip });
     return jsonError('Body inválido. Esperaba JSON con { url }.', 400, corsHeaders);
   }
   let rawUrl = (body.url || '').toString().trim();
@@ -167,8 +176,11 @@ async function handleFetchSite(request, env, corsHeaders) {
   // Bloquear IPs privadas (defensa básica contra SSRF)
   const host = parsedUrl.hostname;
   if (/^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.|::1|\[::1\])/i.test(host)) {
+    log('fetch_site_ssrf_blocked', { ip, host });
     return jsonError('No se permiten URLs privadas.', 400, corsHeaders);
   }
+
+  log('fetch_site_start', { ip, url: parsedUrl.toString() });
 
   let res;
   try {
@@ -183,15 +195,18 @@ async function handleFetchSite(request, env, corsHeaders) {
       signal: AbortSignal.timeout(SITE_FETCH_TIMEOUT_MS),
     });
   } catch (err) {
+    log('fetch_site_error', { ip, url: parsedUrl.toString(), error: String(err.message || err), latencyMs: Date.now() - startTime });
     return jsonError(`No pude acceder al sitio: ${err.message || err}`, 502, corsHeaders);
   }
 
   if (!res.ok) {
+    log('fetch_site_http_error', { ip, url: parsedUrl.toString(), status: res.status, finalUrl: res.url, latencyMs: Date.now() - startTime });
     return jsonError(`El sitio respondió HTTP ${res.status}. URL final: ${res.url}`, 502, corsHeaders);
   }
 
   const contentType = res.headers.get('Content-Type') || '';
   if (!/text\/html|application\/xhtml/i.test(contentType)) {
+    log('fetch_site_not_html', { ip, url: parsedUrl.toString(), contentType });
     return jsonError(`El sitio no devolvió HTML (Content-Type: ${contentType}).`, 400, corsHeaders);
   }
 
@@ -211,6 +226,7 @@ async function handleFetchSite(request, env, corsHeaders) {
       chunks.push(value);
     }
   } catch (err) {
+    log('fetch_site_read_error', { ip, url: parsedUrl.toString(), error: String(err.message || err) });
     return jsonError(`Error leyendo el sitio: ${err.message || err}`, 502, corsHeaders);
   }
   const html = new TextDecoder('utf-8', { fatal: false }).decode(
@@ -218,11 +234,25 @@ async function handleFetchSite(request, env, corsHeaders) {
   );
 
   if (!html || html.length < 100) {
+    log('fetch_site_empty', { ip, url: parsedUrl.toString(), bytes: html?.length || 0 });
     return jsonError('El sitio devolvió contenido vacío o muy corto.', 400, corsHeaders);
   }
 
   const blocked = isBlockedPage(html);
   const extract = extractContent(html);
+
+  log('fetch_site_result', {
+    ip,
+    url: parsedUrl.toString(),
+    finalUrl: res.url,
+    bytes: received,
+    blocked,
+    hasTitle: !!extract.title,
+    hasOgDesc: !!extract.ogDescription,
+    hasSchema: !!extract.schemas,
+    bodyChars: extract.bodyText.length,
+    latencyMs: Date.now() - startTime,
+  });
 
   return jsonOk({
     ok: true,
@@ -233,13 +263,21 @@ async function handleFetchSite(request, env, corsHeaders) {
 }
 
 // Handler para POST / → proxy a Anthropic
-async function handleAnthropicProxy(request, env, corsHeaders) {
+async function handleAnthropicProxy(request, env, corsHeaders, ip) {
+  const startTime = Date.now();
   let body;
   try {
     body = await request.json();
   } catch {
+    log('anthropic_bad_body', { ip });
     return jsonError('Body inválido. Esperaba JSON.', 400, corsHeaders);
   }
+
+  const model = body.model || 'unknown';
+  const messageCount = Array.isArray(body.messages) ? body.messages.length : 0;
+  const systemLength = typeof body.system === 'string' ? body.system.length : 0;
+
+  log('anthropic_request', { ip, model, messageCount, systemLength });
 
   let upstream;
   try {
@@ -253,10 +291,26 @@ async function handleAnthropicProxy(request, env, corsHeaders) {
       body: JSON.stringify(body),
     });
   } catch (err) {
+    log('anthropic_network_error', { ip, error: String(err.message || err), latencyMs: Date.now() - startTime });
     return jsonError(`Error al contactar Anthropic: ${err.message}`, 502, corsHeaders);
   }
 
   const text = await upstream.text();
+  const latencyMs = Date.now() - startTime;
+
+  if (upstream.status >= 400) {
+    log('anthropic_response_error', { ip, model, status: upstream.status, latencyMs, bytes: text.length });
+  } else {
+    // Intentar extraer tokens usados (Anthropic incluye `usage` en la respuesta) sin parsear el cuerpo completo.
+    let inputTokens = null, outputTokens = null;
+    try {
+      const parsed = JSON.parse(text);
+      inputTokens = parsed?.usage?.input_tokens ?? null;
+      outputTokens = parsed?.usage?.output_tokens ?? null;
+    } catch {}
+    log('anthropic_response_ok', { ip, model, status: upstream.status, latencyMs, inputTokens, outputTokens, bytes: text.length });
+  }
+
   return new Response(text, {
     status: upstream.status,
     headers: {
@@ -275,12 +329,16 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
 
+    const url = new URL(request.url);
+    const endpoint = url.pathname;
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+
     if (request.method !== 'POST') {
+      log('method_not_allowed', { ip, endpoint, method: request.method });
       return jsonError('Método no permitido. Usá POST.', 405, corsHeaders);
     }
 
     // Rate limit por IP usando caches.default. Va ANTES de validar password.
-    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     const window = Math.floor(Date.now() / (RATE_LIMIT_WINDOW * 1000));
     const cacheKey = new Request(`https://rl.local/${encodeURIComponent(ip)}/${window}`);
     const cached = await caches.default.match(cacheKey);
@@ -288,6 +346,7 @@ export default {
     if (cached) {
       count = parseInt(await cached.text(), 10) + 1;
       if (count > RATE_LIMIT_MAX) {
+        log('rate_limited', { ip, endpoint, count });
         return jsonError(
           'Demasiadas consultas en poco tiempo. Esperá un minuto y reintentá.',
           429,
@@ -303,14 +362,14 @@ export default {
     // Validar password
     const password = request.headers.get('X-Access-Password');
     if (!password || password !== env.ACCESS_PASSWORD) {
+      log('auth_failed', { ip, endpoint, hasPassword: !!password });
       return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
     }
 
     // Routing
-    const url = new URL(request.url);
-    if (url.pathname === '/fetch-site') {
-      return handleFetchSite(request, env, corsHeaders);
+    if (endpoint === '/fetch-site') {
+      return handleFetchSite(request, env, corsHeaders, ip);
     }
-    return handleAnthropicProxy(request, env, corsHeaders);
+    return handleAnthropicProxy(request, env, corsHeaders, ip);
   },
 };
