@@ -1,13 +1,17 @@
 /**
  * Fabrisio sin Humo — Cloudflare Worker proxy
  * ===========================================
- * Proxy entre el cliente (Vercel) y la API de Anthropic + endpoint para fetch de sitios.
+ * Proxy entre el cliente (Vercel) y la API de Anthropic + fetch de sitios + admin de passwords.
  *
  * Variables de entorno (Cloudflare → Worker → Settings → Variables and Secrets):
  *   ANTHROPIC_API_KEY    → Tu key sk-ant-... (Secret)
- *   ACCESS_PASSWORD      → La contraseña que ingresan los clientes (Secret)
- *   ALLOWED_ORIGINS      → Lista separada por comas de orígenes permitidos. Plain Text.
+ *   ACCESS_PASSWORD      → Password compartida legacy — opcional, sigue funcionando como fallback (Secret)
+ *   MASTER_PASSWORD      → Password maestra para el endpoint /admin (Secret, SOLO vos la sabés)
+ *   ALLOWED_ORIGINS      → Lista CSV de orígenes permitidos. Plain Text.
  *                          Ej: "https://fabrisiosinhumo.com,https://www.fabrisiosinhumo.com,https://fabrisio-sin-humo-app.vercel.app"
+ *
+ * Bindings (Cloudflare → Worker → Bindings):
+ *   PASSWORDS (KV namespace) → Almacena hash de cada password con metadata { name, createdAt, lastUsedAt, disabled, notes }
  *
  * Rate limit: 30 requests/min por IP, implementado con caches.default del edge.
  *             Per-colo (eventual consistency entre data centers) pero suficiente para
@@ -15,9 +19,17 @@
  *
  * Endpoints expuestos:
  *   POST /              → Proxy a Anthropic. Body: { model, max_tokens, system, messages }
+ *                         Headers: X-Access-Password (chequea KV, fallback a ACCESS_PASSWORD)
  *   POST /fetch-site    → Fetch + extracción estructurada de un sitio web.
  *                         Body: { url }
  *                         Returns: { ok, blocked, title, description, ogTitle, ogType, headings, bodyText, schemas }
+ *   POST /admin         → Gestión de passwords. Headers: X-Master-Password
+ *                         Acciones via body:
+ *                           { action: "create", name, notes?, prefix? } → genera + devuelve password ÚNICA VEZ
+ *                           { action: "list" }                          → lista todos los records (sin passwords reales)
+ *                           { action: "disable", hash }                 → marca disabled
+ *                           { action: "enable", hash }                  → reactiva
+ *                           { action: "delete", hash }                  → borra permanente
  */
 
 const RATE_LIMIT_MAX = 30;       // requests
@@ -45,7 +57,7 @@ function getCorsHeaders(request, env) {
 
   return {
     'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Headers': 'Content-Type, X-Access-Password',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Access-Password, X-Master-Password',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Vary': 'Origin',
   };
@@ -70,6 +82,130 @@ function jsonOk(data, corsHeaders) {
 // Nunca loguear password ni body completo (privacidad + costo de log).
 function log(event, data) {
   try { console.log(JSON.stringify({ event, ts: Date.now(), ...data })); } catch {}
+}
+
+// ============ MULTI-PASSWORD (KV) helpers ============
+// Hash SHA-256 hex de un string. Usado para no guardar la password en claro en KV.
+async function sha256(str) {
+  const buf = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Genera password tipo "fabrisio-x7k2-m9p4" — 4 chars + 4 chars sin confusos (0/O/1/I/l).
+function generatePassword(prefix = 'fshumo') {
+  const safe = 'abcdefghjkmnpqrstuvwxyz23456789'; // 31 chars
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  const chars = Array.from(bytes).map(b => safe[b % safe.length]);
+  return `${prefix}-${chars.slice(0, 4).join('')}-${chars.slice(4, 8).join('')}`;
+}
+
+// Valida una password contra KV (si está configurado) y como fallback contra ACCESS_PASSWORD legacy.
+// Devuelve { source: 'kv'|'legacy', name } si es válida, o null si no.
+// Si es kv, también actualiza lastUsedAt async (fire-and-forget via ctx.waitUntil).
+async function isPasswordValid(password, env, ctx) {
+  if (!password || typeof password !== 'string') return null;
+
+  // 1) KV: buscar por hash
+  if (env.PASSWORDS) {
+    try {
+      const hash = await sha256(password);
+      const key = `pw:${hash}`;
+      const record = await env.PASSWORDS.get(key, 'json');
+      if (record && !record.disabled) {
+        const updated = { ...record, lastUsedAt: Date.now() };
+        if (ctx && typeof ctx.waitUntil === 'function') {
+          ctx.waitUntil(env.PASSWORDS.put(key, JSON.stringify(updated)));
+        }
+        return { source: 'kv', name: record.name, hash };
+      }
+    } catch (err) {
+      log('kv_lookup_error', { error: String(err.message || err) });
+    }
+  }
+
+  // 2) Legacy: ACCESS_PASSWORD env var (compat antes de migrar todos a KV)
+  if (env.ACCESS_PASSWORD && password === env.ACCESS_PASSWORD) {
+    return { source: 'legacy', name: 'legacy-shared' };
+  }
+
+  return null;
+}
+
+// Endpoint admin protegido por MASTER_PASSWORD. Acciones: create, list, disable, enable, delete.
+async function handleAdmin(request, env, corsHeaders, ip) {
+  if (!env.PASSWORDS) {
+    return jsonError('KV namespace PASSWORDS no configurado en el Worker.', 500, corsHeaders);
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError('Body inválido. Esperaba JSON con { action, ... }.', 400, corsHeaders);
+  }
+  const action = (body.action || '').toString().trim();
+  if (!action) return jsonError('Falta action.', 400, corsHeaders);
+
+  if (action === 'create') {
+    const name = (body.name || '').toString().trim();
+    if (!name) return jsonError('Falta name.', 400, corsHeaders);
+    const prefix = (body.prefix || 'fshumo').toString().toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 20) || 'fshumo';
+    const password = generatePassword(prefix);
+    const hash = await sha256(password);
+    const key = `pw:${hash}`;
+    const record = {
+      name,
+      createdAt: Date.now(),
+      lastUsedAt: null,
+      disabled: false,
+      notes: (body.notes || '').toString(),
+    };
+    await env.PASSWORDS.put(key, JSON.stringify(record));
+    log('admin_create', { ip, name, hash });
+    return jsonOk({
+      ok: true,
+      message: 'Password creada. GUARDALA AHORA — solo se muestra una vez.',
+      password,
+      hash,
+      ...record,
+    }, corsHeaders);
+  }
+
+  if (action === 'list') {
+    const list = await env.PASSWORDS.list({ prefix: 'pw:' });
+    const records = await Promise.all(list.keys.map(async k => {
+      const r = await env.PASSWORDS.get(k.name, 'json');
+      return r ? { hash: k.name.slice(3), ...r } : null;
+    }));
+    const clean = records.filter(Boolean);
+    return jsonOk({ ok: true, count: clean.length, records: clean }, corsHeaders);
+  }
+
+  if (action === 'disable' || action === 'enable') {
+    const hash = (body.hash || '').toString().trim();
+    if (!hash) return jsonError('Falta hash.', 400, corsHeaders);
+    const key = `pw:${hash}`;
+    const record = await env.PASSWORDS.get(key, 'json');
+    if (!record) return jsonError('Hash no encontrado.', 404, corsHeaders);
+    const updated = { ...record, disabled: action === 'disable' };
+    await env.PASSWORDS.put(key, JSON.stringify(updated));
+    log('admin_toggle', { ip, action, hash, name: record.name });
+    return jsonOk({ ok: true, ...updated, hash }, corsHeaders);
+  }
+
+  if (action === 'delete') {
+    const hash = (body.hash || '').toString().trim();
+    if (!hash) return jsonError('Falta hash.', 400, corsHeaders);
+    const key = `pw:${hash}`;
+    const record = await env.PASSWORDS.get(key, 'json');
+    if (!record) return jsonError('Hash no encontrado.', 404, corsHeaders);
+    await env.PASSWORDS.delete(key);
+    log('admin_delete', { ip, hash, name: record.name });
+    return jsonOk({ ok: true, deleted: true, hash }, corsHeaders);
+  }
+
+  return jsonError('action inválida. Usá: create, list, disable, enable, delete.', 400, corsHeaders);
 }
 
 // Detecta páginas típicas de anti-bot / challenge / acceso denegado
@@ -321,7 +457,7 @@ async function handleAnthropicProxy(request, env, corsHeaders, ip) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const corsHeaders = getCorsHeaders(request, env);
 
     // Preflight
@@ -359,11 +495,26 @@ export default {
       new Response(String(count), { headers: { 'Cache-Control': `public, max-age=${RATE_LIMIT_WINDOW}` } })
     );
 
-    // Validar password
+    // Admin endpoint: usa MASTER_PASSWORD (no X-Access-Password). NO requiere KV en sí — handleAdmin chequea.
+    if (endpoint === '/admin') {
+      const masterPass = request.headers.get('X-Master-Password');
+      if (!env.MASTER_PASSWORD || !masterPass || masterPass !== env.MASTER_PASSWORD) {
+        log('admin_auth_failed', { ip, hasMaster: !!masterPass });
+        return jsonError('Master password incorrecta.', 401, corsHeaders);
+      }
+      return handleAdmin(request, env, corsHeaders, ip);
+    }
+
+    // Endpoints normales: validar password vía KV (con fallback a ACCESS_PASSWORD legacy)
     const password = request.headers.get('X-Access-Password');
-    if (!password || password !== env.ACCESS_PASSWORD) {
+    const validation = await isPasswordValid(password, env, ctx);
+    if (!validation) {
       log('auth_failed', { ip, endpoint, hasPassword: !!password });
       return jsonError('Acceso no autorizado. Verificá tu contraseña.', 401, corsHeaders);
+    }
+    // Log quién usó la password (para métricas por cliente en KV)
+    if (validation.source === 'kv') {
+      log('auth_ok', { ip, endpoint, source: 'kv', name: validation.name });
     }
 
     // Routing
