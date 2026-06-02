@@ -1352,7 +1352,41 @@ const PROFILE_MAPPING: Record<string, Record<string, ProfileKey>> = {
     igAbout: 'businessDescription',
     igIdealFollower: 'idealCustomer',
   },
-  // brand-story NO se mapea — su lógica es voz personal sagrada (ver feedback_pragmatic_typing)
+  'hormozi-grand-slam-offer': {
+    gsoCurrentOffer: 'businessDescription',
+  },
+  'copy-storytelling-ventas': {
+    copyWhatSell: 'businessDescription',
+    copyTarget: 'idealCustomer',
+    copyDeepPain: 'mainPain',
+  },
+  'cardone-sales-engine': {
+    cardProduct: 'businessDescription',
+    cardIdealProspect: 'idealCustomer',
+  },
+  'garyv-content-pillar': {
+    gvAudience: 'idealCustomer',
+  },
+  'blue-ocean-purple-cow': {
+    boBusiness: 'businessDescription',
+  },
+  'ideas-virales-2': {
+    viralProEdge: 'differential',
+  },
+  'guiones-video-1': {
+    vsProduct: 'businessDescription',
+    vsBigPromise: 'differential',
+    vsTarget: 'idealCustomer',
+    vsTopPain: 'mainPain',
+  },
+  // NO mapeadas (con razón):
+  // - brand-story, storytelling-digital, storytelling-heroe: voz personal sagrada
+  // - producir-reel, seis-sombreros-deliberacion: 100% específico al contexto
+  // - guiones-video-2: campos compuestos (segments, ladder) — riesgo de polución
+  // - video-ai: vaiContext es contextual a la escena
+  // - growth-leads: glProductPriceTicket combina producto+precio+ciclo
+  // - optimizador-meta-ads: omaVerticalIndustry combina vertical+margen+ticket
+  // - calendario-redes-isra: swcBrand combina name+desc+url, no es 1:1
 };
 
 function loadProfile(): Record<string, string> {
