@@ -71,11 +71,11 @@ const t = {
     myProfile:'Mi perfil',
     myProfileTitle:'Perfil de tu negocio',
     myProfileDesc:'Estos datos se reusan automáticamente en cada herramienta. Editá cuando cambien.',
-    myProfileFilledCount:'cargados de 5',
+    myProfileFilledCount:'cargados de 8',
     myProfileSave:'Guardar cambios',
     myProfileSaved:'✓ Perfil guardado',
     myProfileDelete:'Borrar perfil',
-    myProfileDeleteConfirm:'¿Seguro? Esto borra los 5 campos. No se puede deshacer.',
+    myProfileDeleteConfirm:'¿Seguro? Esto borra los 8 campos. No se puede deshacer.',
     myProfileDeleteYes:'Sí, borrar todo',
     myProfileDeleteCancel:'Cancelar',
     myProfileEmpty:'(vacío)',
@@ -89,6 +89,12 @@ const t = {
     profileDifferentialPh:'Ej: Respuesta de WhatsApp <10min vs 4hs competencia. Garantía local 6 meses. 4.8★ en 300 reseñas...',
     profileMainPain:'Problema #1 que resolvés',
     profileMainPainPh:'Ej: Acceso a tech moderna sin pagar precio premium de Apple/Samsung...',
+    profileMainProduct:'Producto/servicio principal + precio + ciclo de venta',
+    profileMainProductPh:'Ej: Programa de consultoría 1:1, $1800 USD pago único o 3 cuotas de $700. Ciclo típico: 18-26 días desde primer contacto hasta cierre. ~50% cierra en 14-30 días.',
+    profileBrandVoice:'Voz y tono de marca',
+    profileBrandVoicePh:'Ej: Cercana, divertida, confiable. Rioplatense (vos/tenés). Autoridad sin desesperación. NUNCA usar "¡Aprovechá!" ni más de 1 signo de admiración por post. Frases-marca: "Los que saben, eligen X". "Simple."',
+    profileMainGoal:'Objetivo dominante (corto/mediano plazo)',
+    profileMainGoalPh:'Ej: Llegar a 30 ventas/mes en 90 días manteniendo ROAS >3x. Después escalar a 60 ventas/mes en mes 6 y contratar SDR. Objetivo de fondo: que el negocio funcione sin mí 20hs/semana.',
     continueSessionTitle:'Tenés una sesión sin terminar',
     continueSessionDesc:'Podés retomar donde dejaste o empezar de cero.',
     continueSessionLast:'Última actividad',
@@ -191,11 +197,11 @@ const t = {
     myProfile:'My profile',
     myProfileTitle:'Your business profile',
     myProfileDesc:'These fields are reused automatically across tools. Edit them when they change.',
-    myProfileFilledCount:'of 5 filled',
+    myProfileFilledCount:'of 8 filled',
     myProfileSave:'Save changes',
     myProfileSaved:'✓ Profile saved',
     myProfileDelete:'Delete profile',
-    myProfileDeleteConfirm:'Sure? This deletes all 5 fields. Can\'t be undone.',
+    myProfileDeleteConfirm:'Sure? This deletes all 8 fields. Can\'t be undone.',
     myProfileDeleteYes:'Yes, delete all',
     myProfileDeleteCancel:'Cancel',
     myProfileEmpty:'(empty)',
@@ -209,6 +215,12 @@ const t = {
     profileDifferentialPh:'Ex: WhatsApp reply <10min vs 4h competitors. Local 6-month warranty. 4.8★ on 300 reviews...',
     profileMainPain:'Problem #1 you solve',
     profileMainPainPh:'Ex: Access to modern tech without paying Apple/Samsung premium...',
+    profileMainProduct:'Main product/service + price + sales cycle',
+    profileMainProductPh:'Ex: 1:1 consulting program, $1800 USD one-time or 3 of $700. Typical cycle: 18-26 days from first contact to close. ~50% close in 14-30 days.',
+    profileBrandVoice:'Brand voice and tone',
+    profileBrandVoicePh:'Ex: Friendly, fun, trustworthy. Authority without desperation. NEVER use "Get it now!" or more than 1 exclamation per post. Brand phrases: "Those who know, choose X". "Simple."',
+    profileMainGoal:'Main goal (short/mid term)',
+    profileMainGoalPh:'Ex: Reach 30 sales/month in 90 days maintaining ROAS >3x. Then scale to 60 sales/month by month 6 and hire SDR. Background goal: business running without me 20h/week.',
     continueSessionTitle:'You have an unfinished session',
     continueSessionDesc:'Pick up where you left off, or start fresh.',
     continueSessionLast:'Last activity',
@@ -1330,7 +1342,7 @@ const BIZ_LABELS = {ecommerce:'E-commerce / Retail',service:'Servicio profesiona
 const CRITICAL_KEYS = new Set(['differential','fodaMainStrength','fodaMainWeakness','bsAudience2','bsValues1','bsOffer2','bsOrigin3']);
 
 // ============ PERFIL DEL NEGOCIO (persistente entre tools) ============
-type ProfileKey = 'businessName' | 'businessDescription' | 'idealCustomer' | 'differential' | 'mainPain';
+type ProfileKey = 'businessName' | 'businessDescription' | 'idealCustomer' | 'differential' | 'mainPain' | 'mainProduct' | 'brandVoice' | 'mainGoal';
 const PROFILE_STORAGE_KEY = 'fshumo_profile';
 
 // Mapea preguntas de cada tool a conceptos del perfil compartido.
@@ -1379,14 +1391,19 @@ const PROFILE_MAPPING: Record<string, Record<string, ProfileKey>> = {
     vsTarget: 'idealCustomer',
     vsTopPain: 'mainPain',
   },
+  'growth-leads': {
+    glProductPriceTicket: 'mainProduct',
+  },
   // NO mapeadas (con razón):
   // - brand-story, storytelling-digital, storytelling-heroe: voz personal sagrada
   // - producir-reel, seis-sombreros-deliberacion: 100% específico al contexto
   // - guiones-video-2: campos compuestos (segments, ladder) — riesgo de polución
   // - video-ai: vaiContext es contextual a la escena
-  // - growth-leads: glProductPriceTicket combina producto+precio+ciclo
   // - optimizador-meta-ads: omaVerticalIndustry combina vertical+margen+ticket
   // - calendario-redes-isra: swcBrand combina name+desc+url, no es 1:1
+  // - brandVoice y mainGoal del profile no se mapean automáticamente porque las
+  //   preguntas de las tools que tocan voz/objetivo son selects/multiselects o
+  //   muy compuestas — sirven como referencia legible en Mi Perfil para el user.
 };
 
 function loadProfile(): Record<string, string> {
@@ -2412,6 +2429,9 @@ export default function App() {
       idealCustomer: current.idealCustomer || '',
       differential: current.differential || '',
       mainPain: current.mainPain || '',
+      mainProduct: current.mainProduct || '',
+      brandVoice: current.brandVoice || '',
+      mainGoal: current.mainGoal || '',
     });
     setMyProfileSaved(false);
     setMyProfileDeleteAsk(false);
@@ -2420,7 +2440,7 @@ export default function App() {
 
   const saveMyProfile = () => {
     const cleaned: Record<string, string> = {};
-    (['businessName','businessDescription','idealCustomer','differential','mainPain'] as ProfileKey[]).forEach(k => {
+    (['businessName','businessDescription','idealCustomer','differential','mainPain','mainProduct','brandVoice','mainGoal'] as ProfileKey[]).forEach(k => {
       const v = (myProfileDraft[k] || '').trim();
       if (v) cleaned[k] = v;
     });
@@ -2431,7 +2451,7 @@ export default function App() {
 
   const deleteMyProfile = () => {
     saveProfile({});
-    setMyProfileDraft({ businessName:'', businessDescription:'', idealCustomer:'', differential:'', mainPain:'' });
+    setMyProfileDraft({ businessName:'', businessDescription:'', idealCustomer:'', differential:'', mainPain:'', mainProduct:'', brandVoice:'', mainGoal:'' });
     setMyProfileDeleteAsk(false);
     setMyProfileSaved(true);
     setTimeout(() => setMyProfileSaved(false), 2500);
@@ -2768,6 +2788,9 @@ export default function App() {
       { key: 'idealCustomer',        label: lng.profileIdealCustomer,       placeholder: lng.profileIdealCustomerPh },
       { key: 'differential',         label: lng.profileDifferential,        placeholder: lng.profileDifferentialPh },
       { key: 'mainPain',             label: lng.profileMainPain,            placeholder: lng.profileMainPainPh },
+      { key: 'mainProduct',          label: lng.profileMainProduct,         placeholder: lng.profileMainProductPh },
+      { key: 'brandVoice',           label: lng.profileBrandVoice,          placeholder: lng.profileBrandVoicePh },
+      { key: 'mainGoal',             label: lng.profileMainGoal,            placeholder: lng.profileMainGoalPh },
     ];
     const filledCount = fields.filter(f => (myProfileDraft[f.key] || '').trim()).length;
     return (
