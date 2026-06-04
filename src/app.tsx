@@ -3097,6 +3097,7 @@ export default function App() {
               <button onClick={()=>dismissTip(toolId)} className="text-xs text-zinc-400 hover:text-white px-2 py-1 rounded hover:bg-zinc-800 flex-shrink-0">{lng.tipDismiss}</button>
             </div>
           )}
+          <motion.div key={stepIdx} initial={{opacity:0,x:14}} animate={{opacity:1,x:0}} transition={{duration:0.35,ease:[0.23,1,0.32,1]}}>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-xs text-zinc-400 mb-6">
             <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full"/>
             {phaseLabels[curStep.phase]}
@@ -3108,10 +3109,11 @@ export default function App() {
           {autoFilled[curStep.key]&&<div className="smooth-enter inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-400/10 border border-yellow-400/30 rounded-full text-yellow-400 text-xs font-medium mb-4"><Wand2 className="w-3.5 h-3.5"/><span>{lng.autoDetected}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
           {!autoFilled[curStep.key]&&profileFilled[curStep.key]&&<div className="smooth-enter inline-flex items-center gap-2 px-3 py-1.5 bg-blue-400/10 border border-blue-400/30 rounded-full text-blue-300 text-xs font-medium mb-4"><Users className="w-3.5 h-3.5"/><span>{lng.fromProfile}</span><button onClick={()=>clearField(curStep.key)} className="ml-1 hover:text-white"><Eraser className="w-3.5 h-3.5"/></button></div>}
           <div className="mt-2">
-            {curStep.type==='textarea'&&<textarea value={val||''} onChange={e=>setData({...data,[curStep.key]:e.target.value})} placeholder={q.placeholder} rows={6} className="w-full px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600 resize-none"/>}
+            {curStep.type==='textarea'&&<textarea value={val||''} onChange={e=>setData({...data,[curStep.key]:e.target.value})} placeholder={q.placeholder} rows={6} className="w-full px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/15 outline-none text-zinc-100 placeholder-zinc-600 resize-none transition-shadow"/>}
             {curStep.type==='select'&&<div className="space-y-2">{q.options.map((opt: string)=><button key={opt} onClick={()=>setData({...data,[curStep.key]:opt})} className={`w-full text-left px-5 py-4 rounded-xl border transition-all ${val===opt?'bg-yellow-400/10 border-yellow-400 text-white':'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300'}`}><div className="flex items-center justify-between"><span>{opt}</span>{val===opt&&<Check className="w-5 h-5 text-yellow-400"/>}</div></button>)}</div>}
             {curStep.type==='multiselect'&&<><p className="text-xs text-zinc-500 mb-3">{lng.selectMultiple}</p><div className="grid grid-cols-2 md:grid-cols-3 gap-2">{q.options.map((opt: string)=>{const sel=Array.isArray(val)&&val.includes(opt);return<button key={opt} onClick={()=>{const arr=Array.isArray(val)?val:[];setData({...data,[curStep.key]:sel?arr.filter((x: string)=>x!==opt):[...arr,opt]});}} className={`px-4 py-3 rounded-xl border text-sm font-medium ${sel?'bg-yellow-400/10 border-yellow-400 text-white':'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300'}`}>{opt}</button>;})}</div></>}
           </div>
+          </motion.div>
           <div className="flex flex-wrap items-center gap-3 mt-6">
             <button onClick={()=>setChatOpen(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-sm text-zinc-300"><MessageCircle className="w-4 h-4 text-yellow-400"/>{lng.dontKnow}</button>
             {curStep.skippable&&<button onClick={handleSkipSection} className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-sm text-zinc-300"><SkipForward className="w-4 h-4"/>{lang==='es'?'Saltar sección':'Skip section'}</button>}
