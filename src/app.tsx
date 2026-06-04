@@ -2612,7 +2612,7 @@ export default function App() {
       <section className="relative border-y border-zinc-800/60 bg-zinc-950/40 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           {L.stats.map((s:any,i:number)=>(
-            <motion.div key={i} {...reveal(i*0.08)} className="text-center">
+            <motion.div key={i} {...reveal(i*0.08)} className={`text-center ${i>0 ? 'md:border-l md:border-zinc-800' : ''}`}>
               <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">{s.n}</div>
               <div className="mt-2 text-sm text-zinc-400">{s.l}</div>
             </motion.div>
@@ -2630,6 +2630,11 @@ export default function App() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {L.steps.map((s:any,i:number)=>(
             <motion.div key={i} {...reveal(i*0.08)} className="relative p-6 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl">
+              {i < L.steps.length-1 && (
+                <div className="hidden md:flex absolute top-1/2 -right-2 -translate-y-1/2 translate-x-1/2 z-10 w-6 h-6 rounded-full bg-zinc-900 border border-zinc-700 items-center justify-center">
+                  <ArrowRight className="w-3 h-3 text-yellow-400"/>
+                </div>
+              )}
               <div className="text-yellow-400/25 font-bold text-5xl leading-none mb-3">{String(i+1).padStart(2,'0')}</div>
               <h3 className="font-semibold text-lg mb-2">{s.t}</h3>
               <p className="text-sm text-zinc-400 leading-relaxed">{s.d}</p>
@@ -2726,17 +2731,17 @@ export default function App() {
     const CardComp = ({tool, index}: any) => {
       const locked = !tool.available;
       return (
-        <button onClick={()=>tool.available&&pickTool(tool.id)} disabled={locked} style={{animationDelay:`${(index||0)*40}ms`}} className={`stagger-item group relative text-left rounded-2xl border overflow-hidden ${locked?'bg-zinc-900/30 border-zinc-800/60 cursor-not-allowed opacity-70':'bg-zinc-900 border-zinc-800 hover:border-yellow-400/50 hover:bg-zinc-900/90 cursor-pointer hover:shadow-lg hover:shadow-yellow-400/5'}`}>
+        <button onClick={()=>tool.available&&pickTool(tool.id)} disabled={locked} style={{animationDelay:`${(index||0)*40}ms`}} className={`stagger-item group relative flex flex-col h-full text-left rounded-2xl border overflow-hidden ${locked?'bg-zinc-900/30 border-zinc-800/60 cursor-not-allowed opacity-70':'bg-zinc-900 border-zinc-800 hover:border-yellow-400/50 hover:bg-zinc-900/90 cursor-pointer hover:shadow-xl hover:shadow-yellow-400/10 hover:-translate-y-1'}`}>
           <div className={`relative h-32 overflow-hidden ${locked?'bg-gradient-to-br from-zinc-900 to-zinc-950':'bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950'}`}>
             {!locked&&<div className="absolute inset-0 opacity-30" style={{backgroundImage:'radial-gradient(circle at 30% 50%, rgba(250,204,21,0.15) 0%, transparent 60%)'}}/>}
             <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'linear-gradient(rgba(250,204,21,1) 1px,transparent 1px),linear-gradient(90deg,rgba(250,204,21,1) 1px,transparent 1px)',backgroundSize:'14px 14px'}}/>
             <div className="absolute inset-0 p-4 transition-transform duration-300 group-hover:scale-105"><ToolIllustration illustrationId={tool.illustrationId} isLocked={locked}/></div>
             {locked&&<div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-zinc-950/90 backdrop-blur-sm border border-zinc-700 rounded-full text-[10px] font-semibold text-zinc-400"><Lock className="w-2.5 h-2.5"/>{lng.toolSoon}</div>}
           </div>
-          <div className="p-5">
+          <div className="p-5 flex flex-col flex-1">
             <h3 className={`font-semibold text-base mb-1.5 leading-tight ${locked?'text-zinc-400':'text-white'}`}>{getToolName(tool.id)}</h3>
             <p className={`text-sm leading-relaxed mb-4 ${locked?'text-zinc-600':'text-zinc-400'}`}>{getToolDesc(tool.id)}</p>
-            <div className="flex flex-wrap items-center gap-2 text-xs">
+            <div className="flex flex-wrap items-center gap-2 text-xs mt-auto">
               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${(levelColors as any)[tool.level]}`}>{(levelMap as any)[tool.level]}</span>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-zinc-800/80 text-zinc-400 rounded-md border border-zinc-700"><Clock className="w-3 h-3"/>{tool.time} {lng.toolTimeMin}</span>
             </div>
