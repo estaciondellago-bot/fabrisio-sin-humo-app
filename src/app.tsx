@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, Download, MessageCircle, X, Send, SkipForward, Flame, Users, Trophy, BarChart3, FileText, ArrowRight, AlertCircle, Link2, Wand2, Eraser, Zap, Target, Search, Clock, Megaphone, Compass, TrendingUp, Briefcase, PieChart, Lock, FileEdit, Film, ListChecks, DollarSign } from 'lucide-react';
 
 const WORKER_URL = 'https://api.fabrisiosinhumo.com';
@@ -7,6 +8,26 @@ const t = {
   es: {
     appName:'Fabrisio sin Humo', subtitle:'Constructor de estrategias y consultoría con IA',
     heroDesc:'Caja de herramientas profesional para diagnosticar, estrategizar y escalar tu negocio. Sin plantillas genéricas. Sin humo.',
+    landing:{
+      stats:[
+        {n:'+20', l:'herramientas de estrategia'},
+        {n:'6',    l:'tipos de negocio'},
+        {n:'100%', l:'adaptado a vos, sin plantillas'},
+        {n:'0',    l:'chamuyo'},
+      ],
+      howTag:'Cómo funciona', howTitle:'De cero a estrategia en 4 pasos',
+      howDesc:'Sin cursos ni teoría. Respondés y te llevás un plan accionable.',
+      steps:[
+        {t:'Elegí tu negocio', d:'Decinos tu rubro y adaptamos cada herramienta a tu realidad.'},
+        {t:'Respondé lo que importa', d:'Preguntas afiladas — o pre-cargá tu web y redes y te pre-llenamos todo.'},
+        {t:'Fabrisio arma la estrategia', d:'Diagnóstico, funnel, campañas y creatividades, ordenado por bloques.'},
+        {t:'Exportás y ejecutás', d:'Te lo llevás en Markdown o PDF, listo para poner en marcha.'},
+      ],
+      areasTag:'Qué vas a resolver', areasTitle:'Un kit de consultoría completo',
+      areasDesc:'No es una plantilla: son herramientas que se adaptan a tu negocio.',
+      ctaTitle:'Basta de estrategias genéricas.',
+      ctaDesc:'Armá la tuya — con tu voz, tu negocio y cero humo.',
+    },
     startBtn:'Empezar', next:'Siguiente', back:'Atrás', skip:'Saltar',
     dontKnow:'No sé / Ayudame a pensarlo', askClaude:'Preguntale a Fabrisio',
     send:'Enviar', step:'Paso', of:'de', selectMultiple:'Podés elegir varias',
@@ -134,6 +155,26 @@ const t = {
   en: {
     appName:'Fabrisio sin Humo', subtitle:'AI-powered strategy & consulting builder',
     heroDesc:'Professional toolbox to diagnose, strategize and scale your business. No BS.',
+    landing:{
+      stats:[
+        {n:'+20', l:'strategy tools'},
+        {n:'6',    l:'business types'},
+        {n:'100%', l:'tailored to you, no templates'},
+        {n:'0',    l:'BS'},
+      ],
+      howTag:'How it works', howTitle:'From zero to strategy in 4 steps',
+      howDesc:'No courses, no theory. You answer and walk away with an actionable plan.',
+      steps:[
+        {t:'Pick your business', d:'Tell us your niche and we adapt every tool to your reality.'},
+        {t:'Answer what matters', d:'Sharp questions — or pre-load your site and socials and we fill it in.'},
+        {t:'Fabrisio builds the strategy', d:'Diagnosis, funnel, campaigns and creatives, organized by blocks.'},
+        {t:'Export and execute', d:'Take it in Markdown or PDF, ready to put to work.'},
+      ],
+      areasTag:'What you can solve', areasTitle:'A complete consulting kit',
+      areasDesc:'Not a template: tools that adapt to your business.',
+      ctaTitle:'Enough generic strategies.',
+      ctaDesc:'Build yours — your voice, your business, zero BS.',
+    },
     startBtn:'Start', next:'Next', back:'Back', skip:'Skip',
     dontKnow:"I don't know / Help me think", askClaude:'Ask Fabrisio',
     send:'Send', step:'Step', of:'of', selectMultiple:'You can pick several',
@@ -2509,35 +2550,127 @@ export default function App() {
     );
   };
 
-  if (screen==='landing') return (
-    <div className="screen-enter min-h-screen bg-zinc-950 text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(250,204,21,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(250,204,21,0.03)_1px,transparent_1px)] bg-[size:40px_40px]"/>
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-yellow-500/10 rounded-full blur-[120px]"/>
+  if (screen==='landing') {
+    // Variantes de entrada escalonada (no son hooks: declaración local, seguro
+    // dentro del bloque condicional). El easing matchea las curvas de Emil.
+    const fadeUp = { hidden:{opacity:0, y:18}, show:{opacity:1, y:0, transition:{duration:0.55, ease:[0.23,1,0.32,1] as const}} };
+    const container = { hidden:{}, show:{transition:{staggerChildren:0.09, delayChildren:0.05}} };
+    const features = [
+      {icon:Target,    t:lang==='es'?'Diagnóstico real':'Real diagnosis',     d:lang==='es'?'Preguntas que importan':'Questions that matter'},
+      {icon:BarChart3, t:lang==='es'?'Estrategia por bloques':'Strategy by blocks', d:lang==='es'?'Funnel + campañas + creatividades':'Funnel + campaigns + creatives'},
+      {icon:FileText,  t:lang==='es'?'Exportable':'Exportable',               d:lang==='es'?'Te lo llevás listo para ejecutar':'Take it ready to execute'},
+    ];
+    // Secciones nuevas de la landing. Las áreas reutilizan las categorías reales
+    // del objeto t (catDiagnosis, etc.) — nada inventado.
+    const L = lng.landing as any;
+    const areas = [
+      {icon:Search,     t:lng.catDiagnosis,  d:lng.catDiagnosisDesc},
+      {icon:Megaphone,  t:lng.catMarketing,  d:lng.catMarketingDesc},
+      {icon:FileEdit,   t:lng.catContent,    d:lng.catContentDesc},
+      {icon:PieChart,   t:lng.catOperations, d:lng.catOperationsDesc},
+      {icon:DollarSign, t:lng.catSales,      d:lng.catSalesDesc},
+      {icon:TrendingUp, t:lng.catGrowth,     d:lng.catGrowthDesc},
+    ];
+    const viewport = {once:true, margin:'-80px'} as const;
+    const reveal = (delay=0) => ({ initial:{opacity:0,y:18}, whileInView:{opacity:1,y:0}, viewport, transition:{duration:0.5, delay, ease:[0.23,1,0.32,1] as const} });
+    return (
+    <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
+      {/* Fondo: grid con máscara radial + 3 orbes aurora animados */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(250,204,21,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(250,204,21,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_75%_60%_at_50%_0%,black,transparent)]"/>
+      <div className="orb-breathe absolute top-[-12%] left-1/2 w-[760px] h-[760px] bg-yellow-500/15 rounded-full blur-[130px] pointer-events-none"/>
+      <div className="orb-drift absolute top-[18%] right-[6%] w-[420px] h-[420px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none"/>
+      <div className="orb-drift absolute bottom-[2%] left-[4%] w-[380px] h-[380px] bg-yellow-400/5 rounded-full blur-[110px] pointer-events-none" style={{animationDelay:'-7s'}}/>
+
       <div className="relative max-w-6xl mx-auto px-6 py-6">
         <header className="flex items-center justify-between mb-20">
-          <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
+          <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/30"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
           <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
         </header>
-        <div className="text-center max-w-3xl mx-auto pt-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Sparkles className="w-3 h-3"/>{lng.subtitle}</div>
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
+        <motion.div variants={container} initial="hidden" animate="show" className="text-center max-w-3xl mx-auto pt-12">
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Sparkles className="w-3 h-3"/>{lng.subtitle}</motion.div>
+          <motion.h1 variants={fadeUp} className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
             <span className="block">{lang==='es'?'Estrategia real.':'Real strategy.'}</span>
-            <span className="block text-yellow-400">{lang==='es'?'Sin chamuyo.':'No BS.'}</span>
-          </h1>
-          <p className="text-xl text-zinc-400 mb-10 leading-relaxed max-w-2xl mx-auto">{lng.heroDesc}</p>
-          <button onClick={handleStart} className="group inline-flex items-center gap-2 px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/20">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+            <span className="block bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">{lang==='es'?'Sin chamuyo.':'No BS.'}</span>
+          </motion.h1>
+          <motion.p variants={fadeUp} className="text-xl text-zinc-400 mb-10 leading-relaxed max-w-2xl mx-auto">{lng.heroDesc}</motion.p>
+          <motion.div variants={fadeUp} className="group relative inline-block">
+            <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
+            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20">
-            {[{icon:Target,t:lang==='es'?'Diagnóstico real':'Real diagnosis',d:lang==='es'?'Preguntas que importan':'Questions that matter'},{icon:BarChart3,t:lang==='es'?'Estrategia por bloques':'Strategy by blocks',d:lang==='es'?'Funnel + campañas + creatividades':'Funnel + campaigns + creatives'},{icon:FileText,t:lang==='es'?'Exportable':'Exportable',d:lang==='es'?'Te lo llevás listo para ejecutar':'Take it ready to execute'}].map((f,i)=>(
-              <div key={i} className="p-5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-left">
-                <div className="w-10 h-10 bg-yellow-400/10 rounded-lg flex items-center justify-center mb-3"><f.icon className="w-5 h-5 text-yellow-400"/></div>
+            {features.map((f,i)=>(
+              <motion.div key={i} variants={fadeUp} whileHover={{y:-4}} transition={{type:'spring',stiffness:300,damping:22}} className="group p-5 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-yellow-400/40 rounded-xl text-left transition-colors">
+                <div className="w-10 h-10 bg-yellow-400/10 group-hover:bg-yellow-400/20 rounded-lg flex items-center justify-center mb-3 transition-colors"><f.icon className="w-5 h-5 text-yellow-400"/></div>
                 <h3 className="font-semibold mb-1">{f.t}</h3><p className="text-sm text-zinc-400">{f.d}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
+
+      {/* ===== Banda de stats ===== */}
+      <section className="relative border-y border-zinc-800/60 bg-zinc-950/40 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {L.stats.map((s:any,i:number)=>(
+            <motion.div key={i} {...reveal(i*0.08)} className="text-center">
+              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">{s.n}</div>
+              <div className="mt-2 text-sm text-zinc-400">{s.l}</div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== Cómo funciona ===== */}
+      <section className="relative max-w-6xl mx-auto px-6 py-24">
+        <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Compass className="w-3 h-3"/>{L.howTag}</div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
+          <p className="text-zinc-400 text-lg">{L.howDesc}</p>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {L.steps.map((s:any,i:number)=>(
+            <motion.div key={i} {...reveal(i*0.08)} className="relative p-6 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl">
+              <div className="text-yellow-400/25 font-bold text-5xl leading-none mb-3">{String(i+1).padStart(2,'0')}</div>
+              <h3 className="font-semibold text-lg mb-2">{s.t}</h3>
+              <p className="text-sm text-zinc-400 leading-relaxed">{s.d}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== Áreas / qué resolvés ===== */}
+      <section className="relative max-w-6xl mx-auto px-6 pb-24">
+        <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><ListChecks className="w-3 h-3"/>{L.areasTag}</div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.areasTitle}</h2>
+          <p className="text-zinc-400 text-lg">{L.areasDesc}</p>
+        </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {areas.map((a,i)=>(
+            <motion.div key={i} {...reveal(i*0.06)} whileHover={{y:-4}} className="group p-6 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-yellow-400/40 rounded-2xl transition-colors">
+              <div className="w-11 h-11 bg-yellow-400/10 group-hover:bg-yellow-400/20 rounded-xl flex items-center justify-center mb-4 transition-colors"><a.icon className="w-5 h-5 text-yellow-400"/></div>
+              <h3 className="font-semibold text-lg mb-1">{a.t}</h3>
+              <p className="text-sm text-zinc-400 leading-relaxed">{a.d}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== CTA final ===== */}
+      <section className="relative max-w-4xl mx-auto px-6 pb-28">
+        <motion.div {...reveal()} className="relative text-center rounded-3xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm px-8 py-16 overflow-hidden">
+          <div className="orb-breathe absolute -top-1/2 left-1/2 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none"/>
+          <h2 className="relative text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.ctaTitle}</h2>
+          <p className="relative text-zinc-400 text-lg mb-8 max-w-xl mx-auto">{L.ctaDesc}</p>
+          <div className="relative group inline-block">
+            <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
+            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+          </div>
+        </motion.div>
+      </section>
     </div>
-  );
+    );
+  }
 
   if (screen==='apikey') return (
     <div className="screen-enter min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
