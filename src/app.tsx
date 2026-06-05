@@ -3,6 +3,9 @@ import { motion } from 'motion/react';
 import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, Download, MessageCircle, X, Send, SkipForward, Flame, Users, Trophy, BarChart3, FileText, ArrowRight, AlertCircle, Link2, Wand2, Eraser, Zap, Target, Search, Clock, Megaphone, Compass, TrendingUp, Briefcase, PieChart, Lock, FileEdit, Film, ListChecks, DollarSign } from 'lucide-react';
 
 const WORKER_URL = 'https://api.fabrisiosinhumo.com';
+// URL del Google Apps Script (web app doPost) que guarda los leads del mini-diagnóstico
+// en una Google Sheet. Pegá acá la URL que te da "Implementar → App web". Vacío = no envía.
+const LEAD_WEBHOOK_URL = '';
 
 const t = {
   es: {
@@ -2118,6 +2121,7 @@ export default function App() {
   const [diagStep, setDiagStep] = useState('intro'); // intro | questions | result | thanks
   const [diagData, setDiagData] = useState({biz:'', traba:'', goal:'', name:'', email:''});
   const [diagBusy, setDiagBusy] = useState(false);
+  const [diagResult, setDiagResult] = useState<{intro:string;actions:string[]}|null>(null);
   const [profileFilled, setProfileFilled] = useState<Record<string, boolean>>({});
   const [myProfileDraft, setMyProfileDraft] = useState<Record<string, string>>({});
   const [myProfileSaved, setMyProfileSaved] = useState(false);
@@ -2774,8 +2778,9 @@ export default function App() {
     const F = lng.freediag as any;
     const bizTypeKeys = Object.keys(lng.bizTypes);
     const biz = diagData.biz ? (lng.bizTypes[diagData.biz]?.label||'') : '';
-    // Diagnóstico mockeado (se reemplaza por el endpoint /diag del Worker más adelante).
-    const diag = lang==='en' ? {
+    // Diagnóstico mockeado: fallback si el endpoint /diag del Worker no está disponible
+    // (ej. en dev local por CORS, o antes de redeployar el Worker).
+    const mockDiag = lang==='en' ? {
       intro:`Based on what you shared, your ${biz?biz.toLowerCase()+' ':''}business doesn't have an effort problem — it has a focus problem. "${(diagData.traba||'your blocker').slice(0,90)}" is almost always a symptom of a value proposition that isn't sharp enough yet for clients to choose you without hesitating.`,
       actions:[
         'Nail in one sentence why a client picks you over the one next door. If you can\'t, that\'s job #1.',
@@ -2790,10 +2795,29 @@ export default function App() {
         `Para tu objetivo de "${(diagData.goal||'90 días').slice(0,60)}", elegí UNA palanca y ejecutala 90 días sin distraerte con el resto.`,
       ],
     };
+    const diag = diagResult || mockDiag;
     const canGen = !!(diagData.biz && diagData.traba.trim() && diagData.goal.trim());
     const canSubmit = !!(diagData.name.trim() && /\S+@\S+\.\S+/.test(diagData.email));
-    const runDiag = () => { setDiagBusy(true); setTimeout(()=>{ setDiagBusy(false); setDiagStep('result'); window.scrollTo(0,0); }, 1500); };
-    const submitLead = () => { setDiagBusy(true); setTimeout(()=>{ setDiagBusy(false); setDiagStep('thanks'); window.scrollTo(0,0); }, 1200); }; // TODO: POST a Google Sheet (Apps Script)
+    // Llama al Worker /diag (IA real). Si falla (CORS dev / Worker viejo), cae al mock.
+    const runDiag = async () => {
+      setDiagBusy(true);
+      try {
+        const res = await fetch(`${WORKER_URL}/diag`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ biz, traba:diagData.traba, goal:diagData.goal, lang }) });
+        if (res.ok) { const d = await res.json(); if (d && d.intro && Array.isArray(d.actions) && d.actions.length) setDiagResult({intro:d.intro, actions:d.actions}); }
+      } catch {}
+      setDiagBusy(false); setDiagStep('result'); window.scrollTo(0,0);
+    };
+    // Envía el lead a la Google Sheet (Apps Script) si LEAD_WEBHOOK_URL está seteado.
+    // no-cors + text/plain evita el preflight de CORS (Apps Script no devuelve headers CORS).
+    const submitLead = async () => {
+      setDiagBusy(true);
+      if (LEAD_WEBHOOK_URL) {
+        try {
+          await fetch(LEAD_WEBHOOK_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ name:diagData.name, email:diagData.email, biz, traba:diagData.traba, goal:diagData.goal, lang }) });
+        } catch {}
+      }
+      setDiagBusy(false); setDiagStep('thanks'); window.scrollTo(0,0);
+    };
     const goHome = () => { setScreen('landing'); setDiagStep('intro'); };
     const stepAnim = { initial:{opacity:0,y:18}, animate:{opacity:1,y:0}, transition:{duration:0.45,ease:[0.23,1,0.32,1] as const} };
 

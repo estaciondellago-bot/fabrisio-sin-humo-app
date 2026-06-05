@@ -25,6 +25,9 @@
  *   POST /fetch-site    → Fetch + extracción estructurada de un sitio web.
  *                         Body: { url }
  *                         Returns: { ok, blocked, title, description, ogTitle, ogType, headings, bodyText, schemas }
+ *   POST /diag          → PÚBLICO (sin password). Mini-diagnóstico gratis (lead magnet).
+ *                         Body: { biz, traba, goal, lang }
+ *                         Returns: { ok, intro, actions[] }. Protegido solo por el rate-limit por IP.
  *   POST /admin         → Gestión de passwords. Headers: X-Master-Password
  *                         Acciones via body:
  *                           { action: "create", name, notes?, prefix? } → genera + devuelve password ÚNICA VEZ
@@ -458,6 +461,82 @@ async function handleAnthropicProxy(request, env, corsHeaders, ip) {
   });
 }
 
+// Handler para POST /diag → mini-diagnóstico gratis (PÚBLICO, sin password).
+// Construye un prompt corto en la voz de Fabrisio y pide al modelo un JSON {intro, actions}.
+async function handleDiag(request, env, corsHeaders, ip) {
+  const startTime = Date.now();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return jsonError('Body inválido. Esperaba JSON con { biz, traba, goal, lang }.', 400, corsHeaders);
+  }
+  const biz = (body.biz || '').toString().slice(0, 120);
+  const traba = (body.traba || '').toString().slice(0, 800);
+  const goal = (body.goal || '').toString().slice(0, 800);
+  const lang = body.lang === 'en' ? 'en' : 'es';
+  if (!traba.trim() || !goal.trim()) {
+    return jsonError('Faltan respuestas (traba y objetivo).', 400, corsHeaders);
+  }
+
+  const sys = lang === 'en'
+    ? `You are Fabrisio, a no-BS business & marketing strategist (accountant + MBA + battle-scarred entrepreneur). Give a SHORT express diagnosis. Be direct, sharp and concrete — no fluff, no generic guru talk. Output ONLY a JSON object, nothing else: {"intro":"<one punchy paragraph, max 90 words, diagnosing the REAL underlying problem behind their blocker>","actions":["<concrete doable action 1>","<action 2>","<action 3>"]}. Actions must be specific, not platitudes.`
+    : `Sos Fabrisio, estratega de negocios y marketing sin chamuyo (contador + MBA + emprendedor escarmentado). Das un diagnóstico express CORTO. Directo, filoso y concreto — nada de relleno ni discurso de gurú. Escribí en español rioplatense (voseo). Devolvé SOLO un objeto JSON, nada más: {"intro":"<un párrafo punzante, máx 90 palabras, que diagnostique el problema REAL de fondo detrás de su traba>","actions":["<acción concreta y accionable 1>","<acción 2>","<acción 3>"]}. Las acciones deben ser específicas, no lugares comunes.`;
+
+  const userMsg = lang === 'en'
+    ? `Business type: ${biz || '(not specified)'}\nBiggest blocker: ${traba}\n90-day goal: ${goal}`
+    : `Tipo de negocio: ${biz || '(no especificado)'}\nMayor traba: ${traba}\nObjetivo 90 días: ${goal}`;
+
+  log('diag_request', { ip, biz, lang });
+
+  let upstream;
+  try {
+    upstream = await fetch(ANTHROPIC_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 700,
+        system: sys,
+        messages: [{ role: 'user', content: userMsg }],
+      }),
+    });
+  } catch (err) {
+    log('diag_network_error', { ip, error: String(err.message || err), latencyMs: Date.now() - startTime });
+    return jsonError('No pude generar el diagnóstico. Reintentá en un momento.', 502, corsHeaders);
+  }
+
+  const raw = await upstream.text();
+  if (upstream.status >= 400) {
+    log('diag_anthropic_error', { ip, status: upstream.status, latencyMs: Date.now() - startTime });
+    return jsonError('No pude generar el diagnóstico.', 502, corsHeaders);
+  }
+
+  let intro = '', actions = [];
+  try {
+    const parsed = JSON.parse(raw);
+    const textOut = parsed?.content?.[0]?.text || '';
+    const jsonMatch = textOut.match(/\{[\s\S]*\}/);
+    const diag = JSON.parse(jsonMatch ? jsonMatch[0] : textOut);
+    intro = (diag.intro || '').toString();
+    actions = Array.isArray(diag.actions) ? diag.actions.slice(0, 3).map(a => a.toString()) : [];
+  } catch (err) {
+    log('diag_parse_error', { ip, error: String(err.message || err) });
+    return jsonError('Respuesta inesperada del modelo. Reintentá.', 502, corsHeaders);
+  }
+
+  if (!intro || actions.length === 0) {
+    return jsonError('El modelo no devolvió un diagnóstico válido.', 502, corsHeaders);
+  }
+
+  log('diag_ok', { ip, biz, lang, latencyMs: Date.now() - startTime });
+  return jsonOk({ ok: true, intro, actions }, corsHeaders);
+}
+
 export default {
   async fetch(request, env, ctx) {
     const corsHeaders = getCorsHeaders(request, env);
@@ -505,6 +584,12 @@ export default {
         return jsonError('Master password incorrecta.', 401, corsHeaders);
       }
       return handleAdmin(request, env, corsHeaders, ip);
+    }
+
+    // Mini-diagnóstico gratis: PÚBLICO (sin password). Va antes de la validación
+    // de password. Ya quedó cubierto por el rate-limit por IP de arriba.
+    if (endpoint === '/diag') {
+      return handleDiag(request, env, corsHeaders, ip);
     }
 
     // Endpoints normales: validar password vía KV (con fallback a ACCESS_PASSWORD legacy)
