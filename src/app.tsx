@@ -3391,19 +3391,24 @@ export default function App() {
   }
 
   if (screen==='review') return (
-    <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-2">{lng.reviewTitle}</h2><p className="text-zinc-400 mb-8">{lng.reviewDesc}</p>
+    <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden"><Header/>
+      <div className="orb-breathe absolute top-[-10%] left-1/2 w-[600px] h-[600px] bg-yellow-500/8 rounded-full blur-[130px] pointer-events-none"/>
+      <div className="relative max-w-4xl mx-auto px-6 py-12">
+        <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:0.5,ease:[0.23,1,0.32,1]}} className="mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><FileText className="w-3 h-3"/>{getToolName(toolId)}</div>
+          <h2 className="text-4xl font-bold tracking-tight mb-2">{lng.reviewTitle}</h2>
+          <p className="text-zinc-400 text-lg">{lng.reviewDesc}</p>
+        </motion.div>
         {loading&&<div className="flex flex-col items-center py-20 gap-4"><Loader2 className="w-10 h-10 animate-spin text-yellow-400"/><p className="text-zinc-400">{lng.generating}</p></div>}
         {error&&<div className="p-5 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3"><AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"/><div><p className="font-semibold text-red-400">{lng.error}</p><p className="text-sm text-zinc-400 mt-1">{error}</p><button onClick={genReview} className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-sm text-red-300"><RefreshCw className="w-4 h-4"/>{lng.retry}</button></div></div>}
         {reviewText&&!loading&&<>
-          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8 mb-8"><MdRender text={reviewText}/></div>
-          <div className="p-5 bg-yellow-400/5 border border-yellow-400/20 rounded-xl"><p className="text-yellow-100 font-medium mb-4">{lng.confirmReview}</p>
+          <motion.div initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} transition={{duration:0.55,delay:0.1,ease:[0.23,1,0.32,1]}} className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl p-6 md:p-8 mb-8 shadow-xl shadow-black/20"><MdRender text={reviewText}/></motion.div>
+          <motion.div initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} transition={{duration:0.5,delay:0.2,ease:[0.23,1,0.32,1]}} className="p-6 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-2xl"><p className="text-yellow-100 font-medium mb-4">{lng.confirmReview}</p>
             <div className="flex flex-wrap gap-3">
-              <button onClick={async()=>{setScreen('output');setCurBlock(0);await genBlock(0);}} className="inline-flex items-center gap-2 px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-lg"><Check className="w-4 h-4"/>{lng.yesGenerate}</button>
+              <button onClick={async()=>{setScreen('output');setCurBlock(0);await genBlock(0);}} className="inline-flex items-center gap-2 px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-zinc-950 font-semibold rounded-lg shadow-lg shadow-yellow-400/20"><Check className="w-4 h-4"/>{lng.yesGenerate}</button>
               <button onClick={()=>{setScreen('wizard');setStepIdx(0);}} className="inline-flex items-center gap-2 px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 rounded-lg">{lng.noAdjust}</button>
             </div>
-          </div>
+          </motion.div>
         </>}
       </div>
     </div>
@@ -3412,14 +3417,15 @@ export default function App() {
   if (screen==='output') {
     const blocks = currentTool.outputBlocks;
     return (
-      <div className="screen-enter min-h-screen bg-zinc-950 text-white">
+      <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
         <Header right={<div className="flex items-center gap-2">{blocks.map((_: any,n: number)=><div key={n} className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border ${n<curBlock?'bg-yellow-400 border-yellow-400 text-zinc-950':n===curBlock?'bg-yellow-400/20 border-yellow-400 text-yellow-400':'bg-zinc-900 border-zinc-800 text-zinc-600'}`}>{n<curBlock?<Check className="w-3.5 h-3.5"/>:n+1}</div>)}</div>}/>
-        <div className="max-w-4xl mx-auto px-6 py-12 space-y-8">
+        <div className="orb-breathe absolute top-[-10%] left-1/2 w-[600px] h-[600px] bg-yellow-500/8 rounded-full blur-[130px] pointer-events-none"/>
+        <div className="relative max-w-4xl mx-auto px-6 py-12 space-y-8">
           {blocks.map((block: any,bi: number)=>{
             if (bi>curBlock) return null;
             const isCur=bi===curBlock, showLoad=isCur&&loading, showRef=refineMode===bi, blockText=outputs[block.id];
             return (
-              <div key={block.id} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden">
+              <motion.div key={block.id} initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} transition={{duration:0.5,ease:[0.23,1,0.32,1]}} className="bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl overflow-hidden shadow-xl shadow-black/20">
                 <div className="bg-yellow-400/5 border-b border-zinc-800 px-6 py-4"><div className="flex items-center gap-3"><div className="w-8 h-8 bg-yellow-400 text-zinc-950 rounded-lg flex items-center justify-center font-bold text-sm">{bi+1}</div><h3 className="font-semibold">{block.title[lang]||block.title.es}</h3></div></div>
                 <div className="p-6 md:p-8">
                   {showLoad&&<div className="flex flex-col items-center py-16 gap-4"><Loader2 className="w-10 h-10 animate-spin text-yellow-400"/><p className="text-zinc-400">{lng.generating}</p></div>}
@@ -3440,7 +3446,7 @@ export default function App() {
                     </div>}
                   </>}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
