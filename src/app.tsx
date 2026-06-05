@@ -35,6 +35,30 @@ const t = {
         highlight:'No vas a encontrar humo. Vas a encontrar un plan que se ejecuta.',
       },
     },
+    freediag:{
+      navBack:'Volver al inicio',
+      badge:'Gratis · 1 minuto',
+      title:'Diagnóstico express de tu negocio',
+      subtitle:'Respondé 3 preguntas y Fabrisio te tira un diagnóstico al toque. Sin vueltas, sin humo.',
+      startBtn:'Empezar diagnóstico',
+      qBiz:'¿Qué tipo de negocio tenés?',
+      qTraba:'¿Cuál es tu mayor traba hoy?',
+      qTrabaPh:'Ej: me cuesta conseguir clientes nuevos, no sé cómo diferenciarme…',
+      qGoal:'¿Qué querés lograr en los próximos 90 días?',
+      qGoalPh:'Ej: duplicar consultas, lanzar un servicio nuevo, ordenar mi marca…',
+      genBtn:'Generar mi diagnóstico',
+      generating:'Fabrisio está analizando tu negocio…',
+      resultBadge:'Tu diagnóstico express',
+      resultLockTitle:'Esto es solo la punta.',
+      resultLockDesc:'Dejame tu nombre y email y te mando el plan ampliado + acceso a la caja de herramientas completa.',
+      namePh:'¿Cómo te llamás?',
+      emailPh:'tucorreo@ejemplo.com',
+      submitBtn:'Quiero el plan completo',
+      submitting:'Enviando…',
+      thanksTitle:'¡Listo! Te llega a tu correo.',
+      thanksDesc:'Revisá tu bandeja (y el spam, por las dudas). Mientras tanto, podés conocer la caja de herramientas completa.',
+      thanksCta:'Conocé la caja completa',
+    },
     startBtn:'Empezar', next:'Siguiente', back:'Atrás', skip:'Saltar',
     dontKnow:'No sé / Ayudame a pensarlo', askClaude:'Preguntale a Fabrisio',
     send:'Enviar', step:'Paso', of:'de', selectMultiple:'Podés elegir varias',
@@ -188,6 +212,30 @@ const t = {
         body:"No templates, no guru theory. Here you'll find real strategy, tailored to YOUR business, with AI working for you — not the other way around.",
         highlight:"You won't find smoke. You'll find a plan that gets executed.",
       },
+    },
+    freediag:{
+      navBack:'Back to home',
+      badge:'Free · 1 minute',
+      title:'Express diagnosis of your business',
+      subtitle:'Answer 3 questions and Fabrisio gives you a diagnosis on the spot. No fluff, no BS.',
+      startBtn:'Start diagnosis',
+      qBiz:'What type of business do you have?',
+      qTraba:"What's your biggest blocker right now?",
+      qTrabaPh:"E.g. I struggle to get new clients, I don't know how to stand out…",
+      qGoal:'What do you want to achieve in the next 90 days?',
+      qGoalPh:'E.g. double inquiries, launch a new service, clean up my brand…',
+      genBtn:'Generate my diagnosis',
+      generating:'Fabrisio is analyzing your business…',
+      resultBadge:'Your express diagnosis',
+      resultLockTitle:'This is just the tip.',
+      resultLockDesc:"Leave your name and email and I'll send the extended plan + access to the full toolbox.",
+      namePh:"What's your name?",
+      emailPh:'you@example.com',
+      submitBtn:'I want the full plan',
+      submitting:'Sending…',
+      thanksTitle:'Done! Check your inbox.',
+      thanksDesc:'Check your inbox (and spam, just in case). Meanwhile, you can explore the full toolbox.',
+      thanksCta:'Discover the full toolbox',
     },
     startBtn:'Start', next:'Next', back:'Back', skip:'Skip',
     dontKnow:"I don't know / Help me think", askClaude:'Ask Fabrisio',
@@ -2066,6 +2114,10 @@ export default function App() {
   const [vagueOverride, setVagueOverride] = useState<Record<string, boolean>>({});
   const [toolSearch, setToolSearch] = useState('');
   const [toolCatFilter, setToolCatFilter] = useState('');
+  // Lead magnet: mini-diagnóstico gratis (flujo público, sin login)
+  const [diagStep, setDiagStep] = useState('intro'); // intro | questions | result | thanks
+  const [diagData, setDiagData] = useState({biz:'', traba:'', goal:'', name:'', email:''});
+  const [diagBusy, setDiagBusy] = useState(false);
   const [profileFilled, setProfileFilled] = useState<Record<string, boolean>>({});
   const [myProfileDraft, setMyProfileDraft] = useState<Record<string, string>>({});
   const [myProfileSaved, setMyProfileSaved] = useState(false);
@@ -2611,6 +2663,9 @@ export default function App() {
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
             <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
           </motion.div>
+          <motion.div variants={fadeUp} className="mt-5">
+            <button onClick={()=>{setScreen('freediag'); setDiagStep('intro');}} className="text-sm text-zinc-400 hover:text-yellow-400 underline underline-offset-4 transition-colors">{lang==='es'?'o probá gratis el diagnóstico express →':'or try the free express diagnosis →'}</button>
+          </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20">
             {features.map((f,i)=>(
               <motion.div key={i} variants={fadeUp} whileHover={{y:-4}} transition={{type:'spring',stiffness:300,damping:22}} className="group p-5 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-yellow-400/40 rounded-xl text-left transition-colors">
@@ -2712,6 +2767,109 @@ export default function App() {
         </motion.div>
       </section>
     </div>
+    );
+  }
+
+  if (screen==='freediag') {
+    const F = lng.freediag as any;
+    const bizTypeKeys = Object.keys(lng.bizTypes);
+    const biz = diagData.biz ? (lng.bizTypes[diagData.biz]?.label||'') : '';
+    // Diagnóstico mockeado (se reemplaza por el endpoint /diag del Worker más adelante).
+    const diag = lang==='en' ? {
+      intro:`Based on what you shared, your ${biz?biz.toLowerCase()+' ':''}business doesn't have an effort problem — it has a focus problem. "${(diagData.traba||'your blocker').slice(0,90)}" is almost always a symptom of a value proposition that isn't sharp enough yet for clients to choose you without hesitating.`,
+      actions:[
+        'Nail in one sentence why a client picks you over the one next door. If you can\'t, that\'s job #1.',
+        'Look at your last 5 clients: what did they have in common? That\'s your ideal client — not the one who "could" buy.',
+        `For your goal of "${(diagData.goal||'90 days').slice(0,60)}", pick ONE lever and execute it for 90 days without getting distracted.`,
+      ],
+    } : {
+      intro:`Por lo que contás, tu negocio${biz?` de ${biz.toLowerCase()}`:''} no tiene un problema de esfuerzo — tiene un problema de foco. "${(diagData.traba||'tu traba').slice(0,90)}" casi siempre es síntoma de una propuesta de valor que todavía no está lo suficientemente afilada como para que el cliente te elija sin dudar.`,
+      actions:[
+        'Definí en una sola frase por qué un cliente te elige a vos y no al de al lado. Si no te sale, ese es el trabajo #1.',
+        'Mirá tus últimos 5 clientes: ¿qué tenían en común? Ese es tu cliente ideal, no el que "podría" comprarte.',
+        `Para tu objetivo de "${(diagData.goal||'90 días').slice(0,60)}", elegí UNA palanca y ejecutala 90 días sin distraerte con el resto.`,
+      ],
+    };
+    const canGen = !!(diagData.biz && diagData.traba.trim() && diagData.goal.trim());
+    const canSubmit = !!(diagData.name.trim() && /\S+@\S+\.\S+/.test(diagData.email));
+    const runDiag = () => { setDiagBusy(true); setTimeout(()=>{ setDiagBusy(false); setDiagStep('result'); window.scrollTo(0,0); }, 1500); };
+    const submitLead = () => { setDiagBusy(true); setTimeout(()=>{ setDiagBusy(false); setDiagStep('thanks'); window.scrollTo(0,0); }, 1200); }; // TODO: POST a Google Sheet (Apps Script)
+    const goHome = () => { setScreen('landing'); setDiagStep('intro'); };
+    const stepAnim = { initial:{opacity:0,y:18}, animate:{opacity:1,y:0}, transition:{duration:0.45,ease:[0.23,1,0.32,1] as const} };
+
+    return (
+      <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
+        <div className="orb-breathe absolute top-[-10%] left-1/2 w-[700px] h-[700px] bg-yellow-500/10 rounded-full blur-[130px] pointer-events-none"/>
+        <header className="relative flex items-center justify-between max-w-3xl mx-auto px-6 py-6">
+          <button onClick={goHome} className="flex items-center gap-2 hover:opacity-80"><div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/30"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></button>
+          <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
+        </header>
+
+        <div className="relative max-w-2xl mx-auto px-6 py-10">
+          {diagBusy && diagStep==='questions' ? (
+            <div className="flex flex-col items-center justify-center py-32 gap-5 text-center"><Loader2 className="w-10 h-10 animate-spin text-yellow-400"/><p className="text-zinc-300 text-lg">{F.generating}</p></div>
+          ) : diagStep==='intro' ? (
+            <motion.div {...stepAnim} className="text-center pt-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Sparkles className="w-3 h-3"/>{F.badge}</div>
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-5">{F.title}</h1>
+              <p className="text-xl text-zinc-400 mb-10 max-w-xl mx-auto leading-relaxed">{F.subtitle}</p>
+              <div className="group relative inline-block">
+                <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity pointer-events-none"/>
+                <button onClick={()=>setDiagStep('questions')} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{F.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+              </div>
+            </motion.div>
+          ) : diagStep==='questions' ? (
+            <motion.div {...stepAnim} className="space-y-8">
+              <button onClick={()=>setDiagStep('intro')} className="inline-flex items-center gap-2 text-zinc-400 hover:text-white text-sm"><ChevronLeft className="w-4 h-4"/>{F.navBack}</button>
+              <div>
+                <label className="block font-semibold text-lg mb-3">{F.qBiz}</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {bizTypeKeys.map(k=>{ const sel=diagData.biz===k; return (
+                    <button key={k} onClick={()=>setDiagData({...diagData,biz:k})} className={`text-left px-4 py-3 rounded-xl border transition-colors ${sel?'bg-yellow-400/10 border-yellow-400 text-white':'bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-300'}`}>{lng.bizTypes[k].label}</button>
+                  );})}
+                </div>
+              </div>
+              <div>
+                <label className="block font-semibold text-lg mb-3">{F.qTraba}</label>
+                <textarea value={diagData.traba} onChange={e=>setDiagData({...diagData,traba:e.target.value})} placeholder={F.qTrabaPh} rows={3} className="w-full px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/15 outline-none text-zinc-100 placeholder-zinc-600 resize-none transition-shadow"/>
+              </div>
+              <div>
+                <label className="block font-semibold text-lg mb-3">{F.qGoal}</label>
+                <textarea value={diagData.goal} onChange={e=>setDiagData({...diagData,goal:e.target.value})} placeholder={F.qGoalPh} rows={3} className="w-full px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/15 outline-none text-zinc-100 placeholder-zinc-600 resize-none transition-shadow"/>
+              </div>
+              <button onClick={runDiag} disabled={!canGen} className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-xl">{F.genBtn}<Sparkles className="w-4 h-4"/></button>
+            </motion.div>
+          ) : diagStep==='result' ? (
+            <motion.div {...stepAnim} className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium"><Sparkles className="w-3 h-3"/>{F.resultBadge}</div>
+              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8">
+                <p className="text-zinc-200 leading-relaxed mb-6">{diag.intro}</p>
+                <div className="space-y-3">
+                  {diag.actions.map((a:string,i:number)=>(
+                    <div key={i} className="flex items-start gap-3"><div className="w-6 h-6 rounded-lg bg-yellow-400/15 text-yellow-400 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{i+1}</div><p className="text-sm text-zinc-300 leading-relaxed">{a}</p></div>
+                  ))}
+                </div>
+              </div>
+              <div className="relative rounded-2xl border border-yellow-400/30 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 p-6 md:p-8">
+                <h3 className="text-xl font-bold mb-1">{F.resultLockTitle}</h3>
+                <p className="text-sm text-zinc-300 mb-5">{F.resultLockDesc}</p>
+                <div className="space-y-3">
+                  <input value={diagData.name} onChange={e=>setDiagData({...diagData,name:e.target.value})} placeholder={F.namePh} className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none placeholder-zinc-600"/>
+                  <input type="email" value={diagData.email} onChange={e=>setDiagData({...diagData,email:e.target.value})} placeholder={F.emailPh} className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none placeholder-zinc-600"/>
+                  <button onClick={submitLead} disabled={!canSubmit||diagBusy} className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-xl">{diagBusy?F.submitting:F.submitBtn}{!diagBusy&&<ArrowRight className="w-4 h-4"/>}</button>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div {...stepAnim} className="text-center pt-16">
+              <div className="inline-flex w-16 h-16 bg-yellow-400 rounded-2xl items-center justify-center mb-6"><Check className="w-8 h-8 text-zinc-950" strokeWidth={2.5}/></div>
+              <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">{F.thanksTitle}</h1>
+              <p className="text-zinc-400 text-lg mb-8 max-w-lg mx-auto">{F.thanksDesc}</p>
+              <button onClick={goHome} className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl shadow-lg shadow-yellow-400/30">{F.thanksCta}<ArrowRight className="w-5 h-5"/></button>
+            </motion.div>
+          )}
+        </div>
+      </div>
     );
   }
 
