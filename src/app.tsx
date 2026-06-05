@@ -27,6 +27,13 @@ const t = {
       areasDesc:'No es una plantilla: son herramientas que se adaptan a tu negocio.',
       ctaTitle:'Basta de estrategias genéricas.',
       ctaDesc:'Armá la tuya — con tu voz, tu negocio y cero humo.',
+      about:{
+        tag:'Quién está detrás',
+        hi:'¡Hey! Soy Fabrisio.',
+        lead:'Estratega de negocios y marketing. Hace años que ayudo a emprendedores y empresas a dejar de adivinar y empezar a ejecutar.',
+        body:'Nada de plantillas ni teoría de gurú. Acá vas a encontrar estrategia real, adaptada a TU negocio, con IA que trabaja para vos — no al revés.',
+        highlight:'No vas a encontrar humo. Vas a encontrar un plan que se ejecuta.',
+      },
     },
     startBtn:'Empezar', next:'Siguiente', back:'Atrás', skip:'Saltar',
     dontKnow:'No sé / Ayudame a pensarlo', askClaude:'Preguntale a Fabrisio',
@@ -174,6 +181,13 @@ const t = {
       areasDesc:'Not a template: tools that adapt to your business.',
       ctaTitle:'Enough generic strategies.',
       ctaDesc:'Build yours — your voice, your business, zero BS.',
+      about:{
+        tag:'Who is behind this',
+        hi:"Hey! I'm Fabrisio.",
+        lead:"Business & marketing strategist. For years I've helped founders and companies stop guessing and start executing.",
+        body:"No templates, no guru theory. Here you'll find real strategy, tailored to YOUR business, with AI working for you — not the other way around.",
+        highlight:"You won't find smoke. You'll find a plan that gets executed.",
+      },
     },
     startBtn:'Start', next:'Next', back:'Back', skip:'Skip',
     dontKnow:"I don't know / Help me think", askClaude:'Ask Fabrisio',
@@ -2620,6 +2634,26 @@ export default function App() {
         </div>
       </section>
 
+      {/* ===== Soy Fabrisio ===== */}
+      <section className="relative max-w-6xl mx-auto px-6 py-24">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+          <motion.div {...reveal()} className="relative mx-auto md:mx-0 w-full max-w-sm">
+            <div className="orb-breathe absolute -inset-8 bg-yellow-500/20 rounded-full blur-[90px] pointer-events-none"/>
+            <motion.div animate={{y:[0,-10,0]}} transition={{duration:6,repeat:Infinity,ease:'easeInOut'}} className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-br from-yellow-400/40 via-amber-500/20 to-transparent rounded-3xl blur-sm pointer-events-none"/>
+              <img src="/fabrisio.webp" alt="Fabrisio" loading="lazy" className="relative w-full rounded-3xl border border-zinc-800 object-cover shadow-2xl shadow-yellow-500/10"/>
+            </motion.div>
+          </motion.div>
+          <motion.div {...reveal(0.1)}>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Sparkles className="w-3 h-3"/>{L.about.tag}</div>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">{L.about.hi.split('Fabrisio')[0]}<span className="bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">Fabrisio</span>{L.about.hi.split('Fabrisio')[1]}</h2>
+            <p className="text-lg text-zinc-100 font-medium leading-relaxed mb-4">{L.about.lead}</p>
+            <p className="text-zinc-400 leading-relaxed mb-6">{L.about.body}</p>
+            <span className="inline bg-yellow-400/15 text-yellow-200 font-semibold px-2 py-1 rounded leading-loose box-decoration-clone">{L.about.highlight}</span>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ===== Cómo funciona ===== */}
       <section className="relative max-w-6xl mx-auto px-6 py-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
@@ -2665,6 +2699,10 @@ export default function App() {
       <section className="relative max-w-4xl mx-auto px-6 pb-28">
         <motion.div {...reveal()} className="relative text-center rounded-3xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm px-8 py-16 overflow-hidden">
           <div className="orb-breathe absolute -top-1/2 left-1/2 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none"/>
+          <motion.div animate={{y:[0,-8,0]}} transition={{duration:5,repeat:Infinity,ease:'easeInOut'}} className="relative mx-auto mb-6 w-20 h-20">
+            <div className="absolute inset-0 rounded-full bg-yellow-400/40 blur-md pointer-events-none"/>
+            <img src="/fabrisio.webp" alt="Fabrisio" loading="lazy" className="relative w-20 h-20 rounded-full object-cover border-2 border-yellow-400/60 shadow-lg shadow-yellow-400/20" style={{objectPosition:'center 22%'}}/>
+          </motion.div>
           <h2 className="relative text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.ctaTitle}</h2>
           <p className="relative text-zinc-400 text-lg mb-8 max-w-xl mx-auto">{L.ctaDesc}</p>
           <div className="relative group inline-block">
