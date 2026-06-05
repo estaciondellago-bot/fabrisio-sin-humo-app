@@ -2720,6 +2720,16 @@ export default function App() {
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.howDesc}</p>
         </motion.div>
+        <motion.div {...reveal(0.05)} className="relative mb-16 mx-auto max-w-4xl">
+          <div className="orb-breathe absolute -inset-x-10 -inset-y-6 bg-yellow-500/10 rounded-[40px] blur-[90px] pointer-events-none"/>
+          <motion.div animate={{y:[0,-8,0]}} transition={{duration:7,repeat:Infinity,ease:'easeInOut'}} className="relative rounded-xl border border-zinc-800 bg-zinc-900/60 backdrop-blur-sm overflow-hidden shadow-2xl shadow-yellow-500/10">
+            <div className="flex items-center gap-1.5 px-4 py-3 border-b border-zinc-800 bg-zinc-950/60">
+              <span className="w-3 h-3 rounded-full bg-zinc-700"/><span className="w-3 h-3 rounded-full bg-zinc-700"/><span className="w-3 h-3 rounded-full bg-zinc-700"/>
+              <span className="ml-3 text-xs text-zinc-600 font-medium">fabrisiosinhumo.com</span>
+            </div>
+            <img src="/mockup-toolbox.webp" alt={lang==='es'?'La caja de herramientas de Fabrisio por dentro':'Inside Fabrisio toolbox'} loading="lazy" className="w-full block"/>
+          </motion.div>
+        </motion.div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {L.steps.map((s:any,i:number)=>(
             <motion.div key={i} {...reveal(i*0.08)} className="relative p-6 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 rounded-2xl">
