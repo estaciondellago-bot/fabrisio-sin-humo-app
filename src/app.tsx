@@ -30,9 +30,9 @@ const t = {
       about:{
         tag:'Quién está detrás',
         hi:'¡Hey! Soy Fabrisio.',
-        lead:'Estratega de negocios y marketing. Hace años que ayudo a emprendedores y empresas a dejar de adivinar y empezar a ejecutar.',
-        body:'Nada de plantillas ni teoría de gurú. Acá vas a encontrar estrategia real, adaptada a TU negocio, con IA que trabaja para vos — no al revés.',
-        highlight:'No vas a encontrar humo. Vas a encontrar un plan que se ejecuta.',
+        lead:'Contador, MBA y emprendedor escarmentado. Tuve 4 farmacias, un complejo de cabañas y suficientes decisiones malas como para saber bien qué NO recomendarte.',
+        body:'Hoy te doy una mano para que tomés mejores decisiones de estrategia, marketing y producto — con la IA de aliada, para que no pierdas tiempo ni plata aprendiendo a la mala como aprendí yo.',
+        highlight:'No vendo teoría. Te cuento lo que me costó caro.',
       },
     },
     freediag:{
@@ -208,9 +208,9 @@ const t = {
       about:{
         tag:'Who is behind this',
         hi:"Hey! I'm Fabrisio.",
-        lead:"Business & marketing strategist. For years I've helped founders and companies stop guessing and start executing.",
-        body:"No templates, no guru theory. Here you'll find real strategy, tailored to YOUR business, with AI working for you — not the other way around.",
-        highlight:"You won't find smoke. You'll find a plan that gets executed.",
+        lead:"Accountant, MBA, and an entrepreneur with the scars to prove it. I ran 4 pharmacies, a cabin resort, and made enough bad calls to know exactly what NOT to recommend.",
+        body:"Now I help professionals and business owners make better strategy, marketing and product decisions — using AI so you don't waste time or money learning the hard way like I did.",
+        highlight:"I don't sell theory. I share what cost me dearly.",
       },
     },
     freediag:{
