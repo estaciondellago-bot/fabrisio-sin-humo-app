@@ -2672,7 +2672,7 @@ export default function App() {
             <button onClick={()=>{setScreen('freediag'); setDiagStep('intro');}} className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-yellow-400/50 bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-200 text-sm font-semibold transition-colors">
               <motion.span animate={{opacity:[0.15,0.45,0.15]}} transition={{duration:2.4,repeat:Infinity,ease:'easeInOut'}} className="absolute -inset-1 rounded-full bg-yellow-400/25 blur-md pointer-events-none"/>
               <Sparkles className="relative w-4 h-4"/>
-              <span className="relative">{lang==='es'?'Probá el diagnóstico express':'Try the express diagnosis'}</span>
+              <span className="relative">{lang==='es'?'Diagnosticá tu negocio en 1 min':'Diagnose your business in 1 min'}</span>
               <span className="relative text-[10px] font-bold uppercase tracking-wider bg-yellow-400 text-zinc-950 px-1.5 py-0.5 rounded-full">{lang==='es'?'Gratis':'Free'}</span>
               <ArrowRight className="relative w-4 h-4 group-hover:translate-x-1 transition-transform"/>
             </button>
