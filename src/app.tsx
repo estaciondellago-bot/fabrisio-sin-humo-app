@@ -2667,8 +2667,15 @@ export default function App() {
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
             <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
           </motion.div>
-          <motion.div variants={fadeUp} className="mt-5">
-            <button onClick={()=>{setScreen('freediag'); setDiagStep('intro');}} className="text-sm text-zinc-400 hover:text-yellow-400 underline underline-offset-4 transition-colors">{lang==='es'?'o probá gratis el diagnóstico express →':'or try the free express diagnosis →'}</button>
+          <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center gap-2.5">
+            <motion.span animate={{x:[0,7,0]}} transition={{duration:1.2,repeat:Infinity,ease:'easeInOut'}} className="text-2xl select-none" aria-hidden="true">👉</motion.span>
+            <button onClick={()=>{setScreen('freediag'); setDiagStep('intro');}} className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-yellow-400/50 bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-200 text-sm font-semibold transition-colors">
+              <motion.span animate={{opacity:[0.15,0.45,0.15]}} transition={{duration:2.4,repeat:Infinity,ease:'easeInOut'}} className="absolute -inset-1 rounded-full bg-yellow-400/25 blur-md pointer-events-none"/>
+              <Sparkles className="relative w-4 h-4"/>
+              <span className="relative">{lang==='es'?'Probá el diagnóstico express':'Try the express diagnosis'}</span>
+              <span className="relative text-[10px] font-bold uppercase tracking-wider bg-yellow-400 text-zinc-950 px-1.5 py-0.5 rounded-full">{lang==='es'?'Gratis':'Free'}</span>
+              <ArrowRight className="relative w-4 h-4 group-hover:translate-x-1 transition-transform"/>
+            </button>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20">
             {features.map((f,i)=>(
