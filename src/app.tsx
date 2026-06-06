@@ -3055,8 +3055,8 @@ export default function App() {
     <div className="screen-enter min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-10">
-          <div className="inline-flex w-20 h-20 bg-yellow-400 rounded-2xl items-center justify-center mb-5"><Flame className="w-10 h-10 text-zinc-950" strokeWidth={2.5}/></div>
-          <h1 className="text-3xl font-bold mb-2">{lng.appName}</h1>
+          <div className="inline-flex w-20 h-20 bg-yellow-400 rounded-[22px_8px_28px_10px] items-center justify-center mb-5 shadow-lg shadow-yellow-400/10"><Flame className="w-10 h-10 text-zinc-950" strokeWidth={2.5}/></div>
+          <h1 className="font-heading text-4xl font-bold tracking-tight mb-2">{lng.appName}</h1>
           <p className="text-zinc-400 text-sm">{lng.loginDesc}</p>
         </div>
         <div className="space-y-4">
@@ -3075,13 +3075,15 @@ export default function App() {
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
         <div className="max-w-4xl mx-auto px-6 py-12">
           <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lang==='es'?'Paso 1':'Step 1'}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.bizTypeTitle}</h2>
-          <p className="text-zinc-400 mb-10">{lng.bizTypeDesc}</p>
+          <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-3">{lng.bizTypeTitle}</h2>
+          <p className="text-zinc-400 mb-10 text-lg">{lng.bizTypeDesc}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
             {types.map((tp,i)=>{
               const info=lng.bizTypes[tp.key]; const sel=bizType===tp.key;
-              return <button key={tp.key} onClick={()=>setBizType(tp.key)} style={{animationDelay:`${i*40}ms`}} className={`stagger-item text-left p-5 rounded-xl border ${sel?'bg-yellow-400/10 border-yellow-400':'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
-                <div className="flex items-start gap-4"><div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${sel?'bg-yellow-400/20':'bg-zinc-800'}`}>{tp.icon}</div>
+              // Tilt sutil alternado — rompe la grilla SaaS perfecta. Hover endereza.
+              const tilt = [-0.5, 0.4, -0.3, 0.5, -0.4, 0.3][i % 6];
+              return <button key={tp.key} onClick={()=>setBizType(tp.key)} style={{animationDelay:`${i*40}ms`, transform:`rotate(${tilt}deg)`}} className={`stagger-item text-left p-5 rounded-xl border transition-transform hover:!rotate-0 ${sel?'bg-yellow-400/10 border-yellow-400':'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
+                <div className="flex items-start gap-4"><div className={`w-12 h-12 rounded-[14px_4px_16px_6px] flex items-center justify-center text-2xl flex-shrink-0 ${sel?'bg-yellow-400/20':'bg-zinc-800'}`}>{tp.icon}</div>
                   <div className="flex-1"><div className="flex items-center gap-2 mb-1"><h3 className="font-semibold text-white">{info.label}</h3>{sel&&<Check className="w-4 h-4 text-yellow-400"/>}</div><p className="text-sm text-zinc-400">{info.desc}</p></div></div>
               </button>;
             })}
