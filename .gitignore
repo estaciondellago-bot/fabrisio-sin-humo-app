@@ -41,3 +41,13 @@ lerna-debug.log*
 
 # TypeScript build cache
 *.tsbuildinfo
+
+# Vite + Dropbox temp files (jamás versionar)
+**/*.tmp.*
+
+# Claude Code / skill assets locales
+.agents/
+skills-lock.json
+
+# Credenciales / instrucciones personales (NUNCA commitear)
+Claves*.txt
