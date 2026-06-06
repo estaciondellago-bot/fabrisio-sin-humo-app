@@ -2662,7 +2662,7 @@ export default function App() {
           <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
         </header>
         <motion.div variants={container} initial="hidden" animate="show" className="text-center max-w-3xl mx-auto pt-12">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{lng.subtitle}<span className="block w-8 h-px bg-yellow-400/60"/></motion.div>
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lng.subtitle}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></motion.div>
           <motion.h1 variants={fadeUp} className="font-heading text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
             <span className="block">{lang==='es'?'Estrategia real.':'Real strategy.'}</span>
             <span className="block bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">{lang==='es'?'Sin chamuyo.':'No BS.'}</span>
@@ -2716,7 +2716,7 @@ export default function App() {
             </motion.div>
           </motion.div>
           <motion.div {...reveal(0.1)}>
-            <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="block w-8 h-px bg-yellow-400/60"/>{L.about.tag}</div>
+            <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.about.tag}</div>
             <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-2">{L.about.hi.split('Fabrisio')[0]}<span className="bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">Fabrisio</span>{L.about.hi.split('Fabrisio')[1]}</h2>
             {/* Anotación hand-drawn: flecha + caption manuscrito apuntando a la foto.
                 Solo desktop (mobile la foto está arriba, no tiene sentido apuntar). */}
@@ -2741,7 +2741,7 @@ export default function App() {
       {/* ===== Cómo funciona ===== */}
       <section className="relative max-w-6xl mx-auto px-6 py-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="block w-8 h-px bg-yellow-400/60"/>{L.howTag}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.howTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.howDesc}</p>
         </motion.div>
@@ -2774,7 +2774,7 @@ export default function App() {
       {/* ===== Áreas / qué resolvés ===== */}
       <section className="relative max-w-6xl mx-auto px-6 pb-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="block w-8 h-px bg-yellow-400/60"/>{L.areasTag}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.areasTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.areasTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.areasDesc}</p>
         </motion.div>
@@ -2874,7 +2874,7 @@ export default function App() {
             <div className="flex flex-col items-center justify-center py-32 gap-5 text-center"><Loader2 className="w-10 h-10 animate-spin text-yellow-400"/><p className="text-zinc-300 text-lg">{F.generating}</p></div>
           ) : diagStep==='intro' ? (
             <motion.div {...stepAnim} className="text-center pt-10">
-              <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{F.badge}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+              <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{F.badge}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-5">{F.title}</h1>
               <p className="text-xl text-zinc-400 mb-10 max-w-xl mx-auto leading-relaxed">{F.subtitle}</p>
               <div className="group relative inline-block">
@@ -2905,7 +2905,7 @@ export default function App() {
             </motion.div>
           ) : diagStep==='result' ? (
             <motion.div {...stepAnim} className="space-y-6">
-              <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase"><span className="block w-8 h-px bg-yellow-400/60"/>{F.resultBadge}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+              <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{F.resultBadge}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
               <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8">
                 <p className="text-zinc-200 leading-relaxed mb-6">{diag.intro}</p>
                 <div className="space-y-3">
@@ -2960,7 +2960,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
         <div className="max-w-4xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{lang==='es'?'Paso 1':'Step 1'}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lang==='es'?'Paso 1':'Step 1'}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.bizTypeTitle}</h2>
           <p className="text-zinc-400 mb-10">{lng.bizTypeDesc}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
@@ -3015,7 +3015,7 @@ export default function App() {
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={openMyProfile} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs text-zinc-300 border border-zinc-800"><Users className="w-3 h-3"/>{lng.myProfile}</button>}/>
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="mb-10">
-            <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="block w-8 h-px bg-yellow-400/60"/>{lng.toolboxSubtitle}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+            <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lng.toolboxSubtitle}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
             <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.toolboxTitle}</h2>
             <p className="text-zinc-400 leading-relaxed text-lg max-w-2xl">{lng.toolboxDesc}</p>
             {bizType&&<div className="mt-4 inline-flex items-center gap-2 text-xs text-zinc-500"><span>{lang==='es'?'Negocio:':'Business:'}</span><span className="text-yellow-400 font-medium">{lng.bizTypes[bizType].label}</span><button onClick={()=>setScreen('biztype')} className="text-zinc-600 hover:text-yellow-400 underline">{lang==='es'?'cambiar':'change'}</button></div>}
@@ -3099,7 +3099,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{lng.guideMeBtnShort}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lng.guideMeBtnShort}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPickTitle}</h2>
           <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPickDesc}</p>
           <div className="space-y-3">
@@ -3123,7 +3123,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={()=>setScreen('journeyPick')} className="text-xs text-zinc-500 hover:text-yellow-400">← {lang==='es'?'Cambiar objetivo':'Change goal'}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="block w-8 h-px bg-yellow-400/60"/>{objectiveLabel}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{objectiveLabel}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPlanTitle}</h2>
           <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPlanDesc}</p>
           <div className="space-y-4 mb-8">
@@ -3261,7 +3261,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.profileTitle}</h2>
           <p className="text-zinc-400 mb-10">{lng.profileDesc}</p>
           <div className="space-y-3">
@@ -3284,7 +3284,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={backToToolbox} className="text-xs text-zinc-500 hover:text-yellow-400">← {lng.toolboxBack}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.entryTitle}</h2>
           <p className="text-zinc-400 mb-10">{lng.entryDesc}</p>
           <div className="space-y-3">
@@ -3306,7 +3306,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
         <div className="max-w-3xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3 flex items-center gap-3"><Wand2 className="w-8 h-8 text-yellow-400"/>{lng.entryPreload}</h2>
           <p className="text-zinc-400 mb-10">{lng.entryPreloadDesc}</p>
           <div className="mb-6"><label className="flex items-center gap-2 text-sm font-semibold text-zinc-200 mb-2"><Link2 className="w-4 h-4 text-yellow-400"/>{lng.preloadUrlLabel}</label><input type="url" value={preloadUrl} onChange={e=>setPreloadUrl(e.target.value)} placeholder={lng.preloadUrlPlaceholder} disabled={isWorking} className="w-full px-5 py-3.5 bg-zinc-900 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none text-zinc-100 placeholder-zinc-600 disabled:opacity-50"/>{preloadStatus==='fetch_failed'&&<div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg flex items-start gap-2 text-sm"><AlertCircle className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5"/><span className="text-orange-200">{lng.preloadFailed}</span></div>}</div>
@@ -3418,7 +3418,7 @@ export default function App() {
       <div className="orb-breathe absolute top-[-10%] left-1/2 w-[600px] h-[600px] bg-yellow-500/8 rounded-full blur-[130px] pointer-events-none"/>
       <div className="relative max-w-4xl mx-auto px-6 py-12">
         <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:0.5,ease:[0.23,1,0.32,1]}} className="mb-8">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-4xl font-bold tracking-tight mb-2">{lng.reviewTitle}</h2>
           <p className="text-zinc-400 text-lg">{lng.reviewDesc}</p>
         </motion.div>
