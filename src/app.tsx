@@ -51,12 +51,20 @@ const t = {
       qGoalPh:'Ej: duplicar consultas, lanzar un servicio nuevo, ordenar mi marca…',
       genBtn:'Generar mi diagnóstico',
       generating:'Fabrisio está analizando tu negocio…',
-      resultBadge:'Tu diagnóstico express',
-      resultLockTitle:'Esto es solo la punta.',
-      resultLockDesc:'Dejame tu nombre y email y te mando el plan ampliado + acceso a la caja de herramientas completa.',
+      resultBadge:'Tu diagnóstico',
+      verdictLabel:'Lo que veo',
+      strengthsLabel:'Esto ya lo estás haciendo bien',
+      leaksLabel:'Esto te está costando hoy',
+      roadmapLabel:'Plan 30 / 60 / 90 días',
+      roadmap30:'30 días',
+      roadmap60:'60 días',
+      roadmap90:'90 días',
+      antiRecLabel:'Lo que NO te recomiendo',
+      resultLockTitle:'Te mando 3 ideas extra por email',
+      resultLockDesc:'Adaptadas a tu negocio (no genéricas). Sin newsletter masivo, sin spam — un solo mail con las 3 ideas. Si querés más, vos me decís.',
       namePh:'¿Cómo te llamás?',
       emailPh:'tucorreo@ejemplo.com',
-      submitBtn:'Quiero el plan completo',
+      submitBtn:'Mandame las 3 ideas',
       submitting:'Enviando…',
       thanksTitle:'¡Listo! Te llega a tu correo.',
       thanksDesc:'Revisá tu bandeja (y el spam, por las dudas). Mientras tanto, podés conocer la caja de herramientas completa.',
@@ -229,12 +237,20 @@ const t = {
       qGoalPh:'E.g. double inquiries, launch a new service, clean up my brand…',
       genBtn:'Generate my diagnosis',
       generating:'Fabrisio is analyzing your business…',
-      resultBadge:'Your express diagnosis',
-      resultLockTitle:'This is just the tip.',
-      resultLockDesc:"Leave your name and email and I'll send the extended plan + access to the full toolbox.",
+      resultBadge:'Your diagnosis',
+      verdictLabel:'What I see',
+      strengthsLabel:"What you're already doing right",
+      leaksLabel:"What's costing you today",
+      roadmapLabel:'30 / 60 / 90 day plan',
+      roadmap30:'30 days',
+      roadmap60:'60 days',
+      roadmap90:'90 days',
+      antiRecLabel:"What I do NOT recommend",
+      resultLockTitle:"I'll send 3 extra ideas by email",
+      resultLockDesc:"Tailored to your business (not generic). No mass newsletter, no spam — one email with the 3 ideas. If you want more, you tell me.",
       namePh:"What's your name?",
       emailPh:'you@example.com',
-      submitBtn:'I want the full plan',
+      submitBtn:'Send me the 3 ideas',
       submitting:'Sending…',
       thanksTitle:'Done! Check your inbox.',
       thanksDesc:'Check your inbox (and spam, just in case). Meanwhile, you can explore the full toolbox.',
@@ -2126,7 +2142,7 @@ export default function App() {
   const [diagStep, setDiagStep] = useState('intro'); // intro | questions | result | thanks
   const [diagData, setDiagData] = useState({biz:'', traba:'', goal:'', name:'', email:''});
   const [diagBusy, setDiagBusy] = useState(false);
-  const [diagResult, setDiagResult] = useState<{intro:string;actions:string[]}|null>(null);
+  const [diagResult, setDiagResult] = useState<any>(null);
   const [profileFilled, setProfileFilled] = useState<Record<string, boolean>>({});
   const [myProfileDraft, setMyProfileDraft] = useState<Record<string, string>>({});
   const [myProfileSaved, setMyProfileSaved] = useState(false);
@@ -2818,31 +2834,62 @@ export default function App() {
     const bizTypeKeys = Object.keys(lng.bizTypes);
     const biz = diagData.biz ? (lng.bizTypes[diagData.biz]?.label||'') : '';
     // Diagnóstico mockeado: fallback si el endpoint /diag del Worker no está disponible
-    // (ej. en dev local por CORS, o antes de redeployar el Worker).
+    // (ej. en dev local por CORS, o antes de redeployar el Worker con el nuevo schema).
+    const trabaShort = (diagData.traba||'tu traba').slice(0,80);
+    const goalShort = (diagData.goal||'90 días').slice(0,60);
     const mockDiag = lang==='en' ? {
-      intro:`Based on what you shared, your ${biz?biz.toLowerCase()+' ':''}business doesn't have an effort problem — it has a focus problem. "${(diagData.traba||'your blocker').slice(0,90)}" is almost always a symptom of a value proposition that isn't sharp enough yet for clients to choose you without hesitating.`,
-      actions:[
-        'Nail in one sentence why a client picks you over the one next door. If you can\'t, that\'s job #1.',
-        'Look at your last 5 clients: what did they have in common? That\'s your ideal client — not the one who "could" buy.',
-        `For your goal of "${(diagData.goal||'90 days').slice(0,60)}", pick ONE lever and execute it for 90 days without getting distracted.`,
+      verdict:`Your real problem isn't what you described — it's a focus issue. "${trabaShort}" is almost always a symptom of a value proposition that isn't sharp enough. You're optimizing tactics in a system that hasn't been defined yet. ${biz?`In ${biz.toLowerCase()},`:''} that gap costs you double: you work more and convert less.`,
+      strengths:[
+        "You spotted the blocker yourself — most don't even know they have a problem.",
+        "Your goal is concrete enough to measure (good filter for noise).",
       ],
+      leaks:[
+        {title:"Generic value proposition", why:"You sound like 80% of your competition. The client can't tell why you, not them. That's why prices get questioned."},
+        {title:"No defined ideal client", why:"Without a clear ICP, every conversation starts from scratch. Energy lost in unqualified leads."},
+        {title:"Tactics without system", why:"Each action lives on its own — content, sales, delivery. Doesn't compound. Like running with the handbrake on."},
+      ],
+      roadmap:{
+        "30":"In one sentence, write why a client picks you over the one next door. If it doesn't come out, that's job #1.",
+        "60":`Look at your last 5 clients: what did they have in common? Define your ICP based on data, not on who "could" buy.`,
+        "90":`For your goal of "${goalShort}", pick ONE lever and execute 90 days without distraction.`,
+      },
+      antiRec:"Don't run more ads or post more on social yet. Without a sharp value prop, you're just amplifying confusion — and burning money.",
+      hook:"In business, the answer is almost never 'do more.' Usually it's 'do less, but right.'",
     } : {
-      intro:`Por lo que contás, tu negocio${biz?` de ${biz.toLowerCase()}`:''} no tiene un problema de esfuerzo — tiene un problema de foco. "${(diagData.traba||'tu traba').slice(0,90)}" casi siempre es síntoma de una propuesta de valor que todavía no está lo suficientemente afilada como para que el cliente te elija sin dudar.`,
-      actions:[
-        'Definí en una sola frase por qué un cliente te elige a vos y no al de al lado. Si no te sale, ese es el trabajo #1.',
-        'Mirá tus últimos 5 clientes: ¿qué tenían en común? Ese es tu cliente ideal, no el que "podría" comprarte.',
-        `Para tu objetivo de "${(diagData.goal||'90 días').slice(0,60)}", elegí UNA palanca y ejecutala 90 días sin distraerte con el resto.`,
+      verdict:`Tu problema real no es el que describiste — es uno de foco. "${trabaShort}" casi siempre es síntoma de una propuesta de valor que no está lo suficientemente afilada. Estás optimizando tácticas en un sistema que todavía no está definido. ${biz?`En ${biz.toLowerCase()},`:''} eso te cuesta doble: laburás más y convertís menos.`,
+      strengths:[
+        "Detectaste vos solo la traba — la mayoría ni sabe que tiene un problema.",
+        "Tu objetivo es lo suficientemente concreto como para medirlo (buen filtro de ruido).",
       ],
+      leaks:[
+        {title:"Propuesta de valor genérica", why:"Sonás como el 80% de la competencia. El cliente no entiende por qué vos y no el otro. Por eso te cuestionan precio."},
+        {title:"Sin cliente ideal definido", why:"Sin un ICP claro, cada conversación arranca de cero. Energía perdida en leads que no califican."},
+        {title:"Tácticas sin sistema", why:"Cada acción vive por su cuenta — contenido, ventas, delivery. No componen. Es correr con el freno de mano puesto."},
+      ],
+      roadmap:{
+        "30":"Escribí en una sola frase por qué un cliente te elige a vos y no al de al lado. Si no te sale, ese es el trabajo #1.",
+        "60":"Mirá tus últimos 5 clientes: ¿qué tenían en común? Definí tu cliente ideal en base a datos, no a quién 'podría' comprarte.",
+        "90":`Para tu objetivo de "${goalShort}", elegí UNA palanca y ejecutala 90 días sin distraerte con el resto.`,
+      },
+      antiRec:"No corras a hacer más ads ni a postear más en redes todavía. Sin propuesta filada, solo amplificás la confusión — y quemás plata.",
+      hook:"En los negocios, la respuesta casi nunca es 'hacer más'. Casi siempre es 'hacer menos, pero bien'.",
     };
     const diag = diagResult || mockDiag;
     const canGen = !!(diagData.biz && diagData.traba.trim() && diagData.goal.trim());
     const canSubmit = !!(diagData.name.trim() && /\S+@\S+\.\S+/.test(diagData.email));
-    // Llama al Worker /diag (IA real). Si falla (CORS dev / Worker viejo), cae al mock.
+    // Llama al Worker /diag (IA real). Si falla (CORS dev) o si el worker está sin redeploy
+    // con el nuevo schema (verdict/strengths/leaks/roadmap/antiRec/hook), cae al mock.
     const runDiag = async () => {
       setDiagBusy(true);
       try {
         const res = await fetch(`${WORKER_URL}/diag`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ biz, traba:diagData.traba, goal:diagData.goal, lang }) });
-        if (res.ok) { const d = await res.json(); if (d && d.intro && Array.isArray(d.actions) && d.actions.length) setDiagResult({intro:d.intro, actions:d.actions}); }
+        if (res.ok) {
+          const d = await res.json();
+          // Acepta solo el nuevo schema enriquecido. Si el worker está viejo (intro/actions), usamos el mock que ya es más rico.
+          if (d && d.verdict && Array.isArray(d.leaks) && d.leaks.length && d.roadmap && d.roadmap['30']) {
+            setDiagResult(d);
+          }
+        }
       } catch {}
       setDiagBusy(false); setDiagStep('result'); window.scrollTo(0,0);
     };
@@ -2903,16 +2950,67 @@ export default function App() {
               <button onClick={runDiag} disabled={!canGen} className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-xl">{F.genBtn}<Sparkles className="w-4 h-4"/></button>
             </motion.div>
           ) : diagStep==='result' ? (
-            <motion.div {...stepAnim} className="space-y-6">
+            <motion.div {...stepAnim} className="space-y-5">
               <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{F.resultBadge}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
-              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8">
-                <p className="text-zinc-200 leading-relaxed mb-6">{diag.intro}</p>
-                <div className="space-y-3">
-                  {diag.actions.map((a:string,i:number)=>(
-                    <div key={i} className="flex items-start gap-3"><div className="w-6 h-6 rounded-lg bg-yellow-400/15 text-yellow-400 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{i+1}</div><p className="text-sm text-zinc-300 leading-relaxed">{a}</p></div>
+
+              {/* 1. Veredicto principal — destacado */}
+              <div className="rounded-2xl border border-yellow-400/30 bg-yellow-400/[0.04] p-6 md:p-8">
+                <div className="text-yellow-400/80 text-[11px] font-medium tracking-[0.22em] uppercase mb-3">{F.verdictLabel}</div>
+                <p className="text-zinc-100 text-lg leading-relaxed font-medium">{diag.verdict}</p>
+              </div>
+
+              {/* 2. Strengths — lo que ya hace bien */}
+              {diag.strengths?.length>0 && (
+                <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.03] p-6">
+                  <h3 className="font-semibold text-emerald-300 mb-3 flex items-center gap-2"><Check className="w-4 h-4"/>{F.strengthsLabel}</h3>
+                  <ul className="space-y-2">
+                    {diag.strengths.map((s:string,i:number)=>(
+                      <li key={i} className="text-sm text-zinc-300 leading-relaxed flex items-start gap-2"><span className="text-emerald-400/70 mt-1">✓</span>{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* 3. Leaks — qué te cuesta hoy */}
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <h3 className="font-semibold text-zinc-100 mb-4 flex items-center gap-2"><AlertCircle className="w-4 h-4 text-yellow-400"/>{F.leaksLabel}</h3>
+                <div className="space-y-4">
+                  {diag.leaks.map((l:any,i:number)=>(
+                    <div key={i} className="border-l-2 border-yellow-400/40 pl-4">
+                      <div className="text-zinc-100 font-semibold mb-1">{l.title}</div>
+                      <p className="text-sm text-zinc-400 leading-relaxed">{l.why}</p>
+                    </div>
                   ))}
                 </div>
               </div>
+
+              {/* 4. Roadmap 30/60/90 */}
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <h3 className="font-semibold text-zinc-100 mb-4 flex items-center gap-2"><Clock className="w-4 h-4 text-yellow-400"/>{F.roadmapLabel}</h3>
+                <div className="space-y-3">
+                  {(['30','60','90'] as const).map((k,i)=> diag.roadmap?.[k] && (
+                    <div key={k} className="flex items-start gap-3">
+                      <div className="font-heading text-2xl font-bold text-yellow-400 leading-none w-14 flex-shrink-0">{i===0?F.roadmap30:i===1?F.roadmap60:F.roadmap90}</div>
+                      <p className="text-sm text-zinc-300 leading-relaxed pt-1">{diag.roadmap[k]}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. Anti-recomendación — diferencial */}
+              {diag.antiRec && (
+                <div className="rounded-2xl border border-red-400/20 bg-red-400/[0.03] p-6">
+                  <h3 className="font-semibold text-red-300 mb-2 flex items-center gap-2"><X className="w-4 h-4"/>{F.antiRecLabel}</h3>
+                  <p className="text-sm text-zinc-300 leading-relaxed">{diag.antiRec}</p>
+                </div>
+              )}
+
+              {/* 6. Hook final — frase punzante en Fraunces italic */}
+              {diag.hook && (
+                <div className="pt-2 pb-4 text-center">
+                  <p className="font-heading italic text-2xl md:text-3xl text-yellow-400/90 leading-tight max-w-xl mx-auto">"{diag.hook}"</p>
+                </div>
+              )}
               <div className="relative rounded-2xl border border-yellow-400/30 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 p-6 md:p-8">
                 <h3 className="text-xl font-bold mb-1">{F.resultLockTitle}</h3>
                 <p className="text-sm text-zinc-300 mb-5">{F.resultLockDesc}</p>

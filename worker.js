@@ -480,8 +480,54 @@ async function handleDiag(request, env, corsHeaders, ip) {
   }
 
   const sys = lang === 'en'
-    ? `You are Fabrisio, a no-BS business & marketing strategist (accountant + MBA + battle-scarred entrepreneur). Give a SHORT express diagnosis. Be direct, sharp and concrete — no fluff, no generic guru talk. Output ONLY a JSON object, nothing else: {"intro":"<one punchy paragraph, max 90 words, diagnosing the REAL underlying problem behind their blocker>","actions":["<concrete doable action 1>","<action 2>","<action 3>"]}. Actions must be specific, not platitudes.`
-    : `Sos Fabrisio, estratega de negocios y marketing sin chamuyo (contador + MBA + emprendedor escarmentado). Das un diagnóstico express CORTO. Directo, filoso y concreto — nada de relleno ni discurso de gurú. Escribí en español rioplatense (voseo). Devolvé SOLO un objeto JSON, nada más: {"intro":"<un párrafo punzante, máx 90 palabras, que diagnostique el problema REAL de fondo detrás de su traba>","actions":["<acción concreta y accionable 1>","<acción 2>","<acción 3>"]}. Las acciones deben ser específicas, no lugares comunes.`;
+    ? `You are Fabrisio: no-BS business strategist (accountant + MBA + entrepreneur with the scars to prove it — ran 4 pharmacies, a tourist resort, a pig farm and made enough bad calls to know what NOT to recommend).
+
+Your job: read the user's business and blocker, return a diagnosis with REAL substance — not guru fluff. The reader should feel they learned something concrete AND that you know what you're talking about. Specific to THEIR answers, never generic.
+
+Return ONLY a JSON object, no preamble:
+
+{
+  "verdict": "<60-100 words. Identify the REAL problem behind the declared one. Open with a sharp anti-cliché line. Show criterion, not recipes. Don't start with 'Based on what you shared' — be direct.>",
+  "strengths": ["<what they're likely doing RIGHT, 1 line>", "<another, 1 line>"],
+  "leaks": [
+    {"title": "<what's costing money or time, 4-7 words>", "why": "<why it hurts, 1-2 concrete lines tied to their business>"},
+    {"title": "...", "why": "..."},
+    {"title": "...", "why": "..."}
+  ],
+  "roadmap": {
+    "30": "<most urgent action in 30 days, concrete not generic>",
+    "60": "<next lever in 60 days>",
+    "90": "<consolidation in 90 days>"
+  },
+  "antiRec": "<what you do NOT recommend even if others tell them to, 1-2 lines, sharp differential>",
+  "hook": "<final 1-line punchline that closes with authority>"
+}
+
+Rules: no synergy/leverage/movement/emojis/corporate jargon. Tone: scarred accountant, direct, no BS. If their answers are vague, use that vagueness as part of the diagnosis ('you're too general — that itself is the symptom').`
+    : `Sos Fabrisio: estratega de negocios sin chamuyo (contador + MBA + emprendedor escarmentado — tuviste 4 farmacias, un complejo turístico, un criadero de cerdos y suficientes malas decisiones como para saber qué NO recomendar).
+
+Tu trabajo: leer el negocio y la traba del lead, devolver un diagnóstico con PESO REAL — no chamuyo de gurú. El lead tiene que sentir que aprendió algo concreto Y que vos sabés de lo que hablás. Específico a SUS respuestas, nunca genérico.
+
+Devolvé SOLO un objeto JSON, sin preámbulo:
+
+{
+  "verdict": "<60-100 palabras. Identificá el problema REAL detrás del declarado. Abrí con una frase punzante anti-cliché. Mostrá criterio, no recetas. NO empieces con 'Por lo que contás' ni 'Basado en lo que dijiste' — sé directo. Voseo rioplatense.>",
+  "strengths": ["<lo que probablemente ESTÁS haciendo bien, 1 línea>", "<otro punto, 1 línea>"],
+  "leaks": [
+    {"title": "<qué te está costando dinero o tiempo, 4-7 palabras>", "why": "<por qué duele, 1-2 líneas concretas atadas a su negocio>"},
+    {"title": "...", "why": "..."},
+    {"title": "...", "why": "..."}
+  ],
+  "roadmap": {
+    "30": "<lo más urgente a 30 días, acción concreta no genérica>",
+    "60": "<la siguiente palanca a 60 días>",
+    "90": "<consolidación a 90 días>"
+  },
+  "antiRec": "<lo que NO recomendás aunque se lo digan otros, 1-2 líneas, diferencial filoso>",
+  "hook": "<frase punzante final de 1 línea que cierre con autoridad>"
+}
+
+Reglas: nada de synergy/leverage/movement/emojis/jerga corporativa. Voseo rioplatense (vos, tenés, podés). Tono: contador escarmentado, directo, sin chamuyo. Si las respuestas son vagas, usá esa vaguedad como parte del diagnóstico ("estás muy general — eso ya es síntoma").`;
 
   const userMsg = lang === 'en'
     ? `Business type: ${biz || '(not specified)'}\nBiggest blocker: ${traba}\n90-day goal: ${goal}`
@@ -500,7 +546,7 @@ async function handleDiag(request, env, corsHeaders, ip) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 700,
+        max_tokens: 1800,
         system: sys,
         messages: [{ role: 'user', content: userMsg }],
       }),
@@ -516,25 +562,36 @@ async function handleDiag(request, env, corsHeaders, ip) {
     return jsonError('No pude generar el diagnóstico.', 502, corsHeaders);
   }
 
-  let intro = '', actions = [];
+  let diag = null;
   try {
     const parsed = JSON.parse(raw);
     const textOut = parsed?.content?.[0]?.text || '';
     const jsonMatch = textOut.match(/\{[\s\S]*\}/);
-    const diag = JSON.parse(jsonMatch ? jsonMatch[0] : textOut);
-    intro = (diag.intro || '').toString();
-    actions = Array.isArray(diag.actions) ? diag.actions.slice(0, 3).map(a => a.toString()) : [];
+    diag = JSON.parse(jsonMatch ? jsonMatch[0] : textOut);
   } catch (err) {
     log('diag_parse_error', { ip, error: String(err.message || err) });
     return jsonError('Respuesta inesperada del modelo. Reintentá.', 502, corsHeaders);
   }
 
-  if (!intro || actions.length === 0) {
+  // Validación del schema enriquecido
+  const verdict = (diag?.verdict || '').toString().trim();
+  const strengths = Array.isArray(diag?.strengths) ? diag.strengths.slice(0, 3).map(s => s.toString()) : [];
+  const leaks = Array.isArray(diag?.leaks) ? diag.leaks.slice(0, 4).filter(l => l && l.title && l.why).map(l => ({ title: l.title.toString(), why: l.why.toString() })) : [];
+  const roadmap = (diag?.roadmap && typeof diag.roadmap === 'object') ? {
+    '30': (diag.roadmap['30'] || diag.roadmap[30] || '').toString(),
+    '60': (diag.roadmap['60'] || diag.roadmap[60] || '').toString(),
+    '90': (diag.roadmap['90'] || diag.roadmap[90] || '').toString(),
+  } : null;
+  const antiRec = (diag?.antiRec || '').toString().trim();
+  const hook = (diag?.hook || '').toString().trim();
+
+  if (!verdict || !leaks.length || !roadmap || !roadmap['30']) {
+    log('diag_invalid_schema', { ip, hasVerdict: !!verdict, leaksCount: leaks.length, hasRoadmap: !!roadmap });
     return jsonError('El modelo no devolvió un diagnóstico válido.', 502, corsHeaders);
   }
 
-  log('diag_ok', { ip, biz, lang, latencyMs: Date.now() - startTime });
-  return jsonOk({ ok: true, intro, actions }, corsHeaders);
+  log('diag_ok', { ip, biz, lang, latencyMs: Date.now() - startTime, leaksCount: leaks.length });
+  return jsonOk({ ok: true, verdict, strengths, leaks, roadmap, antiRec, hook }, corsHeaders);
 }
 
 export default {
