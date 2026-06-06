@@ -1,5 +1,6 @@
 /**
  * Fabrisio sin Humo — Cloudflare Worker proxy
+ * v2026.06.06 — diag prompt: voseo estricto + sin cifras/benchmarks inventados
  * ===========================================
  * Proxy entre el cliente (Vercel) y la API de Anthropic + fetch de sitios + admin de passwords.
  *
