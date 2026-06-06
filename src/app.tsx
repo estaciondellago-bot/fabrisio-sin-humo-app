@@ -5,7 +5,10 @@ import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, 
 const WORKER_URL = 'https://api.fabrisiosinhumo.com';
 // URL del Google Apps Script (web app doPost) que guarda los leads del mini-diagnóstico
 // en una Google Sheet. Pegá acá la URL que te da "Implementar → App web". Vacío = no envía.
-const LEAD_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyo_BSCy3WbSpEoHDY7Ea0Hgf3QZotR-RCH9R2-kryGfO8493BZH0o_fQKFcvpuGrOsEw/exec';
+// 2026-06-06: actualizada a la deployment "agrega mail app" que apunta a Versión 3 del script
+// (con MailApp.sendEmail). La URL vieja apuntaba a una deployment huérfana que seguía corriendo
+// Versión 1 sin MailApp. La nueva está testeada end-to-end (POST → Apps Script → email recibido).
+const LEAD_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzu79yScmjF8lcARGeyUSP2CHxk7LYykXCF10gl_w3isCHlPzcwvyaGFEapicp18Dp1QA/exec';
 
 const t = {
   es: {
