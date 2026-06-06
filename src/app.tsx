@@ -2658,7 +2658,7 @@ export default function App() {
         </header>
         <motion.div variants={container} initial="hidden" animate="show" className="text-center max-w-3xl mx-auto pt-12">
           <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-6"><Sparkles className="w-3 h-3"/>{lng.subtitle}</motion.div>
-          <motion.h1 variants={fadeUp} className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
+          <motion.h1 variants={fadeUp} className="font-heading text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
             <span className="block">{lang==='es'?'Estrategia real.':'Real strategy.'}</span>
             <span className="block bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">{lang==='es'?'Sin chamuyo.':'No BS.'}</span>
           </motion.h1>
@@ -2712,7 +2712,7 @@ export default function App() {
           </motion.div>
           <motion.div {...reveal(0.1)}>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Sparkles className="w-3 h-3"/>{L.about.tag}</div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">{L.about.hi.split('Fabrisio')[0]}<span className="bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">Fabrisio</span>{L.about.hi.split('Fabrisio')[1]}</h2>
+            <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">{L.about.hi.split('Fabrisio')[0]}<span className="bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">Fabrisio</span>{L.about.hi.split('Fabrisio')[1]}</h2>
             <p className="text-lg text-zinc-100 font-medium leading-relaxed mb-4">{L.about.lead}</p>
             <p className="text-zinc-400 leading-relaxed mb-6">{L.about.body}</p>
             <span className="inline bg-yellow-400/15 text-yellow-200 font-semibold px-2 py-1 rounded leading-loose box-decoration-clone">{L.about.highlight}</span>
@@ -2724,7 +2724,7 @@ export default function App() {
       <section className="relative max-w-6xl mx-auto px-6 py-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><Compass className="w-3 h-3"/>{L.howTag}</div>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
+          <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.howDesc}</p>
         </motion.div>
         <motion.div {...reveal(0.05)} className="relative mb-16 mx-auto max-w-4xl">
@@ -2757,7 +2757,7 @@ export default function App() {
       <section className="relative max-w-6xl mx-auto px-6 pb-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400/20 rounded-full text-yellow-400 text-xs font-medium mb-4"><ListChecks className="w-3 h-3"/>{L.areasTag}</div>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.areasTitle}</h2>
+          <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.areasTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.areasDesc}</p>
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

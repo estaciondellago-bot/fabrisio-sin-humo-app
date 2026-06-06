@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/fraunces";
 /* ---break---
 */
 @custom-variant dark (&:is(.dark *));
@@ -19,6 +20,22 @@
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ============================================================
+     Brand override — warm / human palette (Fase 1 humanización)
+     De zinc-950 frío + yellow-400 LED → warm dark + mostaza honest.
+     Override de los tokens de Tailwind v4 → afecta toda la app sin
+     tocar las clases bg-yellow-400 / bg-zinc-950 en app.tsx.
+     ============================================================ */
+  --color-zinc-950: #1A1612;       /* warm dark (antes #09090b cold) */
+  --color-yellow-200: #F0D788;     /* hover lighter, warm */
+  --color-yellow-300: #E5C46A;     /* hover medio, warm */
+  --color-yellow-400: #D4A938;     /* primario mostaza warm (antes #facc15 LED) */
+  --color-yellow-500: #B5901F;     /* darker, depth */
+  --color-amber-500: #C9961E;      /* gradient companion warm */
+
+  /* Fraunces serif para headings — antídoto al look "Geist AI default" */
+  --font-heading: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
 }
 
 @layer base {
@@ -59,6 +76,32 @@
   html {
     @apply font-sans;
   }
+
+  /* Headings con serif Fraunces — más humano, menos "AI SaaS default".
+     Body se mantiene Geist (sans) para legibilidad. */
+  h1, h2 {
+    font-family: var(--font-heading);
+    font-feature-settings: "ss01" on;
+    font-optical-sizing: auto;
+  }
+
+  /* Grano sutil de fondo — anti-AI smoothness.
+     SVG fractalNoise pre-renderizado, fijo al viewport, opacity bajísima.
+     mix-blend-mode: overlay le da textura sin oscurecer el contenido.
+     pointer-events: none → no afecta clicks. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body::before { display: none; }
+  }
 }
 
 /* ============================================================
@@ -80,8 +123,8 @@
   /* Aurora orbs for hero backgrounds — slow, ambient motion.
      Decorative only; gated by prefers-reduced-motion below. */
   @keyframes orbBreathe {
-    0%, 100% { transform: translateX(-50%) scale(1);    opacity: 0.6; }
-    50%      { transform: translateX(-50%) scale(1.18); opacity: 0.95; }
+    0%, 100% { transform: translateX(-50%) scale(1);    opacity: 0.22; }
+    50%      { transform: translateX(-50%) scale(1.10); opacity: 0.38; }
   }
   @keyframes orbDrift {
     0%, 100% { transform: translate(0, 0) scale(1); }
@@ -138,7 +181,7 @@
 */
 
 @theme inline {
-  --font-heading: var(--font-sans);
+  --font-heading: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
