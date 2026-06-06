@@ -2613,7 +2613,7 @@ export default function App() {
       <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <button onClick={()=>{ if (canGoHome) backToToolbox(); }} disabled={!canGoHome} className={`flex items-center gap-2 ${canGoHome?'hover:opacity-80 cursor-pointer':'cursor-default'} transition-opacity`} title={canGoHome?(lang==='es'?'Volver a herramientas':'Back to toolbox'):''}>
-            <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
+            <div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
             <span className="font-bold text-sm">{lng.appName}</span>
           </button>
           <div className="flex items-center gap-3">
@@ -2658,7 +2658,7 @@ export default function App() {
 
       <div className="relative max-w-6xl mx-auto px-6 py-6">
         <header className="flex items-center justify-between mb-20">
-          <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/30"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
+          <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
           <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
         </header>
         <motion.div variants={container} initial="hidden" animate="show" className="text-center max-w-3xl mx-auto pt-12">
@@ -2670,16 +2670,15 @@ export default function App() {
           <motion.p variants={fadeUp} className="text-xl text-zinc-400 mb-10 leading-relaxed max-w-2xl mx-auto">{lng.heroDesc}</motion.p>
           <motion.div variants={fadeUp} className="group relative inline-block">
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
-            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
           </motion.div>
-          <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center gap-2.5">
-            <motion.span animate={{x:[0,7,0]}} transition={{duration:1.2,repeat:Infinity,ease:'easeInOut'}} className="text-2xl select-none" aria-hidden="true">👉</motion.span>
-            <button onClick={()=>{setScreen('freediag'); setDiagStep('intro');}} className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-yellow-400/50 bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-200 text-sm font-semibold transition-colors">
-              <motion.span animate={{opacity:[0.15,0.45,0.15]}} transition={{duration:2.4,repeat:Infinity,ease:'easeInOut'}} className="absolute -inset-1 rounded-full bg-yellow-400/25 blur-md pointer-events-none"/>
-              <Sparkles className="relative w-4 h-4"/>
-              <span className="relative">{lang==='es'?'Diagnosticá tu negocio en 1 min':'Diagnose your business in 1 min'}</span>
-              <span className="relative text-[10px] font-bold uppercase tracking-wider bg-yellow-400 text-zinc-950 px-1.5 py-0.5 rounded-full">{lang==='es'?'Gratis':'Free'}</span>
-              <ArrowRight className="relative w-4 h-4 group-hover:translate-x-1 transition-transform"/>
+          <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center">
+            {/* CTA secundario humanizado: sin emoji 👉, sin Sparkles, sin pill GRATIS amarillo LED.
+                Pill mostaza warm sutil + "gratis" italic en Fraunces — discreto y editorial. */}
+            <button onClick={()=>{setScreen('freediag'); setDiagStep('intro');}} className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-yellow-400/35 hover:border-yellow-400/60 hover:bg-yellow-400/5 text-yellow-200/90 text-sm font-medium transition-colors">
+              <span>{lang==='es'?'Diagnosticá tu negocio en 1 min':'Diagnose your business in 1 min'}</span>
+              <span className="text-yellow-400/70 italic" style={{fontFamily:"'Fraunces Variable', Georgia, serif"}}>{lang==='es'?'· gratis':'· free'}</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/>
             </button>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20">
@@ -2697,9 +2696,9 @@ export default function App() {
       <section className="relative border-y border-zinc-800/60 bg-zinc-950/40 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           {L.stats.map((s:any,i:number)=>(
-            <motion.div key={i} {...reveal(i*0.08)} className={`text-center ${i>0 ? 'md:border-l md:border-zinc-800' : ''}`}>
-              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">{s.n}</div>
-              <div className="mt-2 text-sm text-zinc-400">{s.l}</div>
+            <motion.div key={i} {...reveal(i*0.08)} className={`text-center ${i>0 ? 'md:border-l md:border-yellow-400/15' : ''}`}>
+              <div className="font-heading text-5xl md:text-6xl font-bold text-yellow-400 tracking-tight leading-none">{s.n}</div>
+              <div className="mt-3 text-sm text-zinc-400 tracking-wide">{s.l}</div>
             </motion.div>
           ))}
         </div>
@@ -2806,7 +2805,7 @@ export default function App() {
           <p className="relative text-zinc-400 text-lg mb-8 max-w-xl mx-auto">{L.ctaDesc}</p>
           <div className="relative group inline-block">
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
-            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
           </div>
         </motion.div>
       </section>
@@ -2865,7 +2864,7 @@ export default function App() {
       <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
         <div className="orb-breathe absolute top-[-10%] left-1/2 w-[700px] h-[700px] bg-yellow-500/10 rounded-full blur-[130px] pointer-events-none"/>
         <header className="relative flex items-center justify-between max-w-3xl mx-auto px-6 py-6">
-          <button onClick={goHome} className="flex items-center gap-2 hover:opacity-80"><div className="w-9 h-9 bg-yellow-400 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/30"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></button>
+          <button onClick={goHome} className="flex items-center gap-2 hover:opacity-80"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></button>
           <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
         </header>
 
@@ -2879,7 +2878,7 @@ export default function App() {
               <p className="text-xl text-zinc-400 mb-10 max-w-xl mx-auto leading-relaxed">{F.subtitle}</p>
               <div className="group relative inline-block">
                 <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity pointer-events-none"/>
-                <button onClick={()=>setDiagStep('questions')} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/30">{F.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+                <button onClick={()=>setDiagStep('questions')} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{F.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
               </div>
             </motion.div>
           ) : diagStep==='questions' ? (
@@ -2929,7 +2928,7 @@ export default function App() {
               <div className="inline-flex w-16 h-16 bg-yellow-400 rounded-2xl items-center justify-center mb-6"><Check className="w-8 h-8 text-zinc-950" strokeWidth={2.5}/></div>
               <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">{F.thanksTitle}</h1>
               <p className="text-zinc-400 text-lg mb-8 max-w-lg mx-auto">{F.thanksDesc}</p>
-              <button onClick={goHome} className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl shadow-lg shadow-yellow-400/30">{F.thanksCta}<ArrowRight className="w-5 h-5"/></button>
+              <button onClick={goHome} className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl shadow-lg shadow-yellow-400/15">{F.thanksCta}<ArrowRight className="w-5 h-5"/></button>
             </motion.div>
           )}
         </div>
@@ -3337,7 +3336,7 @@ export default function App() {
       <div className="screen-enter min-h-screen bg-zinc-950 text-white">
         <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <button onClick={()=>backToToolbox()} className="flex items-center gap-2 hover:opacity-80 cursor-pointer transition-opacity" title={lang==='es'?'Volver a herramientas':'Back to toolbox'}><div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-sm">{lng.appName}</span></button>
+            <button onClick={()=>backToToolbox()} className="flex items-center gap-2 hover:opacity-80 cursor-pointer transition-opacity" title={lang==='es'?'Volver a herramientas':'Back to toolbox'}><div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-sm">{lng.appName}</span></button>
             <div className="flex items-center gap-3">
               <span className="text-xs text-zinc-500">{lng.step} {stepIdx+1} {lng.of} {visibleFlow.length}</span>
               {demoData&&<button onClick={()=>setData(p=>({...p,...demoData}))} className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-400/10 hover:bg-yellow-400/20 border border-yellow-400/30 text-yellow-400 rounded-md text-xs font-medium">🧪 Demo</button>}
@@ -3349,7 +3348,7 @@ export default function App() {
         <div className="max-w-3xl mx-auto px-6 py-12">
           {stepIdx===0 && TOOL_TIPS[toolId] && !tipsSeen[toolId] && (
             <div className="smooth-enter mb-6 p-4 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-xl flex items-start gap-3">
-              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
+              <div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center flex-shrink-0 mt-0.5"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-1">💡 {lng.tipFabrisio}</div>
                 <p className="text-sm text-zinc-200 leading-relaxed">{(TOOL_TIPS[toolId] as any)[lang] || TOOL_TIPS[toolId].es}</p>
@@ -3399,7 +3398,7 @@ export default function App() {
           <div className="fixed inset-0 z-50 flex justify-end" onClick={()=>setChatOpen(false)}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"/>
             <div className="relative w-full max-w-md bg-zinc-950 border-l border-zinc-800 flex flex-col h-screen" onClick={e=>e.stopPropagation()}>
-              <div className="flex items-center justify-between p-5 border-b border-zinc-800"><div className="flex items-center gap-2"><div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-semibold">{lng.askClaude}</span></div><button onClick={()=>setChatOpen(false)} className="p-1.5 hover:bg-zinc-900 rounded-lg"><X className="w-5 h-5"/></button></div>
+              <div className="flex items-center justify-between p-5 border-b border-zinc-800"><div className="flex items-center gap-2"><div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-semibold">{lng.askClaude}</span></div><button onClick={()=>setChatOpen(false)} className="p-1.5 hover:bg-zinc-900 rounded-lg"><X className="w-5 h-5"/></button></div>
               <div className="flex-1 overflow-y-auto p-5 space-y-3">
                 {chatMsgs.length===0&&<div className="text-center text-zinc-500 text-sm pt-12">{lng.chatEmpty}</div>}
                 {chatMsgs.map((m,i)=><div key={i} className={`flex ${m.role==='user'?'justify-end':'justify-start'}`}><div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm ${m.role==='user'?'bg-yellow-400 text-zinc-950':'bg-zinc-900 text-zinc-200 border border-zinc-800'}`}>{m.content}</div></div>)}
