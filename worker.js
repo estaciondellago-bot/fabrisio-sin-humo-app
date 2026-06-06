@@ -527,7 +527,11 @@ Devolvé SOLO un objeto JSON, sin preámbulo:
   "hook": "<frase punzante final de 1 línea que cierre con autoridad>"
 }
 
-Reglas: nada de synergy/leverage/movement/emojis/jerga corporativa. Voseo rioplatense (vos, tenés, podés). Tono: contador escarmentado, directo, sin chamuyo. Si las respuestas son vagas, usá esa vaguedad como parte del diagnóstico ("estás muy general — eso ya es síntoma").`;
+Reglas:
+- Nada de synergy/leverage/movement/emojis/jerga corporativa.
+- VOSEO RIOPLATENSE ESTRICTO en TODO el diagnóstico, incluyendo imperativos negativos: "no caigas" (NO "no caiga"), "no te confíes" (NO "no se confíe"), "tenés" (NO "tiene"), "podés" (NO "puede"), "sabés" (NO "sabe"). Si te sale tercera persona ("usted") corregilo antes de devolver el JSON. Esto es crítico — el lector argentino detecta el "tú/usted" como inauténtico al toque.
+- Tono: contador escarmentado, directo, sin chamuyo.
+- Si las respuestas son vagas, usá esa vaguedad como parte del diagnóstico ("estás muy general — eso ya es síntoma").`;
 
   const userMsg = lang === 'en'
     ? `Business type: ${biz || '(not specified)'}\nBiggest blocker: ${traba}\n90-day goal: ${goal}`
