@@ -3040,7 +3040,7 @@ export default function App() {
             </motion.div>
           ) : (
             <motion.div {...stepAnim} className="text-center pt-16">
-              <div className="inline-flex w-16 h-16 bg-yellow-400 rounded-2xl items-center justify-center mb-6"><Check className="w-8 h-8 text-zinc-950" strokeWidth={2.5}/></div>
+              <div className="inline-flex w-16 h-16 bg-yellow-400 rounded-[18px_6px_22px_8px] items-center justify-center mb-6"><Check className="w-8 h-8 text-zinc-950" strokeWidth={2.5}/></div>
               <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">{F.thanksTitle}</h1>
               <p className="text-zinc-400 text-lg mb-8 max-w-lg mx-auto">{F.thanksDesc}</p>
               <button onClick={goHome} className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl shadow-lg shadow-yellow-400/15">{F.thanksCta}<ArrowRight className="w-5 h-5"/></button>
@@ -3596,7 +3596,7 @@ export default function App() {
   if (screen==='final') return (
     <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header/>
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="text-center mb-12"><div className="inline-flex w-16 h-16 bg-yellow-400/10 rounded-2xl items-center justify-center mb-4"><Trophy className="w-8 h-8 text-yellow-400"/></div><h2 className="text-4xl font-bold mb-3">{lng.finalTitle}</h2><p className="text-zinc-400 text-lg">{lng.finalDesc}</p></div>
+        <div className="text-center mb-12"><div className="inline-flex w-16 h-16 bg-yellow-400/10 rounded-[18px_6px_22px_8px] items-center justify-center mb-4"><Trophy className="w-8 h-8 text-yellow-400"/></div><h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-3">{lng.finalTitle}</h2><p className="text-zinc-400 text-lg">{lng.finalDesc}</p></div>
         {journey && journey.tools[journey.currentIndex] === toolId && (() => {
           const isLast = journey.currentIndex + 1 >= journey.tools.length;
           const nextToolId = !isLast ? journey.tools[journey.currentIndex + 1] : null;
