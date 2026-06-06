@@ -2895,11 +2895,28 @@ export default function App() {
     };
     // Envía el lead a la Google Sheet (Apps Script) si LEAD_WEBHOOK_URL está seteado.
     // no-cors + text/plain evita el preflight de CORS (Apps Script no devuelve headers CORS).
+    // IMPORTANTE: incluye el diagnóstico generado (verdict/strengths/leaks/roadmap/antiRec/hook)
+    // para que Fabrisio pueda dar follow-up coherente con las "3 ideas extra" prometidas.
+    // El Apps Script tiene que estar preparado para parsear estos campos extra.
     const submitLead = async () => {
       setDiagBusy(true);
       if (LEAD_WEBHOOK_URL) {
         try {
-          await fetch(LEAD_WEBHOOK_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ name:diagData.name, email:diagData.email, biz, traba:diagData.traba, goal:diagData.goal, lang }) });
+          const payload = {
+            // Datos del lead
+            name: diagData.name,
+            email: diagData.email,
+            // Respuestas del form
+            biz, traba: diagData.traba, goal: diagData.goal, lang,
+            // Diagnóstico completo generado por IA (verdict/strengths/leaks/roadmap/antiRec/hook).
+            // Si el modelo falló y se usó el mock, esto contiene el mock — igual sirve como referencia
+            // de qué vio el lead en pantalla.
+            diagnosis: diag,
+            // Metadata para tracking
+            ts: new Date().toISOString(),
+            source: typeof window !== 'undefined' ? window.location.href : 'unknown',
+          };
+          await fetch(LEAD_WEBHOOK_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) });
         } catch {}
       }
       setDiagBusy(false); setDiagStep('thanks'); window.scrollTo(0,0);
