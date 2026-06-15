@@ -2675,6 +2675,19 @@ export default function App() {
       <div className="orb-drift absolute top-[18%] right-[6%] w-[420px] h-[420px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none"/>
       <div className="orb-drift absolute bottom-[2%] left-[4%] w-[380px] h-[380px] bg-yellow-400/5 rounded-full blur-[110px] pointer-events-none" style={{animationDelay:'-7s'}}/>
 
+      {/* Campo de humo "Disipación" — se acumula arriba y se aclara hacia abajo,
+          detrás del hero. La señal (titular) emerge del ruido. */}
+      <div aria-hidden className="absolute top-0 left-0 right-0 pointer-events-none" style={{
+        height:'1000px',
+        backgroundImage:'url(/hero-smoke.webp)',
+        backgroundSize:'cover',
+        backgroundPosition:'center top',
+        backgroundRepeat:'no-repeat',
+        opacity:0.92,
+        maskImage:'linear-gradient(to bottom, #000 50%, transparent 100%)',
+        WebkitMaskImage:'linear-gradient(to bottom, #000 50%, transparent 100%)',
+      }}/>
+
       <div className="relative max-w-6xl mx-auto px-6 py-6">
         <header className="flex items-center justify-between mb-20">
           <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
@@ -2682,7 +2695,7 @@ export default function App() {
         </header>
         <motion.div variants={container} initial="hidden" animate="show" className="text-center max-w-3xl mx-auto pt-12">
           <motion.div variants={fadeUp} className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-6"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lng.subtitle}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></motion.div>
-          <motion.h1 variants={fadeUp} className="font-heading text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6">
+          <motion.h1 variants={fadeUp} className="font-gloock text-6xl md:text-7xl tracking-tight leading-[1.05] mb-6">
             <span className="block">{lang==='es'?'Estrategia real.':'Real strategy.'}</span>
             <span className="block bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent">{lang==='es'?'Sin chamuyo.':'No BS.'}</span>
           </motion.h1>
@@ -2711,12 +2724,23 @@ export default function App() {
         </motion.div>
       </div>
 
+      {/* ===== Línea de claridad (Disipación): el instante donde el ruido se va ===== */}
+      <div className="relative max-w-6xl mx-auto px-6 mt-2">
+        <div className="relative h-px bg-gradient-to-r from-transparent via-zinc-700/70 to-transparent">
+          <span className="absolute left-1/2 -translate-x-1/2 -top-[7px] w-0.5 h-[15px] bg-yellow-400 rounded-full" style={{boxShadow:'0 0 14px 2px rgba(212,169,56,0.45)'}}/>
+        </div>
+        <div className="flex justify-between mt-2.5 font-mono text-[10px] tracking-[0.2em] uppercase text-zinc-600">
+          <span>{lang==='es'?'Línea de claridad':'Line of clarity'}</span>
+          <span>{lang==='es'?'señal sobre ruido':'signal over noise'}</span>
+        </div>
+      </div>
+
       {/* ===== Banda de stats ===== */}
       <section className="relative border-y border-zinc-800/60 bg-zinc-950/40 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           {L.stats.map((s:any,i:number)=>(
             <motion.div key={i} {...reveal(i*0.08)} className={`text-center ${i>0 ? 'md:border-l md:border-yellow-400/15' : ''}`}>
-              <div className="font-heading text-5xl md:text-6xl font-bold text-yellow-400 tracking-tight leading-none">{s.n}</div>
+              <div className="font-gloock text-5xl md:text-6xl text-yellow-400 tracking-tight leading-none">{s.n}</div>
               <div className="mt-3 text-sm text-zinc-400 tracking-wide">{s.l}</div>
             </motion.div>
           ))}
@@ -2734,7 +2758,7 @@ export default function App() {
             </motion.div>
           </motion.div>
           <motion.div {...reveal(0.1)}>
-            <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.about.tag}</div>
+            <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.about.tag}</div>
             <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-2">{L.about.hi.split('Fabrisio')[0]}<span className="bg-gradient-to-r from-yellow-300 to-amber-500 bg-clip-text text-transparent">Fabrisio</span>{L.about.hi.split('Fabrisio')[1]}</h2>
             {/* Anotación hand-drawn: flecha + caption manuscrito apuntando a la foto.
                 Solo desktop (mobile la foto está arriba, no tiene sentido apuntar). */}
@@ -2759,7 +2783,7 @@ export default function App() {
       {/* ===== Cómo funciona ===== */}
       <section className="relative max-w-6xl mx-auto px-6 py-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.howTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.howTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.howDesc}</p>
         </motion.div>
@@ -2781,7 +2805,7 @@ export default function App() {
                   <ArrowRight className="w-3 h-3 text-yellow-400"/>
                 </div>
               )}
-              <div className="text-yellow-400/25 font-bold text-5xl leading-none mb-3">{String(i+1).padStart(2,'0')}</div>
+              <div className="font-gloock text-yellow-400/25 text-6xl leading-none mb-3">{String(i+1).padStart(2,'0')}</div>
               <h3 className="font-semibold text-lg mb-2">{s.t}</h3>
               <p className="text-sm text-zinc-400 leading-relaxed">{s.d}</p>
             </motion.div>
@@ -2792,7 +2816,7 @@ export default function App() {
       {/* ===== Áreas / qué resolvés ===== */}
       <section className="relative max-w-6xl mx-auto px-6 pb-24">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.areasTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.areasTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.areasTitle}</h2>
           <p className="text-zinc-400 text-lg">{L.areasDesc}</p>
         </motion.div>
@@ -2820,7 +2844,7 @@ export default function App() {
             <div className="absolute inset-0 rounded-full bg-yellow-400/40 blur-md pointer-events-none"/>
             <img src="/fabrisio.webp" alt="Fabrisio" loading="lazy" className="relative w-20 h-20 rounded-full object-cover border-2 border-yellow-400/60 shadow-lg shadow-yellow-400/20" style={{objectPosition:'center 22%'}}/>
           </motion.div>
-          <h2 className="relative text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.ctaTitle}</h2>
+          <h2 className="relative font-gloock text-4xl md:text-6xl tracking-tight leading-[1.05] mb-4">{L.ctaTitle}</h2>
           <p className="relative text-zinc-400 text-lg mb-8 max-w-xl mx-auto">{L.ctaDesc}</p>
           <div className="relative group inline-block">
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
@@ -2828,6 +2852,14 @@ export default function App() {
           </div>
         </motion.div>
       </section>
+
+      {/* ===== Footer ===== */}
+      <footer className="relative border-t border-zinc-800/60">
+        <div className="max-w-6xl mx-auto px-6 py-7 flex flex-col sm:flex-row items-center justify-between gap-2 font-mono text-[10px] tracking-[0.18em] uppercase text-zinc-600">
+          <span>{lng.appName} · {lang==='es'?'Consultoría de estrategia con IA':'AI strategy consulting'}</span>
+          <span>fabrisiosinhumo.com</span>
+        </div>
+      </footer>
     </div>
     );
   }
@@ -3134,7 +3166,7 @@ export default function App() {
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={openMyProfile} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded-md text-xs text-zinc-300 border border-zinc-800"><Users className="w-3 h-3"/>{lng.myProfile}</button>}/>
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="mb-10">
-            <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lng.toolboxSubtitle}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
+            <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{lng.toolboxSubtitle}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
             <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.toolboxTitle}</h2>
             <p className="text-zinc-400 leading-relaxed text-lg max-w-2xl">{lng.toolboxDesc}</p>
             {bizType&&<div className="mt-4 inline-flex items-center gap-2 text-xs text-zinc-500"><span>{lang==='es'?'Negocio:':'Business:'}</span><span className="text-yellow-400 font-medium">{lng.bizTypes[bizType].label}</span><button onClick={()=>setScreen('biztype')} className="text-zinc-600 hover:text-yellow-400 underline">{lang==='es'?'cambiar':'change'}</button></div>}
@@ -3242,7 +3274,7 @@ export default function App() {
     return (
       <div className="screen-enter min-h-screen bg-zinc-950 text-white"><Header right={<button onClick={()=>setScreen('journeyPick')} className="text-xs text-zinc-500 hover:text-yellow-400">← {lang==='es'?'Cambiar objetivo':'Change goal'}</button>}/>
         <div className="max-w-3xl mx-auto px-6 py-12">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{objectiveLabel}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{objectiveLabel}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{lng.journeyPlanTitle}</h2>
           <p className="text-zinc-400 mb-8 leading-relaxed">{lng.journeyPlanDesc}</p>
           <div className="space-y-4 mb-8">
@@ -3537,7 +3569,7 @@ export default function App() {
       <div className="orb-breathe absolute top-[-10%] left-1/2 w-[600px] h-[600px] bg-yellow-500/8 rounded-full blur-[130px] pointer-events-none"/>
       <div className="relative max-w-4xl mx-auto px-6 py-12">
         <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{duration:0.5,ease:[0.23,1,0.32,1]}} className="mb-8">
-          <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
+          <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{getToolName(toolId)}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="text-4xl font-bold tracking-tight mb-2">{lng.reviewTitle}</h2>
           <p className="text-zinc-400 text-lg">{lng.reviewDesc}</p>
         </motion.div>

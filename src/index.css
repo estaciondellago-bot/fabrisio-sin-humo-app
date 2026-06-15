@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/fraunces";
+@import "@fontsource/gloock";
+@import "@fontsource/dm-mono";
 /* ---break---
 */
 @custom-variant dark (&:is(.dark *));
@@ -36,6 +38,14 @@
 
   /* Fraunces serif para headings — antídoto al look "Geist AI default" */
   --font-heading: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+
+  /* Gloock — serif display de alto contraste para los titulares hero / CTA
+     (estética "Disipación"). Fallback a Fraunces si no carga. */
+  --font-gloock: 'Gloock', 'Fraunces Variable', Georgia, serif;
+
+  /* DM Mono — etiquetas clínicas (FIG, línea de claridad, serie) de la
+     estética "Disipación". Override del --font-mono default de Tailwind. */
+  --font-mono: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
 @layer base {
@@ -182,6 +192,8 @@
 
 @theme inline {
   --font-heading: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-gloock: 'Gloock', 'Fraunces Variable', Georgia, serif;
+  --font-mono: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
   --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
