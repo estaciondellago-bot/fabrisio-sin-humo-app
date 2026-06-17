@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, useSpring, useReducedMotion } from 'motion/react';
 import { ChevronRight, ChevronLeft, Sparkles, Globe, Check, Loader2, RefreshCw, Download, MessageCircle, X, Send, SkipForward, Flame, Users, Trophy, BarChart3, FileText, ArrowRight, AlertCircle, Link2, Wand2, Eraser, Zap, Target, Search, Clock, Megaphone, Compass, TrendingUp, Briefcase, PieChart, Lock, FileEdit, Film, ListChecks, DollarSign } from 'lucide-react';
 
 const WORKER_URL = 'https://api.fabrisiosinhumo.com';
@@ -2082,6 +2082,32 @@ function MdRender({text}: {text: string}) {
   return <div className="space-y-1">{els}</div>;
 }
 
+// Avatar del CTA final con mouse-spring tilt 3D. Es lo único en la página que
+// "te mira de vuelta" — puro delight decorativo. Componente separado para no
+// meter hooks (useSpring) dentro del bloque condicional if(screen==='landing')
+// (Rules of Hooks). Respeta prefers-reduced-motion: sin tilt, solo el float.
+function CtaAvatar({ alt }: { alt: string }) {
+  const reduce = useReducedMotion();
+  const rx = useSpring(0, { stiffness: 100, damping: 18 });
+  const ry = useSpring(0, { stiffness: 100, damping: 18 });
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (reduce) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    ry.set(((e.clientX - cx) / (r.width / 2)) * 12);   // rotateY sigue el eje X
+    rx.set((-(e.clientY - cy) / (r.height / 2)) * 12); // rotateX sigue el eje Y (invertido)
+  };
+  const onLeave = () => { rx.set(0); ry.set(0); };
+  return (
+    <div onMouseMove={onMove} onMouseLeave={onLeave} style={{ perspective: 600 }} className="relative mx-auto mb-6 w-20 h-20">
+      <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }} style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }} className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-yellow-400/40 blur-md pointer-events-none"/>
+        <img src="/fabrisio.webp" alt={alt} loading="lazy" className="relative w-20 h-20 rounded-full object-cover border-2 border-yellow-400/60 shadow-lg shadow-yellow-400/20" style={{ objectPosition: 'center 22%' }}/>
+      </motion.div>
+    </div>
+  );
+}
+
 function ToolIllustration({illustrationId,isLocked,index=0}: {illustrationId: string; isLocked?: boolean; index?: number}) {
   // Warm-palette hardcoded — sincronizado con override de Tailwind v4 en index.css (--color-yellow-400 etc.)
   const gold=isLocked?'#52525b':'#D4A938', dim=isLocked?'#3f3f46':'#B5901F', dark='#1A1612';
@@ -2706,7 +2732,7 @@ export default function App() {
           <motion.p variants={fadeUp} className="text-xl text-zinc-400 mb-10 leading-relaxed max-w-2xl mx-auto">{lng.heroDesc}</motion.p>
           <motion.div variants={fadeUp} className="group relative inline-block">
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
-            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
           </motion.div>
           <motion.div variants={fadeUp} className="mt-6 flex items-center justify-center">
             {/* CTA secundario humanizado: sin emoji 👉, sin Sparkles, sin pill GRATIS amarillo LED.
@@ -2779,7 +2805,9 @@ export default function App() {
             </div>
             <p className="text-lg text-zinc-100 font-medium leading-relaxed mb-4">{L.about.lead}</p>
             <p className="text-zinc-400 leading-relaxed mb-6">{L.about.body}</p>
-            <span className="inline-block font-semibold px-3 py-1 leading-loose text-zinc-100" style={{backgroundColor:"rgba(212, 169, 56, 0.42)",borderRadius:"14px 5px 18px 6px / 7px 16px 5px 13px",transform:"rotate(-0.6deg)",boxShadow:"0 0 0 1px rgba(212,169,56,0.15), inset 0 0 12px rgba(212,169,56,0.08)"}}>{L.about.highlight}</span>
+            {/* Highlight blob: el marcador "se pinta" left-to-right cuando la sección entra
+                al viewport (clip-path inset). Refuerza la metáfora de highlighter manual. */}
+            <motion.span initial={{clipPath:'inset(0 100% 0 0)'}} whileInView={{clipPath:'inset(0 0 0 0)'}} viewport={{once:true, margin:'-80px'}} transition={{duration:0.6, ease:[0.77,0,0.175,1] as const, delay:0.15}} className="inline-block font-semibold px-3 py-1 leading-loose text-zinc-100" style={{backgroundColor:"rgba(212, 169, 56, 0.42)",borderRadius:"14px 5px 18px 6px / 7px 16px 5px 13px",transform:"rotate(-0.6deg)",boxShadow:"0 0 0 1px rgba(212,169,56,0.15), inset 0 0 12px rgba(212,169,56,0.08)"}}>{L.about.highlight}</motion.span>
           </motion.div>
         </div>
       </section>
@@ -2844,15 +2872,12 @@ export default function App() {
       <section className="relative max-w-4xl mx-auto px-6 pb-28">
         <motion.div {...reveal()} className="relative text-center rounded-3xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm px-8 py-16 overflow-hidden">
           <div className="orb-breathe absolute -top-1/2 left-1/2 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none"/>
-          <motion.div animate={{y:[0,-8,0]}} transition={{duration:5,repeat:Infinity,ease:'easeInOut'}} className="relative mx-auto mb-6 w-20 h-20">
-            <div className="absolute inset-0 rounded-full bg-yellow-400/40 blur-md pointer-events-none"/>
-            <img src="/fabrisio.webp" alt="Fabrisio" loading="lazy" className="relative w-20 h-20 rounded-full object-cover border-2 border-yellow-400/60 shadow-lg shadow-yellow-400/20" style={{objectPosition:'center 22%'}}/>
-          </motion.div>
+          <CtaAvatar alt="Fabrisio"/>
           <h2 className="relative font-gloock text-4xl md:text-6xl tracking-tight leading-[1.05] mb-4">{L.ctaTitle}</h2>
           <p className="relative text-zinc-400 text-lg mb-8 max-w-xl mx-auto">{L.ctaDesc}</p>
           <div className="relative group inline-block">
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
-            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+            <button onClick={handleStart} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{lng.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
           </div>
         </motion.div>
       </section>
@@ -2986,7 +3011,7 @@ export default function App() {
               <p className="text-xl text-zinc-400 mb-10 max-w-xl mx-auto leading-relaxed">{F.subtitle}</p>
               <div className="group relative inline-block">
                 <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity pointer-events-none"/>
-                <button onClick={()=>setDiagStep('questions')} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{F.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
+                <button onClick={()=>setDiagStep('questions')} className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-b from-yellow-300 to-yellow-400 hover:from-yellow-200 hover:to-yellow-300 text-zinc-950 font-semibold rounded-xl transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.02] shadow-lg shadow-yellow-400/15">{F.startBtn}<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/></button>
               </div>
             </motion.div>
           ) : diagStep==='questions' ? (
