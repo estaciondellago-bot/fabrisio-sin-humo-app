@@ -2082,7 +2082,7 @@ function MdRender({text}: {text: string}) {
   return <div className="space-y-1">{els}</div>;
 }
 
-function ToolIllustration({illustrationId,isLocked}: {illustrationId: string; isLocked?: boolean}) {
+function ToolIllustration({illustrationId,isLocked,index=0}: {illustrationId: string; isLocked?: boolean; index?: number}) {
   // Warm-palette hardcoded — sincronizado con override de Tailwind v4 en index.css (--color-yellow-400 etc.)
   const gold=isLocked?'#52525b':'#D4A938', dim=isLocked?'#3f3f46':'#B5901F', dark='#1A1612';
   // Filter hand-drawn: feTurbulence + feDisplacementMap → stroke irregular tipo dibujo a mano.
@@ -2107,7 +2107,11 @@ function ToolIllustration({illustrationId,isLocked}: {illustrationId: string; is
     'pillar-spread':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">{hdDefs('ps')}<g filter={hd('ps')}><rect x="85" y="20" width="30" height="40" fill={gold} rx="2"/><line x1="100" y1="60" x2="100" y2="70" stroke={gold} strokeWidth="1"/><circle cx="50" cy="80" r="6" fill={dim} opacity="0.7"/><circle cx="75" cy="83" r="5" fill={dim} opacity="0.6"/><circle cx="100" cy="85" r="6" fill={gold} opacity="0.85"/><circle cx="125" cy="83" r="5" fill={dim} opacity="0.6"/><circle cx="150" cy="80" r="6" fill={dim} opacity="0.7"/><line x1="100" y1="70" x2="50" y2="78" stroke={gold} strokeWidth="0.6" opacity="0.4"/><line x1="100" y1="70" x2="75" y2="80" stroke={gold} strokeWidth="0.6" opacity="0.5"/><line x1="100" y1="70" x2="100" y2="80" stroke={gold} strokeWidth="0.6" opacity="0.6"/><line x1="100" y1="70" x2="125" y2="80" stroke={gold} strokeWidth="0.6" opacity="0.5"/><line x1="100" y1="70" x2="150" y2="78" stroke={gold} strokeWidth="0.6" opacity="0.4"/></g></svg>),
     'blue-ocean':(<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">{hdDefs('bo')}<g filter={hd('bo')}><path d="M20 70 Q 40 60, 60 70 Q 80 80, 100 70 Q 120 60, 140 70 Q 160 80, 180 70" stroke={dim} strokeWidth="1.2" fill="none" opacity="0.5"/><path d="M20 80 Q 40 70, 60 80 Q 80 90, 100 80 Q 120 70, 140 80 Q 160 90, 180 80" stroke={dim} strokeWidth="1.2" fill="none" opacity="0.4"/><path d="M20 60 Q 40 50, 60 60 Q 80 70, 100 60 Q 120 50, 140 60 Q 160 70, 180 60" stroke={gold} strokeWidth="1.5" fill="none" opacity="0.7"/><circle cx="100" cy="35" r="9" fill={gold}/><path d="M93 35 L98 28 L103 35 L100 42 Z" fill={dark}/><circle cx="100" cy="32" r="2" fill={gold}/></g></svg>)
   };
-  return <div className="w-full h-full flex items-center justify-center">{(svgs as any)[illustrationId]||<svg viewBox="0 0 200 100" className="w-full h-full"><rect x="80" y="35" width="40" height="30" fill={gold} opacity="0.3" rx="3"/></svg>}</div>;
+  // Stroke draw stagger: arranca 200ms después que la card empieza su entry stagger.
+  // La card hace fadeInUp 320ms; en 200ms ya está ~70% visible, momento óptimo para
+  // que el SVG empiece a dibujarse. Las 17 SVGs cascadean visualmente.
+  const drawDelay = `${(index * 40) + 200}ms`;
+  return <div className="tool-svg-draw w-full h-full flex items-center justify-center" style={{animationDelay: drawDelay}}>{(svgs as any)[illustrationId]||<svg viewBox="0 0 200 100" className="w-full h-full"><rect x="80" y="35" width="40" height="30" fill={gold} opacity="0.3" rx="3"/></svg>}</div>;
 }
 
 export default function App() {
@@ -3146,7 +3150,7 @@ export default function App() {
           <div className={`relative h-32 overflow-hidden ${locked?'bg-gradient-to-br from-zinc-900 to-zinc-950':'bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950'}`}>
             {!locked&&<div className="absolute inset-0 opacity-30" style={{backgroundImage:'radial-gradient(circle at 30% 50%, rgba(250,204,21,0.15) 0%, transparent 60%)'}}/>}
             {/* grid 14px removido — leía como AI SaaS. Glow radial de arriba ya da profundidad suficiente. */}
-            <div className="absolute inset-0 p-4 transition-transform duration-300 group-hover:scale-105"><ToolIllustration illustrationId={tool.illustrationId} isLocked={locked}/></div>
+            <div className="absolute inset-0 p-4 transition-transform duration-300 group-hover:scale-105"><ToolIllustration illustrationId={tool.illustrationId} isLocked={locked} index={index}/></div>
             {locked&&<div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-zinc-950/90 backdrop-blur-sm border border-zinc-700 rounded-full text-[10px] font-semibold text-zinc-400"><Lock className="w-2.5 h-2.5"/>{lng.toolSoon}</div>}
           </div>
           <div className="p-5 flex flex-col flex-1">

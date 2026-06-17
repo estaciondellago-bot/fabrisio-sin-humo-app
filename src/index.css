@@ -144,6 +144,21 @@
   .orb-breathe { animation: orbBreathe 10s var(--ease-in-out-strong) infinite; }
   .orb-drift   { animation: orbDrift 16s ease-in-out infinite; }
 
+  /* Stroke draw para SVGs de tools — reveal left-to-right.
+     clip-path se anima de inset(0 100% 0 0) (oculto desde derecha) a inset(0 0 0 0) (visible).
+     Refuerza el filter hand-drawn (feTurbulence) que ya tienen las 17 SVGs.
+     El animation-delay se calcula por index en JS para staggear con la entrada de las cards. */
+  @keyframes toolSvgDraw {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+  }
+  .tool-svg-draw {
+    animation: toolSvgDraw 700ms cubic-bezier(0.77, 0, 0.175, 1) backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tool-svg-draw { animation: none; }
+  }
+
   /* Smooth entry for banners/chips that mount mid-screen.
      Uses @starting-style (modern browsers) so the element fades + slides
      in on mount. Browsers without support just appear normally. */
