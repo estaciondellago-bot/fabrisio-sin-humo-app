@@ -2962,6 +2962,11 @@ export default function App() {
     };
     const goHome = () => { setScreen('landing'); setDiagStep('intro'); };
     const stepAnim = { initial:{opacity:0,y:18}, animate:{opacity:1,y:0}, transition:{duration:0.45,ease:[0.23,1,0.32,1] as const} };
+    // Stagger del resultado del diagnóstico: cada pieza aterriza ~70ms después de la
+    // anterior. El lead acaba de pedir un diagnóstico sobre SU negocio — es el momento
+    // de máxima atención. El reveal escalonado construye anticipación hacia el hook final.
+    const diagContainer = { hidden:{}, show:{ transition:{ staggerChildren:0.07, delayChildren:0.05 } } };
+    const diagItem = { hidden:{opacity:0, y:12}, show:{opacity:1, y:0, transition:{duration:0.4, ease:[0.23,1,0.32,1] as const}} };
 
     return (
       <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
@@ -3006,29 +3011,29 @@ export default function App() {
               <button onClick={runDiag} disabled={!canGen} className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-xl">{F.genBtn}<Sparkles className="w-4 h-4"/></button>
             </motion.div>
           ) : diagStep==='result' ? (
-            <motion.div {...stepAnim} className="space-y-5">
-              <div className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{F.resultBadge}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
+            <motion.div variants={diagContainer} initial="hidden" animate="show" className="space-y-5">
+              <motion.div variants={diagItem} className="inline-flex items-center gap-3 text-yellow-400/90 text-[11px] font-medium tracking-[0.22em] uppercase"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{F.resultBadge}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></motion.div>
 
               {/* 1. Veredicto principal — destacado */}
-              <div className="rounded-2xl border border-yellow-400/30 bg-yellow-400/[0.04] p-6 md:p-8">
+              <motion.div variants={diagItem} className="rounded-2xl border border-yellow-400/30 bg-yellow-400/[0.04] p-6 md:p-8">
                 <div className="text-yellow-400/80 text-[11px] font-medium tracking-[0.22em] uppercase mb-3">{F.verdictLabel}</div>
                 <p className="text-zinc-100 text-lg leading-relaxed font-medium">{diag.verdict}</p>
-              </div>
+              </motion.div>
 
               {/* 2. Strengths — lo que ya hace bien */}
               {diag.strengths?.length>0 && (
-                <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.03] p-6">
+                <motion.div variants={diagItem} className="rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.03] p-6">
                   <h3 className="font-semibold text-emerald-300 mb-3 flex items-center gap-2"><Check className="w-4 h-4"/>{F.strengthsLabel}</h3>
                   <ul className="space-y-2">
                     {diag.strengths.map((s:string,i:number)=>(
                       <li key={i} className="text-sm text-zinc-300 leading-relaxed flex items-start gap-2"><span className="text-emerald-400/70 mt-1">✓</span>{s}</li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               )}
 
               {/* 3. Leaks — qué te cuesta hoy */}
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+              <motion.div variants={diagItem} className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h3 className="font-semibold text-zinc-100 mb-4 flex items-center gap-2"><AlertCircle className="w-4 h-4 text-yellow-400"/>{F.leaksLabel}</h3>
                 <div className="space-y-4">
                   {diag.leaks.map((l:any,i:number)=>(
@@ -3038,10 +3043,10 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* 4. Roadmap 30/60/90 */}
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+              <motion.div variants={diagItem} className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
                 <h3 className="font-semibold text-zinc-100 mb-4 flex items-center gap-2"><Clock className="w-4 h-4 text-yellow-400"/>{F.roadmapLabel}</h3>
                 <div className="space-y-3">
                   {(['30','60','90'] as const).map((k,i)=> diag.roadmap?.[k] && (
@@ -3051,23 +3056,23 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
               {/* 5. Anti-recomendación — diferencial */}
               {diag.antiRec && (
-                <div className="rounded-2xl border border-red-400/20 bg-red-400/[0.03] p-6">
+                <motion.div variants={diagItem} className="rounded-2xl border border-red-400/20 bg-red-400/[0.03] p-6">
                   <h3 className="font-semibold text-red-300 mb-2 flex items-center gap-2"><X className="w-4 h-4"/>{F.antiRecLabel}</h3>
                   <p className="text-sm text-zinc-300 leading-relaxed">{diag.antiRec}</p>
-                </div>
+                </motion.div>
               )}
 
               {/* 6. Hook final — frase punzante en Fraunces italic */}
               {diag.hook && (
-                <div className="pt-2 pb-4 text-center">
+                <motion.div variants={diagItem} className="pt-2 pb-4 text-center">
                   <p className="font-heading italic text-2xl md:text-3xl text-yellow-400/90 leading-tight max-w-xl mx-auto">"{diag.hook}"</p>
-                </div>
+                </motion.div>
               )}
-              <div className="relative rounded-2xl border border-yellow-400/30 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 p-6 md:p-8">
+              <motion.div variants={diagItem} className="relative rounded-2xl border border-yellow-400/30 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 p-6 md:p-8">
                 <h3 className="text-xl font-bold mb-1">{F.resultLockTitle}</h3>
                 <p className="text-sm text-zinc-300 mb-5">{F.resultLockDesc}</p>
                 <div className="space-y-3">
@@ -3075,7 +3080,7 @@ export default function App() {
                   <input type="email" value={diagData.email} onChange={e=>setDiagData({...diagData,email:e.target.value})} placeholder={F.emailPh} className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl focus:border-yellow-400 outline-none placeholder-zinc-600"/>
                   <button onClick={submitLead} disabled={!canSubmit||diagBusy} className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 text-zinc-950 font-semibold rounded-xl">{diagBusy?F.submitting:F.submitBtn}{!diagBusy&&<ArrowRight className="w-4 h-4"/>}</button>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           ) : (
             <motion.div {...stepAnim} className="text-center pt-16">
