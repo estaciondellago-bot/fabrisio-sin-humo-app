@@ -2830,7 +2830,7 @@ export default function App() {
             // y dan sensación de "tarjetas tiradas a mano". Hover endereza la card.
             const tilt = [-0.7, 0.5, -0.4, 0.6, -0.5, 0.3][i % 6];
             return (
-            <motion.div key={i} {...reveal(i*0.06)} initial={{opacity:0, y:18, rotate:tilt}} whileInView={{opacity:1, y:0, rotate:tilt}} whileHover={{y:-4, rotate:0}} className="group p-6 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-yellow-400/40 rounded-2xl transition-colors">
+            <motion.div key={i} {...reveal(i*0.06)} initial={{opacity:0, y:18, rotate:tilt}} whileInView={{opacity:1, y:0, rotate:tilt}} whileHover={{y:-6, rotate:0, transition:{type:'spring', stiffness:280, damping:22, mass:0.6}}} className="group p-6 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-yellow-400/40 rounded-2xl transition-colors">
               <div className="w-11 h-11 bg-yellow-400/10 group-hover:bg-yellow-400/20 rounded-xl flex items-center justify-center mb-4 transition-colors"><a.icon className="w-5 h-5 text-yellow-400"/></div>
               <h3 className="font-semibold text-lg mb-1">{a.t}</h3>
               <p className="text-sm text-zinc-400 leading-relaxed">{a.d}</p>
@@ -3121,7 +3121,7 @@ export default function App() {
               const info=lng.bizTypes[tp.key]; const sel=bizType===tp.key;
               // Tilt sutil alternado — rompe la grilla SaaS perfecta. Hover endereza.
               const tilt = [-0.5, 0.4, -0.3, 0.5, -0.4, 0.3][i % 6];
-              return <button key={tp.key} onClick={()=>setBizType(tp.key)} style={{animationDelay:`${i*40}ms`, transform:`rotate(${tilt}deg)`}} className={`stagger-item text-left p-5 rounded-xl border transition-transform hover:!rotate-0 ${sel?'bg-yellow-400/10 border-yellow-400':'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
+              return <button key={tp.key} onClick={()=>setBizType(tp.key)} style={{animationDelay:`${i*40}ms`, transform:`rotate(${tilt}deg)`, transition:'transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 160ms ease, background-color 160ms ease'}} className={`stagger-item text-left p-5 rounded-xl border hover:!rotate-0 ${sel?'bg-yellow-400/10 border-yellow-400':'bg-zinc-900 border-zinc-800 hover:border-zinc-700'}`}>
                 <div className="flex items-start gap-4"><div className={`w-12 h-12 rounded-[14px_4px_16px_6px] flex items-center justify-center text-2xl flex-shrink-0 ${sel?'bg-yellow-400/20':'bg-zinc-800'}`}>{tp.icon}</div>
                   <div className="flex-1"><div className="flex items-center gap-2 mb-1"><h3 className="font-semibold text-white">{info.label}</h3>{sel&&<Check className="w-4 h-4 text-yellow-400"/>}</div><p className="text-sm text-zinc-400">{info.desc}</p></div></div>
               </button>;
