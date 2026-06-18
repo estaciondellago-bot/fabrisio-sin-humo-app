@@ -2745,8 +2745,8 @@ export default function App() {
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-20">
             {features.map((f,i)=>(
-              <motion.div key={i} variants={fadeUp} whileHover={{y:-4}} transition={{type:'spring',stiffness:300,damping:22}} className="group p-5 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-yellow-400/40 rounded-xl text-left transition-colors">
-                <div className="w-10 h-10 bg-yellow-400/10 group-hover:bg-yellow-400/20 rounded-lg flex items-center justify-center mb-3 transition-colors"><f.icon className="w-5 h-5 text-yellow-400"/></div>
+              <motion.div key={i} variants={fadeUp} whileHover={{y:-4, transition:{type:'spring',stiffness:300,damping:22}}} className="group p-5 bg-zinc-900/60 backdrop-blur-sm border border-zinc-700/60 hover:border-yellow-400/50 hover:bg-zinc-900/80 rounded-xl text-left transition-colors">
+                <div className="w-10 h-10 bg-yellow-400/15 group-hover:bg-yellow-400/25 rounded-[12px_4px_14px_5px] flex items-center justify-center mb-3 transition-colors"><f.icon className="w-5 h-5 text-yellow-400"/></div>
                 <h3 className="font-semibold mb-1">{f.t}</h3><p className="text-sm text-zinc-400">{f.d}</p>
               </motion.div>
             ))}
@@ -2770,7 +2770,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           {L.stats.map((s:any,i:number)=>(
             <motion.div key={i} {...reveal(i*0.08)} className={`text-center ${i>0 ? 'md:border-l md:border-yellow-400/15' : ''}`}>
-              <div className="font-gloock text-5xl md:text-6xl text-yellow-400 tracking-tight leading-none">{s.n}</div>
+              <div className="font-heading font-bold text-5xl md:text-6xl text-yellow-400 tracking-tight leading-none">{s.n}</div>
               <div className="mt-3 text-sm text-zinc-400 tracking-wide">{s.l}</div>
             </motion.div>
           ))}
@@ -2778,7 +2778,7 @@ export default function App() {
       </section>
 
       {/* ===== Soy Fabrisio ===== */}
-      <section className="relative max-w-6xl mx-auto px-6 py-24">
+      <section className="relative max-w-6xl mx-auto px-6 py-20">
         <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           <motion.div {...reveal()} className="relative mx-auto md:mx-0 w-full max-w-sm">
             <div className="orb-breathe absolute -inset-8 bg-yellow-500/20 rounded-full blur-[90px] pointer-events-none"/>
@@ -2813,7 +2813,7 @@ export default function App() {
       </section>
 
       {/* ===== Cómo funciona ===== */}
-      <section className="relative max-w-6xl mx-auto px-6 py-24">
+      <section className="relative max-w-6xl mx-auto px-6 py-20">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.howTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.howTitle}</h2>
@@ -2837,7 +2837,7 @@ export default function App() {
                   <ArrowRight className="w-3 h-3 text-yellow-400"/>
                 </div>
               )}
-              <div className="font-gloock text-yellow-400/25 text-6xl leading-none mb-3">{String(i+1).padStart(2,'0')}</div>
+              <div className="font-heading font-bold text-yellow-400/25 text-6xl leading-none mb-3">{String(i+1).padStart(2,'0')}</div>
               <h3 className="font-semibold text-lg mb-2">{s.t}</h3>
               <p className="text-sm text-zinc-400 leading-relaxed">{s.d}</p>
             </motion.div>
@@ -2846,7 +2846,7 @@ export default function App() {
       </section>
 
       {/* ===== Áreas / qué resolvés ===== */}
-      <section className="relative max-w-6xl mx-auto px-6 pb-24">
+      <section className="relative max-w-6xl mx-auto px-6 pb-20">
         <motion.div {...reveal()} className="text-center max-w-2xl mx-auto mb-14">
           <div className="inline-flex items-center gap-3 text-yellow-400/90 font-mono text-[10px] tracking-[0.25em] uppercase mb-4"><span className="hidden sm:block w-8 h-px bg-yellow-400/60"/>{L.areasTag}<span className="hidden sm:block w-8 h-px bg-yellow-400/60"/></div>
           <h2 className="font-heading text-3xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-4">{L.areasTitle}</h2>
@@ -2873,7 +2873,7 @@ export default function App() {
         <motion.div {...reveal()} className="relative text-center rounded-3xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm px-8 py-16 overflow-hidden">
           <div className="orb-breathe absolute -top-1/2 left-1/2 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none"/>
           <CtaAvatar alt="Fabrisio"/>
-          <h2 className="relative font-gloock text-4xl md:text-6xl tracking-tight leading-[1.05] mb-4">{L.ctaTitle}</h2>
+          <h2 className="relative font-heading font-bold text-4xl md:text-6xl tracking-tight leading-[1.05] mb-4">{L.ctaTitle}</h2>
           <p className="relative text-zinc-400 text-lg mb-8 max-w-xl mx-auto">{L.ctaDesc}</p>
           <div className="relative group inline-block">
             <div className="absolute -inset-1.5 bg-yellow-400/30 rounded-2xl blur-lg opacity-50 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none"/>
