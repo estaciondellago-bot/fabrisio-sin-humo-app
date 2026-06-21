@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#1A1612;--bg2:#221d17;--gold:#D4A938;--gold-soft:#E5C46A;--ink:#F5F0E6;--muted:#A89F8E;--line:rgba(212,169,56,.25)}
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+  body{background:#0e0b08;font-family:'Inter',sans-serif;color:var(--ink);width:1500px}
+  .gloock{font-family:'Gloock',Georgia,serif}
+  .fraunces{font-family:'Fraunces',Georgia,serif}
+
+  .lab{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .cell{padding:80px;border:1px solid rgba(255,255,255,.06);position:relative;min-height:520px;display:flex;flex-direction:column}
+  .cell.dark{background:radial-gradient(130% 90% at 50% 0%,#2a231b,var(--bg) 60%,#15110d)}
+  .cell.light{background:#F5F0E6;color:#1A1612}
+  .tag{position:absolute;top:26px;left:30px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .light .tag{color:#9a7a1e}
+  .center{margin:auto;display:flex;flex-direction:column;align-items:center;gap:0}
+  .row{margin:auto 0;display:flex;align-items:center;gap:34px}
+
+  /* ---- Retrato duotono ---- */
+  .portrait{position:relative;border-radius:50%;overflow:hidden;background:var(--gold);flex:none}
+  .portrait img{width:100%;height:100%;object-fit:cover;object-position:center 20%;
+    filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:luminosity;opacity:.95}
+  .portrait .ring{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(212,169,56,.55);pointer-events:none}
+  /* anillo técnico con ticks */
+  .tring{position:absolute;inset:-14px;border-radius:50%;border:1.5px solid var(--line)}
+  .tring::before,.tring::after{content:"";position:absolute;background:var(--gold);opacity:.6}
+  .tring::before{width:2px;height:12px;top:-6px;left:50%;transform:translateX(-50%)}
+  .tring::after{width:2px;height:12px;bottom:-6px;left:50%;transform:translateX(-50%)}
+
+  /* ---- Wordmark ---- */
+  .wm{display:flex;flex-direction:column;line-height:1}
+  .wm .l1{font-family:'Gloock',Georgia,serif;font-size:62px;letter-spacing:-.01em}
+  .wm .l1 .sin{color:var(--gold)}
+  .light .wm .l1 .sin{color:#b8901c}
+  .wm .l2{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:24px;color:var(--muted);margin-top:10px;letter-spacing:.01em}
+  .light .wm .l2{color:#7a6f5a}
+
+  /* ---- Monograma F ---- */
+  .mono{display:flex;align-items:center;justify-content:center;flex:none;
+    background:linear-gradient(160deg,var(--gold-soft),var(--gold));color:#1A1612;
+    font-family:'Gloock',Georgia,serif;border-radius:26px 8px 30px 10px}
+  .mono.circle{border-radius:50%}
+  .mono.outline{background:transparent;border:3px solid var(--gold);color:var(--gold)}
+
+  /* favicon strip */
+  .fav{display:flex;align-items:center;gap:28px;margin:auto 0}
+  .fav .lbl{font-size:13px;color:var(--muted);width:60px}
+
+  h2.note{font-size:15px;color:var(--muted);font-weight:500;margin-top:auto}
+</style></head>
+<body>
+<div class="lab">
+
+  <!-- 1. PRIMARIA: retrato duotono + wordmark (formatos grandes) -->
+  <div class="cell dark">
+    <div class="tag">Primaria · hero / about / slide 1</div>
+    <div class="row">
+      <div class="portrait" style="width:200px;height:200px">
+        <div class="tring"></div>
+        <img src="./public/fabrisio.webp" alt="Fabrisio">
+        <div class="ring"></div>
+      </div>
+      <div class="wm">
+        <div class="l1">Fabrisio<br><span class="sin">sin Humo</span></div>
+        <div class="l2">No vendo teoría.</div>
+      </div>
+    </div>
+    <h2 class="note">Tu foto real en duotono mostaza. La cara es el activo de una marca personal.</h2>
+  </div>
+
+  <!-- 2. Lockup horizontal para header del sitio -->
+  <div class="cell dark">
+    <div class="tag">Header del sitio · horizontal</div>
+    <div class="row" style="gap:22px">
+      <div class="portrait" style="width:72px;height:72px"><img src="./public/fabrisio.webp" alt=""><div class="ring"></div></div>
+      <div class="gloock" style="font-size:34px">Fabrisio <span style="color:var(--gold)">sin Humo</span></div>
+    </div>
+    <h2 class="note">Versión compacta para barra de navegación.</h2>
+  </div>
+
+  <!-- 3. Monograma F (favicon / perfil / marca de agua) -->
+  <div class="cell dark">
+    <div class="tag">Monograma "F" · favicon / perfil / watermark</div>
+    <div class="row" style="gap:40px;margin:auto;justify-content:center">
+      <div class="mono" style="width:150px;height:150px;font-size:104px">F</div>
+      <div class="mono circle" style="width:150px;height:150px;font-size:104px">F</div>
+      <div class="mono outline" style="width:150px;height:150px;font-size:104px">F</div>
+    </div>
+    <h2 class="note">La "F" en Gloock (tu tipografía). Editorial, cálida, cero commodity. App-icon, círculo y outline.</h2>
+  </div>
+
+  <!-- 4. Prueba de escala favicon + fondo claro -->
+  <div class="cell light">
+    <div class="tag">Escala favicon + fondo claro</div>
+    <div class="fav">
+      <span class="lbl">512</span>
+      <div class="mono" style="width:96px;height:96px;font-size:66px;border-radius:18px 6px 20px 7px">F</div>
+      <span class="lbl">64</span>
+      <div class="mono" style="width:48px;height:48px;font-size:33px;border-radius:10px 3px 12px 4px">F</div>
+      <span class="lbl">32</span>
+      <div class="mono" style="width:32px;height:32px;font-size:22px;border-radius:7px 2px 8px 3px">F</div>
+      <span class="lbl">16</span>
+      <div class="mono" style="width:16px;height:16px;font-size:12px;border-radius:4px 1px 4px 1px">F</div>
+    </div>
+    <div class="row" style="margin-top:30px">
+      <div class="portrait" style="width:90px;height:90px"><img src="./public/fabrisio.webp" alt=""><div class="ring"></div></div>
+      <div class="gloock" style="font-size:30px;color:#1A1612">Fabrisio <span style="color:#b8901c">sin Humo</span></div>
+    </div>
+    <h2 class="note" style="color:#7a6f5a">La "F" sobrevive hasta 16px. El retrato funciona en claro y oscuro.</h2>
+  </div>
+
+</div>
+</body></html>

@@ -2662,7 +2662,7 @@ export default function App() {
       <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <button onClick={()=>{ if (canGoHome) backToToolbox(); }} disabled={!canGoHome} className={`flex items-center gap-2 ${canGoHome?'hover:opacity-80 cursor-pointer':'cursor-default'} transition-opacity`} title={canGoHome?(lang==='es'?'Volver a herramientas':'Back to toolbox'):''}>
-            <div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
+            <div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><span className="font-gloock text-zinc-950 text-xl leading-none">F</span></div>
             <span className="font-bold text-sm">{lng.appName}</span>
           </button>
           <div className="flex items-center gap-3">
@@ -2720,7 +2720,7 @@ export default function App() {
 
       <div className="relative max-w-6xl mx-auto px-6 py-6">
         <header className="flex items-center justify-between mb-20">
-          <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
+          <div className="flex items-center gap-2"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><span className="font-gloock text-zinc-950 text-2xl leading-none">F</span></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></div>
           <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
         </header>
         <motion.div variants={container} initial="hidden" animate="show" className="text-center max-w-3xl mx-auto pt-12">
@@ -2997,7 +2997,7 @@ export default function App() {
       <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
         <div className="orb-breathe absolute top-[-10%] left-1/2 w-[700px] h-[700px] bg-yellow-500/10 rounded-full blur-[130px] pointer-events-none"/>
         <header className="relative flex items-center justify-between max-w-3xl mx-auto px-6 py-6">
-          <button onClick={goHome} className="flex items-center gap-2 hover:opacity-80"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><Flame className="w-5 h-5 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></button>
+          <button onClick={goHome} className="flex items-center gap-2 hover:opacity-80"><div className="w-9 h-9 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center shadow-lg shadow-yellow-400/15"><span className="font-gloock text-zinc-950 text-2xl leading-none">F</span></div><span className="font-bold text-lg tracking-tight">{lng.appName}</span></button>
           <button onClick={()=>setLang(lang==='es'?'en':'es')} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 rounded-lg border border-zinc-800 text-sm"><Globe className="w-4 h-4"/>{lang==='es'?'ES':'EN'}</button>
         </header>
 
@@ -3124,7 +3124,7 @@ export default function App() {
     <div className="screen-enter min-h-screen bg-zinc-950 text-white flex items-center justify-center px-6">
       <div className="max-w-md w-full">
         <div className="text-center mb-10">
-          <div className="inline-flex w-20 h-20 bg-yellow-400 rounded-[22px_8px_28px_10px] items-center justify-center mb-5 shadow-lg shadow-yellow-400/10"><Flame className="w-10 h-10 text-zinc-950" strokeWidth={2.5}/></div>
+          <div className="inline-flex w-20 h-20 bg-yellow-400 rounded-[22px_8px_28px_10px] items-center justify-center mb-5 shadow-lg shadow-yellow-400/10"><span className="font-gloock text-zinc-950 text-5xl leading-none">F</span></div>
           <h1 className="font-heading text-4xl font-bold tracking-tight mb-2">{lng.appName}</h1>
           <p className="text-zinc-400 text-sm">{lng.loginDesc}</p>
         </div>
@@ -3522,7 +3522,7 @@ export default function App() {
       <div className="screen-enter min-h-screen bg-zinc-950 text-white">
         <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-lg z-10">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <button onClick={()=>backToToolbox()} className="flex items-center gap-2 hover:opacity-80 cursor-pointer transition-opacity" title={lang==='es'?'Volver a herramientas':'Back to toolbox'}><div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-bold text-sm">{lng.appName}</span></button>
+            <button onClick={()=>backToToolbox()} className="flex items-center gap-2 hover:opacity-80 cursor-pointer transition-opacity" title={lang==='es'?'Volver a herramientas':'Back to toolbox'}><div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><span className="font-gloock text-zinc-950 text-xl leading-none">F</span></div><span className="font-bold text-sm">{lng.appName}</span></button>
             <div className="flex items-center gap-3">
               <span className="text-xs text-zinc-500">{lng.step} {stepIdx+1} {lng.of} {visibleFlow.length}</span>
               {demoData&&<button onClick={()=>setData(p=>({...p,...demoData}))} className="flex items-center gap-1.5 px-2.5 py-1 bg-yellow-400/10 hover:bg-yellow-400/20 border border-yellow-400/30 text-yellow-400 rounded-md text-xs font-medium">🧪 Demo</button>}
@@ -3534,7 +3534,7 @@ export default function App() {
         <div className="max-w-3xl mx-auto px-6 py-12">
           {stepIdx===0 && TOOL_TIPS[toolId] && !tipsSeen[toolId] && (
             <div className="smooth-enter mb-6 p-4 bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/30 rounded-xl flex items-start gap-3">
-              <div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center flex-shrink-0 mt-0.5"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div>
+              <div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center flex-shrink-0 mt-0.5"><span className="font-gloock text-zinc-950 text-xl leading-none">F</span></div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-1">💡 {lng.tipFabrisio}</div>
                 <p className="text-sm text-zinc-200 leading-relaxed">{(TOOL_TIPS[toolId] as any)[lang] || TOOL_TIPS[toolId].es}</p>
@@ -3584,7 +3584,7 @@ export default function App() {
           <div className="fixed inset-0 z-50 flex justify-end" onClick={()=>setChatOpen(false)}>
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"/>
             <div className="relative w-full max-w-md bg-zinc-950 border-l border-zinc-800 flex flex-col h-screen" onClick={e=>e.stopPropagation()}>
-              <div className="flex items-center justify-between p-5 border-b border-zinc-800"><div className="flex items-center gap-2"><div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><Flame className="w-4 h-4 text-zinc-950" strokeWidth={2.5}/></div><span className="font-semibold">{lng.askClaude}</span></div><button onClick={()=>setChatOpen(false)} className="p-1.5 hover:bg-zinc-900 rounded-lg"><X className="w-5 h-5"/></button></div>
+              <div className="flex items-center justify-between p-5 border-b border-zinc-800"><div className="flex items-center gap-2"><div className="w-8 h-8 bg-yellow-400 rounded-[10px_4px_12px_5px] flex items-center justify-center"><span className="font-gloock text-zinc-950 text-xl leading-none">F</span></div><span className="font-semibold">{lng.askClaude}</span></div><button onClick={()=>setChatOpen(false)} className="p-1.5 hover:bg-zinc-900 rounded-lg"><X className="w-5 h-5"/></button></div>
               <div className="flex-1 overflow-y-auto p-5 space-y-3">
                 {chatMsgs.length===0&&<div className="text-center text-zinc-500 text-sm pt-12">{lng.chatEmpty}</div>}
                 {chatMsgs.map((m,i)=><div key={i} className={`flex ${m.role==='user'?'justify-end':'justify-start'}`}><div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm ${m.role==='user'?'bg-yellow-400 text-zinc-950':'bg-zinc-900 text-zinc-200 border border-zinc-800'}`}>{m.content}</div></div>)}
